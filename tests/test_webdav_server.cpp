@@ -10,26 +10,26 @@ public:
     MockGRPCClientWrapperForServer(const std::string& server_address) 
         : GRPCClientWrapper(server_address) {}
     
-    MOCK_METHOD(fileengine_rpc::ListDirectoryResponse, listDirectory, 
-                (const fileengine_rpc::ListDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetFileResponse, getFile, 
-                (const fileengine_rpc::GetFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::StatResponse, stat, 
-                (const fileengine_rpc::StatRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::PutFileResponse, putFile, 
-                (const fileengine_rpc::PutFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::TouchResponse, touch, 
-                (const fileengine_rpc::TouchRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::MakeDirectoryResponse, makeDirectory, 
-                (const fileengine_rpc::MakeDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RemoveFileResponse, removeFile, 
-                (const fileengine_rpc::RemoveFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RemoveDirectoryResponse, removeDirectory, 
-                (const fileengine_rpc::RemoveDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::CopyResponse, copy, 
-                (const fileengine_rpc::CopyRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::MoveResponse, move, 
-                (const fileengine_rpc::MoveRequest&), (override));
+    MOCK_METHOD(fileengine::ListDirectoryResponse, listDirectory,
+                (const fileengine::ListDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine::ReadFileResponse, readFile,
+                (const fileengine::ReadFileRequest&), (override));
+    MOCK_METHOD(fileengine::GetFileInfoResponse, getFileInfo,
+                (const fileengine::GetFileInfoRequest&), (override));
+    MOCK_METHOD(fileengine::WriteFileResponse, writeFile,
+                (const fileengine::WriteFileRequest&), (override));
+    MOCK_METHOD(fileengine::CreateFileResponse, createFile,
+                (const fileengine::CreateFileRequest&), (override));
+    MOCK_METHOD(fileengine::MakeDirectoryResponse, makeDirectory,
+                (const fileengine::MakeDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine::DeleteFileResponse, deleteFile,
+                (const fileengine::DeleteFileRequest&), (override));
+    MOCK_METHOD(fileengine::RemoveDirectoryResponse, removeDirectory,
+                (const fileengine::RemoveDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine::CopyFileResponse, copyFile,
+                (const fileengine::CopyFileRequest&), (override));
+    MOCK_METHOD(fileengine::MoveFileResponse, moveFile,
+                (const fileengine::MoveFileRequest&), (override));
 };
 
 class MockPathResolver : public webdav::PathResolver {

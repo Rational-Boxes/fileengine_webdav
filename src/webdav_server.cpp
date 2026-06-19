@@ -105,7 +105,7 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     }
 
     // Create authentication context for gRPC
-    fileengine_rpc::AuthenticationContext auth_ctx;
+    fileengine::AuthContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
     for (const auto& role : roles) {
@@ -126,15 +126,14 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     }
 
     // Create gRPC request to get file
-    fileengine_rpc::GetFileRequest get_req;
+    fileengine::ReadFileRequest get_req;
     get_req.set_uid(file_uuid);
-    get_req.set_version_timestamp(""); // Get latest version
     *get_req.mutable_auth() = auth_ctx;
 
     // Call gRPC service to get file content
-    fileengine_rpc::GetFileResponse get_resp;
+    fileengine::ReadFileResponse get_resp;
     try {
-        get_resp = grpc_client_->getFile(get_req);
+        get_resp = grpc_client_->readFile(get_req);
     } catch (const std::exception& e) {
         webdav::errorLog("Exception during gRPC GetFile call: " + std::string(e.what()));
         response.setStatus(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
@@ -188,7 +187,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     }
 
     // Create authentication context for gRPC
-    fileengine_rpc::AuthenticationContext auth_ctx;
+    fileengine::AuthContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
     for (const auto& role : roles) {
@@ -239,7 +238,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     std::string filename = clean_path.substr(clean_path.find_last_of('/') + 1);
 
     // Create gRPC request to put file
-    fileengine_rpc::PutFileRequest put_req;
+    fileengine::WriteFileRequest put_req;
     put_req.set_data(content);
     put_req.set_uid(""); // Will be assigned by the server
     *put_req.mutable_auth() = auth_ctx;
@@ -249,12 +248,12 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     std::string file_uuid = path_resolver_->resolvePathToUUID(path, tenant);
     if (file_uuid.empty()) {
         // File doesn't exist, create it first
-        fileengine_rpc::TouchRequest touch_req;
+        fileengine::CreateFileRequest touch_req;
         touch_req.set_parent_uid(parent_uuid);
         touch_req.set_name(filename);
         *touch_req.mutable_auth() = auth_ctx;
 
-        fileengine_rpc::TouchResponse touch_resp = grpc_client_->touch(touch_req);
+        fileengine::CreateFileResponse touch_resp = grpc_client_->createFile(touch_req);
         if (!touch_resp.success()) {
             webdav::errorLog("Failed to create file: " + touch_resp.error());
             response.setStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
@@ -269,7 +268,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
 
     // Update the file content
     put_req.set_uid(file_uuid);
-    fileengine_rpc::PutFileResponse put_resp = grpc_client_->putFile(put_req);
+    fileengine::WriteFileResponse put_resp = grpc_client_->writeFile(put_req);
 
     if (!put_resp.success()) {
         webdav::errorLog("Failed to put file: " + put_resp.error());
@@ -315,7 +314,7 @@ void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Po
     }
 
     // Create authentication context for gRPC
-    fileengine_rpc::AuthenticationContext auth_ctx;
+    fileengine::AuthContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
     for (const auto& role : roles) {
@@ -361,13 +360,13 @@ void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Po
     std::string dirname = clean_path.substr(clean_path.find_last_of('/') + 1);
 
     // Create gRPC request to make directory
-    fileengine_rpc::MakeDirectoryRequest mkcol_req;
+    fileengine::MakeDirectoryRequest mkcol_req;
     mkcol_req.set_parent_uid(parent_uuid);
     mkcol_req.set_name(dirname);
     *mkcol_req.mutable_auth() = auth_ctx;
 
     // Call gRPC service to create directory
-    fileengine_rpc::MakeDirectoryResponse mkcol_resp = grpc_client_->makeDirectory(mkcol_req);
+    fileengine::MakeDirectoryResponse mkcol_resp = grpc_client_->makeDirectory(mkcol_req);
 
     if (!mkcol_resp.success()) {
         webdav::errorLog("Failed to create directory: " + mkcol_resp.error());
@@ -413,7 +412,7 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
     }
 
     // Create authentication context for gRPC
-    fileengine_rpc::AuthenticationContext auth_ctx;
+    fileengine::AuthContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
     for (const auto& role : roles) {
@@ -434,11 +433,11 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
     }
 
     // Determine if it's a file or directory by getting its info
-    fileengine_rpc::StatRequest stat_req;
+    fileengine::GetFileInfoRequest stat_req;
     stat_req.set_uid(resource_uuid);
     *stat_req.mutable_auth() = auth_ctx;
 
-    fileengine_rpc::StatResponse stat_resp = grpc_client_->stat(stat_req);
+    fileengine::GetFileInfoResponse stat_resp = grpc_client_->getFileInfo(stat_req);
 
     if (!stat_resp.success()) {
         webdav::errorLog("Failed to get resource info: " + stat_resp.error());
@@ -451,13 +450,13 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
     }
 
     // Create gRPC request to delete resource based on its type
-    if (stat_resp.info().type() == fileengine_rpc::FileType::DIRECTORY) {
+    if (stat_resp.info().type() == fileengine::ProtoFileType::PROTO_DIRECTORY) {
         // It's a directory, use RemoveDirectory
-        fileengine_rpc::RemoveDirectoryRequest rm_req;
+        fileengine::RemoveDirectoryRequest rm_req;
         rm_req.set_uid(resource_uuid);
         *rm_req.mutable_auth() = auth_ctx;
 
-        fileengine_rpc::RemoveDirectoryResponse rm_resp = grpc_client_->removeDirectory(rm_req);
+        fileengine::RemoveDirectoryResponse rm_resp = grpc_client_->removeDirectory(rm_req);
 
         if (!rm_resp.success()) {
             webdav::errorLog("Failed to delete directory: " + rm_resp.error());
@@ -470,11 +469,11 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
         }
     } else {
         // It's a file, use RemoveFile
-        fileengine_rpc::RemoveFileRequest rm_req;
+        fileengine::DeleteFileRequest rm_req;
         rm_req.set_uid(resource_uuid);
         *rm_req.mutable_auth() = auth_ctx;
 
-        fileengine_rpc::RemoveFileResponse rm_resp = grpc_client_->removeFile(rm_req);
+        fileengine::DeleteFileResponse rm_resp = grpc_client_->deleteFile(rm_req);
 
         if (!rm_resp.success()) {
             webdav::errorLog("Failed to delete file: " + rm_resp.error());
@@ -527,7 +526,7 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     webdav::debugLog("handlePropfind: Authentication successful for user: " + user + " with " + std::to_string(roles.size()) + " roles");
 
     // Create authentication context for gRPC
-    fileengine_rpc::AuthenticationContext auth_ctx;
+    fileengine::AuthContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
     webdav::debugLog("handlePropfind: Building authentication context with user: " + user + ", tenant: " + tenant);
@@ -552,7 +551,7 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     }
 
     // Create gRPC request to list directory
-    fileengine_rpc::ListDirectoryRequest list_req;
+    fileengine::ListDirectoryRequest list_req;
     list_req.set_uid(dir_uuid);
     *list_req.mutable_auth() = auth_ctx;
     webdav::debugLog("handlePropfind: Created gRPC ListDirectory request with UUID: " + dir_uuid +
@@ -561,7 +560,7 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
 
     // Call gRPC service to list directory contents
     webdav::debugLog("handlePropfind: Making gRPC ListDirectory call");
-    fileengine_rpc::ListDirectoryResponse list_resp;
+    fileengine::ListDirectoryResponse list_resp;
     try {
         list_resp = grpc_client_->listDirectory(list_req);
         webdav::debugLog("handlePropfind: gRPC ListDirectory call completed successfully");
@@ -640,14 +639,14 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
         ostr << "        <D:displayname>" << entry.name() << "</D:displayname>\n";
 
         // Set resource type based on entry type
-        if (entry.type() == fileengine_rpc::FileType::DIRECTORY) {
+        if (entry.type() == fileengine::ProtoFileType::PROTO_DIRECTORY) {
             ostr << "        <D:resourcetype><D:collection/></D:resourcetype>\n";
         } else {
             ostr << "        <D:resourcetype></D:resourcetype>\n";
         }
 
         // Set content type based on entry type
-        if (entry.type() == fileengine_rpc::FileType::DIRECTORY) {
+        if (entry.type() == fileengine::ProtoFileType::PROTO_DIRECTORY) {
             ostr << "        <D:getcontenttype>httpd/unix-directory</D:getcontenttype>\n";
         } else {
             ostr << "        <D:getcontenttype>application/octet-stream</D:getcontenttype>\n";
@@ -970,28 +969,6 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
     webdav::debugLog("WebDAVServer: Initialization completed");
 }
 
-// Helper function to check if a user has a specific permission on a resource
-bool WebDAVRequestHandler::checkPermission(const std::string& resource_uuid, const fileengine_rpc::Permission& permission,
-                                          const fileengine_rpc::AuthenticationContext& auth_ctx) {
-    webdav::debugLog("checkPermission: Checking permission " + std::to_string(permission) +
-                     " for resource " + resource_uuid + " for user " + auth_ctx.user());
-
-    fileengine_rpc::CheckPermissionRequest req;
-    req.set_resource_uid(resource_uuid);
-    req.set_required_permission(permission);
-    *req.mutable_auth() = auth_ctx;
-
-    fileengine_rpc::CheckPermissionResponse resp;
-    try {
-        resp = grpc_client_->checkPermission(req);
-        webdav::debugLog("checkPermission: Permission check result - success: " + std::to_string(resp.success()) +
-                         ", has_permission: " + std::to_string(resp.has_permission()));
-        return resp.success() && resp.has_permission();
-    } catch (const std::exception& e) {
-        webdav::errorLog("Exception during gRPC CheckPermission call: " + std::string(e.what()));
-        return false; // Deny access on error
-    }
-}
 
 WebDAVServer::~WebDAVServer() {
     stop();

@@ -6,61 +6,47 @@
 #include "fileservice.grpc.pb.h"
 
 #include <functional>
-#include <grpcpp/support/async_stream.h>
-#include <grpcpp/support/async_unary_call.h>
-#include <grpcpp/impl/channel_interface.h>
-#include <grpcpp/impl/client_unary_call.h>
-#include <grpcpp/support/client_callback.h>
-#include <grpcpp/support/message_allocator.h>
-#include <grpcpp/support/method_handler.h>
-#include <grpcpp/impl/rpc_service_method.h>
-#include <grpcpp/support/server_callback.h>
-#include <grpcpp/impl/server_callback_handlers.h>
-#include <grpcpp/server_context.h>
-#include <grpcpp/impl/service_type.h>
-#include <grpcpp/support/sync_stream.h>
-#include <grpcpp/ports_def.inc>
-namespace fileengine_rpc {
+#include <grpcpp/impl/codegen/async_stream.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_unary_call.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
+#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
+namespace fileengine {
 
 static const char* FileService_method_names[] = {
-  "/fileengine_rpc.FileService/MakeDirectory",
-  "/fileengine_rpc.FileService/RemoveDirectory",
-  "/fileengine_rpc.FileService/ListDirectory",
-  "/fileengine_rpc.FileService/ListDirectoryWithDeleted",
-  "/fileengine_rpc.FileService/Touch",
-  "/fileengine_rpc.FileService/RemoveFile",
-  "/fileengine_rpc.FileService/UndeleteFile",
-  "/fileengine_rpc.FileService/PutFile",
-  "/fileengine_rpc.FileService/GetFile",
-  "/fileengine_rpc.FileService/Stat",
-  "/fileengine_rpc.FileService/Exists",
-  "/fileengine_rpc.FileService/Rename",
-  "/fileengine_rpc.FileService/Move",
-  "/fileengine_rpc.FileService/Copy",
-  "/fileengine_rpc.FileService/ListVersions",
-  "/fileengine_rpc.FileService/GetVersion",
-  "/fileengine_rpc.FileService/RestoreToVersion",
-  "/fileengine_rpc.FileService/SetMetadata",
-  "/fileengine_rpc.FileService/GetMetadata",
-  "/fileengine_rpc.FileService/GetAllMetadata",
-  "/fileengine_rpc.FileService/DeleteMetadata",
-  "/fileengine_rpc.FileService/GetMetadataForVersion",
-  "/fileengine_rpc.FileService/GetAllMetadataForVersion",
-  "/fileengine_rpc.FileService/GrantPermission",
-  "/fileengine_rpc.FileService/RevokePermission",
-  "/fileengine_rpc.FileService/CheckPermission",
-  "/fileengine_rpc.FileService/CreateRole",
-  "/fileengine_rpc.FileService/DeleteRole",
-  "/fileengine_rpc.FileService/AssignUserToRole",
-  "/fileengine_rpc.FileService/RemoveUserFromRole",
-  "/fileengine_rpc.FileService/GetRolesForUser",
-  "/fileengine_rpc.FileService/GetUsersForRole",
-  "/fileengine_rpc.FileService/GetAllRoles",
-  "/fileengine_rpc.FileService/StreamFileUpload",
-  "/fileengine_rpc.FileService/StreamFileDownload",
-  "/fileengine_rpc.FileService/GetStorageUsage",
-  "/fileengine_rpc.FileService/PurgeOldVersions",
-  "/fileengine_rpc.FileService/TriggerSync",
+  "/fileengine.FileService/MakeDirectory",
+  "/fileengine.FileService/RemoveDirectory",
+  "/fileengine.FileService/ListDirectory",
+  "/fileengine.FileService/CreateFile",
+  "/fileengine.FileService/DeleteFile",
+  "/fileengine.FileService/UndeleteFile",
+  "/fileengine.FileService/WriteFile",
+  "/fileengine.FileService/ReadFile",
+  "/fileengine.FileService/GetFileInfo",
+  "/fileengine.FileService/FileExists",
+  "/fileengine.FileService/MoveFile",
+  "/fileengine.FileService/CopyFile",
+  "/fileengine.FileService/RenameFile",
+  "/fileengine.FileService/ListVersions",
+  "/fileengine.FileService/ReadVersion",
+  "/fileengine.FileService/SetMetadata",
+  "/fileengine.FileService/GetMetadata",
+  "/fileengine.FileService/GetAllMetadata",
+  "/fileengine.FileService/DeleteMetadata",
+  "/fileengine.FileService/GetMetadataForVersion",
+  "/fileengine.FileService/GetAllMetadataForVersion",
+  "/fileengine.FileService/WriteFileStream",
+  "/fileengine.FileService/ReadFileStream",
+  "/fileengine.FileService/ResolvePath",
+  "/fileengine.FileService/EvaluateACL",
 };
 
 std::unique_ptr< FileService::Stub> FileService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -73,899 +59,587 @@ FileService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   : channel_(channel), rpcmethod_MakeDirectory_(FileService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_RemoveDirectory_(FileService_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_ListDirectory_(FileService_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListDirectoryWithDeleted_(FileService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Touch_(FileService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_RemoveFile_(FileService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_UndeleteFile_(FileService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_PutFile_(FileService_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetFile_(FileService_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Stat_(FileService_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Exists_(FileService_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Rename_(FileService_method_names[11], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Move_(FileService_method_names[12], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Copy_(FileService_method_names[13], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListVersions_(FileService_method_names[14], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetVersion_(FileService_method_names[15], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_RestoreToVersion_(FileService_method_names[16], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_SetMetadata_(FileService_method_names[17], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetMetadata_(FileService_method_names[18], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetAllMetadata_(FileService_method_names[19], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_DeleteMetadata_(FileService_method_names[20], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetMetadataForVersion_(FileService_method_names[21], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetAllMetadataForVersion_(FileService_method_names[22], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GrantPermission_(FileService_method_names[23], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_RevokePermission_(FileService_method_names[24], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_CheckPermission_(FileService_method_names[25], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_CreateRole_(FileService_method_names[26], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_DeleteRole_(FileService_method_names[27], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_AssignUserToRole_(FileService_method_names[28], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_RemoveUserFromRole_(FileService_method_names[29], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetRolesForUser_(FileService_method_names[30], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetUsersForRole_(FileService_method_names[31], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetAllRoles_(FileService_method_names[32], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_StreamFileUpload_(FileService_method_names[33], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_StreamFileDownload_(FileService_method_names[34], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_GetStorageUsage_(FileService_method_names[35], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_PurgeOldVersions_(FileService_method_names[36], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_TriggerSync_(FileService_method_names[37], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CreateFile_(FileService_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_DeleteFile_(FileService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_UndeleteFile_(FileService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_WriteFile_(FileService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReadFile_(FileService_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetFileInfo_(FileService_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_FileExists_(FileService_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_MoveFile_(FileService_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CopyFile_(FileService_method_names[11], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_RenameFile_(FileService_method_names[12], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListVersions_(FileService_method_names[13], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReadVersion_(FileService_method_names[14], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SetMetadata_(FileService_method_names[15], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetMetadata_(FileService_method_names[16], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetAllMetadata_(FileService_method_names[17], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_DeleteMetadata_(FileService_method_names[18], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetMetadataForVersion_(FileService_method_names[19], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetAllMetadataForVersion_(FileService_method_names[20], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_WriteFileStream_(FileService_method_names[21], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_ReadFileStream_(FileService_method_names[22], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_ResolvePath_(FileService_method_names[23], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_EvaluateACL_(FileService_method_names[24], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status FileService::Stub::MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::fileengine_rpc::MakeDirectoryResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_MakeDirectory_, context, request, response);
+::grpc::Status FileService::Stub::MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::fileengine::MakeDirectoryResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_MakeDirectory_, context, request, response);
 }
 
-void FileService::Stub::async::MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MakeDirectory_, context, request, response, std::move(f));
+void FileService::Stub::async::MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MakeDirectory_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MakeDirectory_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>* FileService::Stub::PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::MakeDirectoryResponse, ::fileengine_rpc::MakeDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_MakeDirectory_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>* FileService::Stub::PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::MakeDirectoryResponse, ::fileengine::MakeDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_MakeDirectory_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>* FileService::Stub::AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>* FileService::Stub::AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncMakeDirectoryRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::fileengine_rpc::RemoveDirectoryResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RemoveDirectory_, context, request, response);
+::grpc::Status FileService::Stub::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::fileengine::RemoveDirectoryResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RemoveDirectory_, context, request, response);
 }
 
-void FileService::Stub::async::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveDirectory_, context, request, response, std::move(f));
+void FileService::Stub::async::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveDirectory_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveDirectory_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>* FileService::Stub::PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RemoveDirectoryResponse, ::fileengine_rpc::RemoveDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RemoveDirectory_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>* FileService::Stub::PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::RemoveDirectoryResponse, ::fileengine::RemoveDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RemoveDirectory_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>* FileService::Stub::AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>* FileService::Stub::AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncRemoveDirectoryRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::fileengine_rpc::ListDirectoryResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListDirectory_, context, request, response);
+::grpc::Status FileService::Stub::ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::fileengine::ListDirectoryResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListDirectory_, context, request, response);
 }
 
-void FileService::Stub::async::ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListDirectory_, context, request, response, std::move(f));
+void FileService::Stub::async::ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListDirectory_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListDirectory_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>* FileService::Stub::PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::ListDirectoryResponse, ::fileengine_rpc::ListDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListDirectory_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>* FileService::Stub::PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::ListDirectoryResponse, ::fileengine::ListDirectoryRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListDirectory_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>* FileService::Stub::AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>* FileService::Stub::AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncListDirectoryRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListDirectoryWithDeleted_, context, request, response);
+::grpc::Status FileService::Stub::CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::fileengine::CreateFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateFile_, context, request, response);
 }
 
-void FileService::Stub::async::ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListDirectoryWithDeleted_, context, request, response, std::move(f));
+void FileService::Stub::async::CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListDirectoryWithDeleted_, context, request, response, reactor);
+void FileService::Stub::async::CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* FileService::Stub::PrepareAsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::ListDirectoryWithDeletedResponse, ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListDirectoryWithDeleted_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>* FileService::Stub::PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::CreateFileResponse, ::fileengine::CreateFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* FileService::Stub::AsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>* FileService::Stub::AsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncListDirectoryWithDeletedRaw(context, request, cq);
+    this->PrepareAsyncCreateFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::fileengine_rpc::TouchResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Touch_, context, request, response);
+::grpc::Status FileService::Stub::DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::fileengine::DeleteFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DeleteFile_, context, request, response);
 }
 
-void FileService::Stub::async::Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Touch_, context, request, response, std::move(f));
+void FileService::Stub::async::DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Touch_, context, request, response, reactor);
+void FileService::Stub::async::DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>* FileService::Stub::PrepareAsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::TouchResponse, ::fileengine_rpc::TouchRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Touch_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>* FileService::Stub::PrepareAsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::DeleteFileResponse, ::fileengine::DeleteFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DeleteFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>* FileService::Stub::AsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>* FileService::Stub::AsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncTouchRaw(context, request, cq);
+    this->PrepareAsyncDeleteFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::fileengine_rpc::RemoveFileResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RemoveFile_, context, request, response);
+::grpc::Status FileService::Stub::UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::fileengine::UndeleteFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_UndeleteFile_, context, request, response);
 }
 
-void FileService::Stub::async::RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveFile_, context, request, response, std::move(f));
+void FileService::Stub::async::UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UndeleteFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveFile_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>* FileService::Stub::PrepareAsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RemoveFileResponse, ::fileengine_rpc::RemoveFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RemoveFile_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>* FileService::Stub::AsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncRemoveFileRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::fileengine_rpc::UndeleteFileResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_UndeleteFile_, context, request, response);
-}
-
-void FileService::Stub::async::UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UndeleteFile_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_UndeleteFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>* FileService::Stub::PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::UndeleteFileResponse, ::fileengine_rpc::UndeleteFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_UndeleteFile_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>* FileService::Stub::PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::UndeleteFileResponse, ::fileengine::UndeleteFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_UndeleteFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>* FileService::Stub::AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>* FileService::Stub::AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncUndeleteFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::fileengine_rpc::PutFileResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_PutFile_, context, request, response);
+::grpc::Status FileService::Stub::WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::fileengine::WriteFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_WriteFile_, context, request, response);
 }
 
-void FileService::Stub::async::PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PutFile_, context, request, response, std::move(f));
+void FileService::Stub::async::WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_WriteFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PutFile_, context, request, response, reactor);
+void FileService::Stub::async::WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_WriteFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>* FileService::Stub::PrepareAsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::PutFileResponse, ::fileengine_rpc::PutFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_PutFile_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>* FileService::Stub::PrepareAsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::WriteFileResponse, ::fileengine::WriteFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_WriteFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>* FileService::Stub::AsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>* FileService::Stub::AsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncPutFileRaw(context, request, cq);
+    this->PrepareAsyncWriteFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::fileengine_rpc::GetFileResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetFile_, context, request, response);
+::grpc::Status FileService::Stub::ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::fileengine::ReadFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ReadFile_, context, request, response);
 }
 
-void FileService::Stub::async::GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetFile_, context, request, response, std::move(f));
+void FileService::Stub::async::ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReadFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetFile_, context, request, response, reactor);
+void FileService::Stub::async::ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReadFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>* FileService::Stub::PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetFileResponse, ::fileengine_rpc::GetFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetFile_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>* FileService::Stub::PrepareAsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::ReadFileResponse, ::fileengine::ReadFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ReadFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>* FileService::Stub::AsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>* FileService::Stub::AsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncGetFileRaw(context, request, cq);
+    this->PrepareAsyncReadFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::fileengine_rpc::StatResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Stat_, context, request, response);
+::grpc::Status FileService::Stub::GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::fileengine::GetFileInfoResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetFileInfo_, context, request, response);
 }
 
-void FileService::Stub::async::Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Stat_, context, request, response, std::move(f));
+void FileService::Stub::async::GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetFileInfo_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Stat_, context, request, response, reactor);
+void FileService::Stub::async::GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetFileInfo_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>* FileService::Stub::PrepareAsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::StatResponse, ::fileengine_rpc::StatRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Stat_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>* FileService::Stub::PrepareAsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::GetFileInfoResponse, ::fileengine::GetFileInfoRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetFileInfo_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>* FileService::Stub::AsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>* FileService::Stub::AsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncStatRaw(context, request, cq);
+    this->PrepareAsyncGetFileInfoRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::fileengine_rpc::ExistsResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Exists_, context, request, response);
+::grpc::Status FileService::Stub::FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::fileengine::FileExistsResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_FileExists_, context, request, response);
 }
 
-void FileService::Stub::async::Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Exists_, context, request, response, std::move(f));
+void FileService::Stub::async::FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_FileExists_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Exists_, context, request, response, reactor);
+void FileService::Stub::async::FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_FileExists_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>* FileService::Stub::PrepareAsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::ExistsResponse, ::fileengine_rpc::ExistsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Exists_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>* FileService::Stub::PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::FileExistsResponse, ::fileengine::FileExistsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_FileExists_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>* FileService::Stub::AsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>* FileService::Stub::AsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncExistsRaw(context, request, cq);
+    this->PrepareAsyncFileExistsRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::fileengine_rpc::RenameResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Rename_, context, request, response);
+::grpc::Status FileService::Stub::MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::fileengine::MoveFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_MoveFile_, context, request, response);
 }
 
-void FileService::Stub::async::Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Rename_, context, request, response, std::move(f));
+void FileService::Stub::async::MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MoveFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Rename_, context, request, response, reactor);
+void FileService::Stub::async::MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_MoveFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>* FileService::Stub::PrepareAsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RenameResponse, ::fileengine_rpc::RenameRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Rename_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>* FileService::Stub::PrepareAsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::MoveFileResponse, ::fileengine::MoveFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_MoveFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>* FileService::Stub::AsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>* FileService::Stub::AsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncRenameRaw(context, request, cq);
+    this->PrepareAsyncMoveFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::fileengine_rpc::MoveResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Move_, context, request, response);
+::grpc::Status FileService::Stub::CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::fileengine::CopyFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CopyFile_, context, request, response);
 }
 
-void FileService::Stub::async::Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Move_, context, request, response, std::move(f));
+void FileService::Stub::async::CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CopyFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Move_, context, request, response, reactor);
+void FileService::Stub::async::CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CopyFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>* FileService::Stub::PrepareAsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::MoveResponse, ::fileengine_rpc::MoveRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Move_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>* FileService::Stub::PrepareAsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::CopyFileResponse, ::fileengine::CopyFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CopyFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>* FileService::Stub::AsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>* FileService::Stub::AsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncMoveRaw(context, request, cq);
+    this->PrepareAsyncCopyFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::fileengine_rpc::CopyResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_Copy_, context, request, response);
+::grpc::Status FileService::Stub::RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::fileengine::RenameFileResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RenameFile_, context, request, response);
 }
 
-void FileService::Stub::async::Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Copy_, context, request, response, std::move(f));
+void FileService::Stub::async::RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RenameFile_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_Copy_, context, request, response, reactor);
+void FileService::Stub::async::RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RenameFile_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>* FileService::Stub::PrepareAsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::CopyResponse, ::fileengine_rpc::CopyRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_Copy_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>* FileService::Stub::PrepareAsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::RenameFileResponse, ::fileengine::RenameFileRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RenameFile_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>* FileService::Stub::AsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>* FileService::Stub::AsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncCopyRaw(context, request, cq);
+    this->PrepareAsyncRenameFileRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::fileengine_rpc::ListVersionsResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListVersions_, context, request, response);
+::grpc::Status FileService::Stub::ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::fileengine::ListVersionsResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListVersions_, context, request, response);
 }
 
-void FileService::Stub::async::ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListVersions_, context, request, response, std::move(f));
+void FileService::Stub::async::ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListVersions_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListVersions_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>* FileService::Stub::PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::ListVersionsResponse, ::fileengine_rpc::ListVersionsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListVersions_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>* FileService::Stub::PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::ListVersionsResponse, ::fileengine::ListVersionsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListVersions_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>* FileService::Stub::AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>* FileService::Stub::AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncListVersionsRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::fileengine_rpc::GetVersionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetVersion_, context, request, response);
+::grpc::Status FileService::Stub::ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::fileengine::ReadVersionResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ReadVersion_, context, request, response);
 }
 
-void FileService::Stub::async::GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetVersion_, context, request, response, std::move(f));
+void FileService::Stub::async::ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReadVersion_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetVersion_, context, request, response, reactor);
+void FileService::Stub::async::ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReadVersion_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>* FileService::Stub::PrepareAsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetVersionResponse, ::fileengine_rpc::GetVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetVersion_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>* FileService::Stub::PrepareAsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::ReadVersionResponse, ::fileengine::ReadVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ReadVersion_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>* FileService::Stub::AsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>* FileService::Stub::AsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncGetVersionRaw(context, request, cq);
+    this->PrepareAsyncReadVersionRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::fileengine_rpc::RestoreToVersionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RestoreToVersion_, context, request, response);
+::grpc::Status FileService::Stub::SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::fileengine::SetMetadataResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SetMetadata_, context, request, response);
 }
 
-void FileService::Stub::async::RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RestoreToVersion_, context, request, response, std::move(f));
+void FileService::Stub::async::SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SetMetadata_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RestoreToVersion_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>* FileService::Stub::PrepareAsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RestoreToVersionResponse, ::fileengine_rpc::RestoreToVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RestoreToVersion_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>* FileService::Stub::AsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncRestoreToVersionRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::fileengine_rpc::SetMetadataResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SetMetadata_, context, request, response);
-}
-
-void FileService::Stub::async::SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SetMetadata_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SetMetadata_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>* FileService::Stub::PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::SetMetadataResponse, ::fileengine_rpc::SetMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SetMetadata_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>* FileService::Stub::PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::SetMetadataResponse, ::fileengine::SetMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SetMetadata_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>* FileService::Stub::AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>* FileService::Stub::AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncSetMetadataRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::fileengine_rpc::GetMetadataResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetMetadata_, context, request, response);
+::grpc::Status FileService::Stub::GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::fileengine::GetMetadataResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetMetadata_, context, request, response);
 }
 
-void FileService::Stub::async::GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadata_, context, request, response, std::move(f));
+void FileService::Stub::async::GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadata_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadata_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>* FileService::Stub::PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetMetadataResponse, ::fileengine_rpc::GetMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetMetadata_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>* FileService::Stub::PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::GetMetadataResponse, ::fileengine::GetMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetMetadata_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>* FileService::Stub::AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>* FileService::Stub::AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetMetadataRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::fileengine_rpc::GetAllMetadataResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetAllMetadata_, context, request, response);
+::grpc::Status FileService::Stub::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::fileengine::GetAllMetadataResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetAllMetadata_, context, request, response);
 }
 
-void FileService::Stub::async::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadata_, context, request, response, std::move(f));
+void FileService::Stub::async::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadata_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadata_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>* FileService::Stub::PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetAllMetadataResponse, ::fileengine_rpc::GetAllMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetAllMetadata_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>* FileService::Stub::PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::GetAllMetadataResponse, ::fileengine::GetAllMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetAllMetadata_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>* FileService::Stub::AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>* FileService::Stub::AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetAllMetadataRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::fileengine_rpc::DeleteMetadataResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DeleteMetadata_, context, request, response);
+::grpc::Status FileService::Stub::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::fileengine::DeleteMetadataResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DeleteMetadata_, context, request, response);
 }
 
-void FileService::Stub::async::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteMetadata_, context, request, response, std::move(f));
+void FileService::Stub::async::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteMetadata_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteMetadata_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>* FileService::Stub::PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::DeleteMetadataResponse, ::fileengine_rpc::DeleteMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DeleteMetadata_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>* FileService::Stub::PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::DeleteMetadataResponse, ::fileengine::DeleteMetadataRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DeleteMetadata_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>* FileService::Stub::AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>* FileService::Stub::AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncDeleteMetadataRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::fileengine_rpc::GetMetadataForVersionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetMetadataForVersion_, context, request, response);
+::grpc::Status FileService::Stub::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::fileengine::GetMetadataForVersionResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetMetadataForVersion_, context, request, response);
 }
 
-void FileService::Stub::async::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadataForVersion_, context, request, response, std::move(f));
+void FileService::Stub::async::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadataForVersion_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetMetadataForVersion_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>* FileService::Stub::PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetMetadataForVersionResponse, ::fileengine_rpc::GetMetadataForVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetMetadataForVersion_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>* FileService::Stub::PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::GetMetadataForVersionResponse, ::fileengine::GetMetadataForVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetMetadataForVersion_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>* FileService::Stub::AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>* FileService::Stub::AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetMetadataForVersionRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetAllMetadataForVersion_, context, request, response);
+::grpc::Status FileService::Stub::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::fileengine::GetAllMetadataForVersionResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetAllMetadataForVersion_, context, request, response);
 }
 
-void FileService::Stub::async::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadataForVersion_, context, request, response, std::move(f));
+void FileService::Stub::async::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadataForVersion_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+void FileService::Stub::async::GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
   ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllMetadataForVersion_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>* FileService::Stub::PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetAllMetadataForVersionResponse, ::fileengine_rpc::GetAllMetadataForVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetAllMetadataForVersion_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>* FileService::Stub::PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::GetAllMetadataForVersionResponse, ::fileengine::GetAllMetadataForVersionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetAllMetadataForVersion_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>* FileService::Stub::AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>* FileService::Stub::AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetAllMetadataForVersionRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::fileengine_rpc::GrantPermissionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GrantPermission_, context, request, response);
+::grpc::ClientWriter< ::fileengine::WriteFileStreamRequest>* FileService::Stub::WriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response) {
+  return ::grpc::internal::ClientWriterFactory< ::fileengine::WriteFileStreamRequest>::Create(channel_.get(), rpcmethod_WriteFileStream_, context, response);
 }
 
-void FileService::Stub::async::GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GrantPermission_, context, request, response, std::move(f));
+void FileService::Stub::async::WriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::ClientWriteReactor< ::fileengine::WriteFileStreamRequest>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::fileengine::WriteFileStreamRequest>::Create(stub_->channel_.get(), stub_->rpcmethod_WriteFileStream_, context, response, reactor);
 }
 
-void FileService::Stub::async::GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GrantPermission_, context, request, response, reactor);
+::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>* FileService::Stub::AsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::fileengine::WriteFileStreamRequest>::Create(channel_.get(), cq, rpcmethod_WriteFileStream_, context, response, true, tag);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>* FileService::Stub::PrepareAsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GrantPermissionResponse, ::fileengine_rpc::GrantPermissionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GrantPermission_, context, request);
+::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>* FileService::Stub::PrepareAsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::fileengine::WriteFileStreamRequest>::Create(channel_.get(), cq, rpcmethod_WriteFileStream_, context, response, false, nullptr);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>* FileService::Stub::AsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientReader< ::fileengine::ReadFileStreamResponse>* FileService::Stub::ReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request) {
+  return ::grpc::internal::ClientReaderFactory< ::fileengine::ReadFileStreamResponse>::Create(channel_.get(), rpcmethod_ReadFileStream_, context, request);
+}
+
+void FileService::Stub::async::ReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest* request, ::grpc::ClientReadReactor< ::fileengine::ReadFileStreamResponse>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::fileengine::ReadFileStreamResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_ReadFileStream_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>* FileService::Stub::AsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::fileengine::ReadFileStreamResponse>::Create(channel_.get(), cq, rpcmethod_ReadFileStream_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>* FileService::Stub::PrepareAsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::fileengine::ReadFileStreamResponse>::Create(channel_.get(), cq, rpcmethod_ReadFileStream_, context, request, false, nullptr);
+}
+
+::grpc::Status FileService::Stub::ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::fileengine::ResolvePathResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ResolvePath_, context, request, response);
+}
+
+void FileService::Stub::async::ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ResolvePath_, context, request, response, std::move(f));
+}
+
+void FileService::Stub::async::ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ResolvePath_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>* FileService::Stub::PrepareAsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::ResolvePathResponse, ::fileengine::ResolvePathRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ResolvePath_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>* FileService::Stub::AsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncGrantPermissionRaw(context, request, cq);
+    this->PrepareAsyncResolvePathRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-::grpc::Status FileService::Stub::RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::fileengine_rpc::RevokePermissionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RevokePermission_, context, request, response);
+::grpc::Status FileService::Stub::EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::fileengine::EvaluateACLResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_EvaluateACL_, context, request, response);
 }
 
-void FileService::Stub::async::RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RevokePermission_, context, request, response, std::move(f));
+void FileService::Stub::async::EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_EvaluateACL_, context, request, response, std::move(f));
 }
 
-void FileService::Stub::async::RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RevokePermission_, context, request, response, reactor);
+void FileService::Stub::async::EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_EvaluateACL_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>* FileService::Stub::PrepareAsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RevokePermissionResponse, ::fileengine_rpc::RevokePermissionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RevokePermission_, context, request);
+::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>* FileService::Stub::PrepareAsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine::EvaluateACLResponse, ::fileengine::EvaluateACLRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_EvaluateACL_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>* FileService::Stub::AsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>* FileService::Stub::AsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncRevokePermissionRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::fileengine_rpc::CheckPermissionResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CheckPermission_, context, request, response);
-}
-
-void FileService::Stub::async::CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CheckPermission_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CheckPermission_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>* FileService::Stub::PrepareAsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::CheckPermissionResponse, ::fileengine_rpc::CheckPermissionRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CheckPermission_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>* FileService::Stub::AsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncCheckPermissionRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::fileengine_rpc::CreateRoleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateRole_, context, request, response);
-}
-
-void FileService::Stub::async::CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRole_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRole_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>* FileService::Stub::PrepareAsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::CreateRoleResponse, ::fileengine_rpc::CreateRoleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateRole_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>* FileService::Stub::AsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncCreateRoleRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::fileengine_rpc::DeleteRoleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DeleteRole_, context, request, response);
-}
-
-void FileService::Stub::async::DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteRole_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DeleteRole_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>* FileService::Stub::PrepareAsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::DeleteRoleResponse, ::fileengine_rpc::DeleteRoleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DeleteRole_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>* FileService::Stub::AsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncDeleteRoleRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::fileengine_rpc::AssignUserToRoleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_AssignUserToRole_, context, request, response);
-}
-
-void FileService::Stub::async::AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_AssignUserToRole_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_AssignUserToRole_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>* FileService::Stub::PrepareAsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::AssignUserToRoleResponse, ::fileengine_rpc::AssignUserToRoleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_AssignUserToRole_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>* FileService::Stub::AsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncAssignUserToRoleRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::fileengine_rpc::RemoveUserFromRoleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RemoveUserFromRole_, context, request, response);
-}
-
-void FileService::Stub::async::RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveUserFromRole_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RemoveUserFromRole_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>* FileService::Stub::PrepareAsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::RemoveUserFromRoleResponse, ::fileengine_rpc::RemoveUserFromRoleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RemoveUserFromRole_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>* FileService::Stub::AsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncRemoveUserFromRoleRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::fileengine_rpc::GetRolesForUserResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetRolesForUser_, context, request, response);
-}
-
-void FileService::Stub::async::GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetRolesForUser_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetRolesForUser_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>* FileService::Stub::PrepareAsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetRolesForUserResponse, ::fileengine_rpc::GetRolesForUserRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetRolesForUser_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>* FileService::Stub::AsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncGetRolesForUserRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::fileengine_rpc::GetUsersForRoleResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetUsersForRole_, context, request, response);
-}
-
-void FileService::Stub::async::GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUsersForRole_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetUsersForRole_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>* FileService::Stub::PrepareAsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetUsersForRoleResponse, ::fileengine_rpc::GetUsersForRoleRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetUsersForRole_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>* FileService::Stub::AsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncGetUsersForRoleRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::fileengine_rpc::GetAllRolesResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetAllRoles_, context, request, response);
-}
-
-void FileService::Stub::async::GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllRoles_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetAllRoles_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>* FileService::Stub::PrepareAsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::GetAllRolesResponse, ::fileengine_rpc::GetAllRolesRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetAllRoles_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>* FileService::Stub::AsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncGetAllRolesRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::ClientWriter< ::fileengine_rpc::PutFileRequest>* FileService::Stub::StreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response) {
-  return ::grpc::internal::ClientWriterFactory< ::fileengine_rpc::PutFileRequest>::Create(channel_.get(), rpcmethod_StreamFileUpload_, context, response);
-}
-
-void FileService::Stub::async::StreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientWriteReactor< ::fileengine_rpc::PutFileRequest>* reactor) {
-  ::grpc::internal::ClientCallbackWriterFactory< ::fileengine_rpc::PutFileRequest>::Create(stub_->channel_.get(), stub_->rpcmethod_StreamFileUpload_, context, response, reactor);
-}
-
-::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>* FileService::Stub::AsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::fileengine_rpc::PutFileRequest>::Create(channel_.get(), cq, rpcmethod_StreamFileUpload_, context, response, true, tag);
-}
-
-::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>* FileService::Stub::PrepareAsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::fileengine_rpc::PutFileRequest>::Create(channel_.get(), cq, rpcmethod_StreamFileUpload_, context, response, false, nullptr);
-}
-
-::grpc::ClientReader< ::fileengine_rpc::GetFileResponse>* FileService::Stub::StreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request) {
-  return ::grpc::internal::ClientReaderFactory< ::fileengine_rpc::GetFileResponse>::Create(channel_.get(), rpcmethod_StreamFileDownload_, context, request);
-}
-
-void FileService::Stub::async::StreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::grpc::ClientReadReactor< ::fileengine_rpc::GetFileResponse>* reactor) {
-  ::grpc::internal::ClientCallbackReaderFactory< ::fileengine_rpc::GetFileResponse>::Create(stub_->channel_.get(), stub_->rpcmethod_StreamFileDownload_, context, request, reactor);
-}
-
-::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>* FileService::Stub::AsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::fileengine_rpc::GetFileResponse>::Create(channel_.get(), cq, rpcmethod_StreamFileDownload_, context, request, true, tag);
-}
-
-::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>* FileService::Stub::PrepareAsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::fileengine_rpc::GetFileResponse>::Create(channel_.get(), cq, rpcmethod_StreamFileDownload_, context, request, false, nullptr);
-}
-
-::grpc::Status FileService::Stub::GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::fileengine_rpc::StorageUsageResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetStorageUsage_, context, request, response);
-}
-
-void FileService::Stub::async::GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetStorageUsage_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetStorageUsage_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>* FileService::Stub::PrepareAsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::StorageUsageResponse, ::fileengine_rpc::StorageUsageRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetStorageUsage_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>* FileService::Stub::AsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncGetStorageUsageRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::fileengine_rpc::PurgeOldVersionsResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_PurgeOldVersions_, context, request, response);
-}
-
-void FileService::Stub::async::PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PurgeOldVersions_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_PurgeOldVersions_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>* FileService::Stub::PrepareAsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::PurgeOldVersionsResponse, ::fileengine_rpc::PurgeOldVersionsRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_PurgeOldVersions_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>* FileService::Stub::AsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncPurgeOldVersionsRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
-
-::grpc::Status FileService::Stub::TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::fileengine_rpc::TriggerSyncResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_TriggerSync_, context, request, response);
-}
-
-void FileService::Stub::async::TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_TriggerSync_, context, request, response, std::move(f));
-}
-
-void FileService::Stub::async::TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_TriggerSync_, context, request, response, reactor);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>* FileService::Stub::PrepareAsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::fileengine_rpc::TriggerSyncResponse, ::fileengine_rpc::TriggerSyncRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_TriggerSync_, context, request);
-}
-
-::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>* FileService::Stub::AsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncTriggerSyncRaw(context, request, cq);
+    this->PrepareAsyncEvaluateACLRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -974,648 +648,427 @@ FileService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::MakeDirectoryRequest* req,
-             ::fileengine_rpc::MakeDirectoryResponse* resp) {
+             const ::fileengine::MakeDirectoryRequest* req,
+             ::fileengine::MakeDirectoryResponse* resp) {
                return service->MakeDirectory(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RemoveDirectoryRequest* req,
-             ::fileengine_rpc::RemoveDirectoryResponse* resp) {
+             const ::fileengine::RemoveDirectoryRequest* req,
+             ::fileengine::RemoveDirectoryResponse* resp) {
                return service->RemoveDirectory(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::ListDirectoryRequest* req,
-             ::fileengine_rpc::ListDirectoryResponse* resp) {
+             const ::fileengine::ListDirectoryRequest* req,
+             ::fileengine::ListDirectoryResponse* resp) {
                return service->ListDirectory(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::ListDirectoryWithDeletedRequest* req,
-             ::fileengine_rpc::ListDirectoryWithDeletedResponse* resp) {
-               return service->ListDirectoryWithDeleted(ctx, req, resp);
+             const ::fileengine::CreateFileRequest* req,
+             ::fileengine::CreateFileResponse* resp) {
+               return service->CreateFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::TouchRequest* req,
-             ::fileengine_rpc::TouchResponse* resp) {
-               return service->Touch(ctx, req, resp);
+             const ::fileengine::DeleteFileRequest* req,
+             ::fileengine::DeleteFileResponse* resp) {
+               return service->DeleteFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[5],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RemoveFileRequest* req,
-             ::fileengine_rpc::RemoveFileResponse* resp) {
-               return service->RemoveFile(ctx, req, resp);
+             const ::fileengine::UndeleteFileRequest* req,
+             ::fileengine::UndeleteFileResponse* resp) {
+               return service->UndeleteFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::UndeleteFileRequest* req,
-             ::fileengine_rpc::UndeleteFileResponse* resp) {
-               return service->UndeleteFile(ctx, req, resp);
+             const ::fileengine::WriteFileRequest* req,
+             ::fileengine::WriteFileResponse* resp) {
+               return service->WriteFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[7],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::PutFileRequest* req,
-             ::fileengine_rpc::PutFileResponse* resp) {
-               return service->PutFile(ctx, req, resp);
+             const ::fileengine::ReadFileRequest* req,
+             ::fileengine::ReadFileResponse* resp) {
+               return service->ReadFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[8],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetFileRequest* req,
-             ::fileengine_rpc::GetFileResponse* resp) {
-               return service->GetFile(ctx, req, resp);
+             const ::fileengine::GetFileInfoRequest* req,
+             ::fileengine::GetFileInfoResponse* resp) {
+               return service->GetFileInfo(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[9],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::StatRequest* req,
-             ::fileengine_rpc::StatResponse* resp) {
-               return service->Stat(ctx, req, resp);
+             const ::fileengine::FileExistsRequest* req,
+             ::fileengine::FileExistsResponse* resp) {
+               return service->FileExists(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[10],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::ExistsRequest* req,
-             ::fileengine_rpc::ExistsResponse* resp) {
-               return service->Exists(ctx, req, resp);
+             const ::fileengine::MoveFileRequest* req,
+             ::fileengine::MoveFileResponse* resp) {
+               return service->MoveFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[11],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RenameRequest* req,
-             ::fileengine_rpc::RenameResponse* resp) {
-               return service->Rename(ctx, req, resp);
+             const ::fileengine::CopyFileRequest* req,
+             ::fileengine::CopyFileResponse* resp) {
+               return service->CopyFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[12],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::MoveRequest* req,
-             ::fileengine_rpc::MoveResponse* resp) {
-               return service->Move(ctx, req, resp);
+             const ::fileengine::RenameFileRequest* req,
+             ::fileengine::RenameFileResponse* resp) {
+               return service->RenameFile(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[13],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::CopyRequest* req,
-             ::fileengine_rpc::CopyResponse* resp) {
-               return service->Copy(ctx, req, resp);
+             const ::fileengine::ListVersionsRequest* req,
+             ::fileengine::ListVersionsResponse* resp) {
+               return service->ListVersions(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[14],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::ListVersionsRequest* req,
-             ::fileengine_rpc::ListVersionsResponse* resp) {
-               return service->ListVersions(ctx, req, resp);
+             const ::fileengine::ReadVersionRequest* req,
+             ::fileengine::ReadVersionResponse* resp) {
+               return service->ReadVersion(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[15],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetVersionRequest* req,
-             ::fileengine_rpc::GetVersionResponse* resp) {
-               return service->GetVersion(ctx, req, resp);
+             const ::fileengine::SetMetadataRequest* req,
+             ::fileengine::SetMetadataResponse* resp) {
+               return service->SetMetadata(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[16],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RestoreToVersionRequest* req,
-             ::fileengine_rpc::RestoreToVersionResponse* resp) {
-               return service->RestoreToVersion(ctx, req, resp);
+             const ::fileengine::GetMetadataRequest* req,
+             ::fileengine::GetMetadataResponse* resp) {
+               return service->GetMetadata(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[17],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::SetMetadataRequest* req,
-             ::fileengine_rpc::SetMetadataResponse* resp) {
-               return service->SetMetadata(ctx, req, resp);
+             const ::fileengine::GetAllMetadataRequest* req,
+             ::fileengine::GetAllMetadataResponse* resp) {
+               return service->GetAllMetadata(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[18],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetMetadataRequest* req,
-             ::fileengine_rpc::GetMetadataResponse* resp) {
-               return service->GetMetadata(ctx, req, resp);
+             const ::fileengine::DeleteMetadataRequest* req,
+             ::fileengine::DeleteMetadataResponse* resp) {
+               return service->DeleteMetadata(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[19],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetAllMetadataRequest* req,
-             ::fileengine_rpc::GetAllMetadataResponse* resp) {
-               return service->GetAllMetadata(ctx, req, resp);
+             const ::fileengine::GetMetadataForVersionRequest* req,
+             ::fileengine::GetMetadataForVersionResponse* resp) {
+               return service->GetMetadataForVersion(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[20],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::DeleteMetadataRequest* req,
-             ::fileengine_rpc::DeleteMetadataResponse* resp) {
-               return service->DeleteMetadata(ctx, req, resp);
+             const ::fileengine::GetAllMetadataForVersionRequest* req,
+             ::fileengine::GetAllMetadataForVersionResponse* resp) {
+               return service->GetAllMetadataForVersion(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[21],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      ::grpc::internal::RpcMethod::CLIENT_STREAMING,
+      new ::grpc::internal::ClientStreamingHandler< FileService::Service, ::fileengine::WriteFileStreamRequest, ::fileengine::WriteFileStreamResponse>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetMetadataForVersionRequest* req,
-             ::fileengine_rpc::GetMetadataForVersionResponse* resp) {
-               return service->GetMetadataForVersion(ctx, req, resp);
+             ::grpc::ServerReader<::fileengine::WriteFileStreamRequest>* reader,
+             ::fileengine::WriteFileStreamResponse* resp) {
+               return service->WriteFileStream(ctx, reader, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[22],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< FileService::Service, ::fileengine::ReadFileStreamRequest, ::fileengine::ReadFileStreamResponse>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetAllMetadataForVersionRequest* req,
-             ::fileengine_rpc::GetAllMetadataForVersionResponse* resp) {
-               return service->GetAllMetadataForVersion(ctx, req, resp);
+             const ::fileengine::ReadFileStreamRequest* req,
+             ::grpc::ServerWriter<::fileengine::ReadFileStreamResponse>* writer) {
+               return service->ReadFileStream(ctx, req, writer);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[23],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GrantPermissionRequest* req,
-             ::fileengine_rpc::GrantPermissionResponse* resp) {
-               return service->GrantPermission(ctx, req, resp);
+             const ::fileengine::ResolvePathRequest* req,
+             ::fileengine::ResolvePathResponse* resp) {
+               return service->ResolvePath(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       FileService_method_names[24],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](FileService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RevokePermissionRequest* req,
-             ::fileengine_rpc::RevokePermissionResponse* resp) {
-               return service->RevokePermission(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[25],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::CheckPermissionRequest* req,
-             ::fileengine_rpc::CheckPermissionResponse* resp) {
-               return service->CheckPermission(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[26],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::CreateRoleRequest* req,
-             ::fileengine_rpc::CreateRoleResponse* resp) {
-               return service->CreateRole(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[27],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::DeleteRoleRequest* req,
-             ::fileengine_rpc::DeleteRoleResponse* resp) {
-               return service->DeleteRole(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[28],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::AssignUserToRoleRequest* req,
-             ::fileengine_rpc::AssignUserToRoleResponse* resp) {
-               return service->AssignUserToRole(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[29],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::RemoveUserFromRoleRequest* req,
-             ::fileengine_rpc::RemoveUserFromRoleResponse* resp) {
-               return service->RemoveUserFromRole(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[30],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetRolesForUserRequest* req,
-             ::fileengine_rpc::GetRolesForUserResponse* resp) {
-               return service->GetRolesForUser(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[31],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetUsersForRoleRequest* req,
-             ::fileengine_rpc::GetUsersForRoleResponse* resp) {
-               return service->GetUsersForRole(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[32],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetAllRolesRequest* req,
-             ::fileengine_rpc::GetAllRolesResponse* resp) {
-               return service->GetAllRoles(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[33],
-      ::grpc::internal::RpcMethod::CLIENT_STREAMING,
-      new ::grpc::internal::ClientStreamingHandler< FileService::Service, ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             ::grpc::ServerReader<::fileengine_rpc::PutFileRequest>* reader,
-             ::fileengine_rpc::PutFileResponse* resp) {
-               return service->StreamFileUpload(ctx, reader, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[34],
-      ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< FileService::Service, ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::GetFileRequest* req,
-             ::grpc::ServerWriter<::fileengine_rpc::GetFileResponse>* writer) {
-               return service->StreamFileDownload(ctx, req, writer);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[35],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::StorageUsageRequest* req,
-             ::fileengine_rpc::StorageUsageResponse* resp) {
-               return service->GetStorageUsage(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[36],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::PurgeOldVersionsRequest* req,
-             ::fileengine_rpc::PurgeOldVersionsResponse* resp) {
-               return service->PurgeOldVersions(ctx, req, resp);
-             }, this)));
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      FileService_method_names[37],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](FileService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::fileengine_rpc::TriggerSyncRequest* req,
-             ::fileengine_rpc::TriggerSyncResponse* resp) {
-               return service->TriggerSync(ctx, req, resp);
+             const ::fileengine::EvaluateACLRequest* req,
+             ::fileengine::EvaluateACLResponse* resp) {
+               return service->EvaluateACL(ctx, req, resp);
              }, this)));
 }
 
 FileService::Service::~Service() {
 }
 
-::grpc::Status FileService::Service::MakeDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response) {
+::grpc::Status FileService::Service::MakeDirectory(::grpc::ServerContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::RemoveDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response) {
+::grpc::Status FileService::Service::RemoveDirectory(::grpc::ServerContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::ListDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response) {
+::grpc::Status FileService::Service::ListDirectory(::grpc::ServerContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::ListDirectoryWithDeleted(::grpc::ServerContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response) {
+::grpc::Status FileService::Service::CreateFile(::grpc::ServerContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Touch(::grpc::ServerContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response) {
+::grpc::Status FileService::Service::DeleteFile(::grpc::ServerContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::RemoveFile(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response) {
+::grpc::Status FileService::Service::UndeleteFile(::grpc::ServerContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::UndeleteFile(::grpc::ServerContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response) {
+::grpc::Status FileService::Service::WriteFile(::grpc::ServerContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::PutFile(::grpc::ServerContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response) {
+::grpc::Status FileService::Service::ReadFile(::grpc::ServerContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetFile(::grpc::ServerContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response) {
+::grpc::Status FileService::Service::GetFileInfo(::grpc::ServerContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Stat(::grpc::ServerContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response) {
+::grpc::Status FileService::Service::FileExists(::grpc::ServerContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Exists(::grpc::ServerContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response) {
+::grpc::Status FileService::Service::MoveFile(::grpc::ServerContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Rename(::grpc::ServerContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response) {
+::grpc::Status FileService::Service::CopyFile(::grpc::ServerContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Move(::grpc::ServerContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response) {
+::grpc::Status FileService::Service::RenameFile(::grpc::ServerContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::Copy(::grpc::ServerContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response) {
+::grpc::Status FileService::Service::ListVersions(::grpc::ServerContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::ListVersions(::grpc::ServerContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response) {
+::grpc::Status FileService::Service::ReadVersion(::grpc::ServerContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response) {
+::grpc::Status FileService::Service::SetMetadata(::grpc::ServerContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::RestoreToVersion(::grpc::ServerContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response) {
+::grpc::Status FileService::Service::GetMetadata(::grpc::ServerContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::SetMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response) {
+::grpc::Status FileService::Service::GetAllMetadata(::grpc::ServerContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response) {
+::grpc::Status FileService::Service::DeleteMetadata(::grpc::ServerContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetAllMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response) {
+::grpc::Status FileService::Service::GetMetadataForVersion(::grpc::ServerContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::DeleteMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response) {
+::grpc::Status FileService::Service::GetAllMetadataForVersion(::grpc::ServerContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetMetadataForVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::GetAllMetadataForVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::GrantPermission(::grpc::ServerContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::RevokePermission(::grpc::ServerContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::CheckPermission(::grpc::ServerContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::CreateRole(::grpc::ServerContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::DeleteRole(::grpc::ServerContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::AssignUserToRole(::grpc::ServerContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::RemoveUserFromRole(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::GetRolesForUser(::grpc::ServerContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::GetUsersForRole(::grpc::ServerContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::GetAllRoles(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::StreamFileUpload(::grpc::ServerContext* context, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* reader, ::fileengine_rpc::PutFileResponse* response) {
+::grpc::Status FileService::Service::WriteFileStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* reader, ::fileengine::WriteFileStreamResponse* response) {
   (void) context;
   (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::StreamFileDownload(::grpc::ServerContext* context, const ::fileengine_rpc::GetFileRequest* request, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* writer) {
+::grpc::Status FileService::Service::ReadFileStream(::grpc::ServerContext* context, const ::fileengine::ReadFileStreamRequest* request, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* writer) {
   (void) context;
   (void) request;
   (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::GetStorageUsage(::grpc::ServerContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response) {
+::grpc::Status FileService::Service::ResolvePath(::grpc::ServerContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status FileService::Service::PurgeOldVersions(::grpc::ServerContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
-
-::grpc::Status FileService::Service::TriggerSync(::grpc::ServerContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response) {
+::grpc::Status FileService::Service::EvaluateACL(::grpc::ServerContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -1623,6 +1076,5 @@ FileService::Service::~Service() {
 }
 
 
-}  // namespace fileengine_rpc
-#include <grpcpp/ports_undef.inc>
+}  // namespace fileengine
 

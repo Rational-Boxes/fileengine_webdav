@@ -53,10 +53,6 @@ private:
     void handleUnlock(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
     void handleOptions(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 
-    // Permission checking helper
-    bool checkPermission(const std::string& resource_uuid, const fileengine_rpc::Permission& permission,
-                       const fileengine_rpc::AuthenticationContext& auth_ctx);
-
     std::string extractTenantFromHost(const std::string& host);
     bool authenticateUser(Poco::Net::HTTPServerRequest& request, std::string& user, std::string& tenant, std::vector<std::string>& roles);
 

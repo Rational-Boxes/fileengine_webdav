@@ -37,14 +37,14 @@ The WebDAV bridge will act as a gRPC client connecting to the FileEngine gRPC se
 The translation layer will handle mapping between WebDAV operations and gRPC calls:
 
 #### WebDAV Methods to gRPC Mappings:
-- `GET` → `GetFile` or `ListDirectory`
-- `PUT` → `PutFile` (with `Touch` if file doesn't exist)
+- `GET` → `ReadFile` or `ListDirectory`
+- `PUT` → `WriteFile` (with `CreateFile` if file doesn't exist)
 - `MKCOL` → `MakeDirectory`
-- `DELETE` → `RemoveFile` or `RemoveDirectory`
-- `PROPFIND` → `Stat` and metadata operations
+- `DELETE` → `DeleteFile` or `RemoveDirectory`
+- `PROPFIND` → `GetFileInfo` and metadata operations
 - `PROPPATCH` → `SetMetadata` and `DeleteMetadata`
-- `COPY` → `Copy`
-- `MOVE` → `Move` or `Rename`
+- `COPY` → `CopyFile`
+- `MOVE` → `MoveFile` or `RenameFile`
 - `LOCK`/`UNLOCK` → Since FileEngine is pervasively versioned and immutable, traditional file locking concerns do not apply. These operations will be handled at the application level if needed for client-side locking semantics, but will not enforce any actual file locks on the backend.
 
 #### Path to UUID Mapping:

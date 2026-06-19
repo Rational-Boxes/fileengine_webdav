@@ -7,837 +7,572 @@
 #include "fileservice.pb.h"
 
 #include <functional>
-#include <grpcpp/generic/async_generic_service.h>
-#include <grpcpp/support/async_stream.h>
-#include <grpcpp/support/async_unary_call.h>
-#include <grpcpp/support/client_callback.h>
-#include <grpcpp/client_context.h>
-#include <grpcpp/completion_queue.h>
-#include <grpcpp/support/message_allocator.h>
-#include <grpcpp/support/method_handler.h>
-#include <grpcpp/impl/proto_utils.h>
-#include <grpcpp/impl/rpc_method.h>
-#include <grpcpp/support/server_callback.h>
-#include <grpcpp/impl/server_callback_handlers.h>
-#include <grpcpp/server_context.h>
-#include <grpcpp/impl/service_type.h>
-#include <grpcpp/support/status.h>
-#include <grpcpp/support/stub_options.h>
-#include <grpcpp/support/sync_stream.h>
-#include <grpcpp/ports_def.inc>
+#include <grpcpp/impl/codegen/async_generic_service.h>
+#include <grpcpp/impl/codegen/async_stream.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
+#include <grpcpp/impl/codegen/proto_utils.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/stub_options.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 
-namespace fileengine_rpc {
+namespace fileengine {
 
-// Service definition for the FileEngine virtual filesystem
+// File service for virtual filesystem operations
 class FileService final {
  public:
   static constexpr char const* service_full_name() {
-    return "fileengine_rpc.FileService";
+    return "fileengine.FileService";
   }
   class StubInterface {
    public:
     virtual ~StubInterface() {}
     // Directory operations
-    virtual ::grpc::Status MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::fileengine_rpc::MakeDirectoryResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>> AsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>>(AsyncMakeDirectoryRaw(context, request, cq));
+    virtual ::grpc::Status MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::fileengine::MakeDirectoryResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>> AsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>>(AsyncMakeDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>> PrepareAsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>>(PrepareAsyncMakeDirectoryRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>> PrepareAsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>>(PrepareAsyncMakeDirectoryRaw(context, request, cq));
     }
-    virtual ::grpc::Status RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::fileengine_rpc::RemoveDirectoryResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>> AsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>>(AsyncRemoveDirectoryRaw(context, request, cq));
+    virtual ::grpc::Status RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::fileengine::RemoveDirectoryResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>> AsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>>(AsyncRemoveDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>> PrepareAsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>>(PrepareAsyncRemoveDirectoryRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>> PrepareAsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>>(PrepareAsyncRemoveDirectoryRaw(context, request, cq));
     }
-    virtual ::grpc::Status ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::fileengine_rpc::ListDirectoryResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>> AsyncListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>>(AsyncListDirectoryRaw(context, request, cq));
+    virtual ::grpc::Status ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::fileengine::ListDirectoryResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>> AsyncListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>>(AsyncListDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>> PrepareAsyncListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>>(PrepareAsyncListDirectoryRaw(context, request, cq));
-    }
-    virtual ::grpc::Status ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>> AsyncListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>>(AsyncListDirectoryWithDeletedRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>> PrepareAsyncListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>>(PrepareAsyncListDirectoryWithDeletedRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>> PrepareAsyncListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>>(PrepareAsyncListDirectoryRaw(context, request, cq));
     }
     // File operations
-    virtual ::grpc::Status Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::fileengine_rpc::TouchResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>> AsyncTouch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>>(AsyncTouchRaw(context, request, cq));
+    virtual ::grpc::Status CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::fileengine::CreateFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>> AsyncCreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>>(AsyncCreateFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>> PrepareAsyncTouch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>>(PrepareAsyncTouchRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>> PrepareAsyncCreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>>(PrepareAsyncCreateFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::fileengine_rpc::RemoveFileResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>> AsyncRemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>>(AsyncRemoveFileRaw(context, request, cq));
+    virtual ::grpc::Status DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::fileengine::DeleteFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>> AsyncDeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>>(AsyncDeleteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>> PrepareAsyncRemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>>(PrepareAsyncRemoveFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>> PrepareAsyncDeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>>(PrepareAsyncDeleteFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::fileengine_rpc::UndeleteFileResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>> AsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>>(AsyncUndeleteFileRaw(context, request, cq));
+    virtual ::grpc::Status UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::fileengine::UndeleteFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>> AsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>>(AsyncUndeleteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>> PrepareAsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>>(PrepareAsyncUndeleteFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>> PrepareAsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>>(PrepareAsyncUndeleteFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::fileengine_rpc::PutFileResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>> AsyncPutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>>(AsyncPutFileRaw(context, request, cq));
+    virtual ::grpc::Status WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::fileengine::WriteFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>> AsyncWriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>>(AsyncWriteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>> PrepareAsyncPutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>>(PrepareAsyncPutFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>> PrepareAsyncWriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>>(PrepareAsyncWriteFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::fileengine_rpc::GetFileResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>> AsyncGetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>>(AsyncGetFileRaw(context, request, cq));
+    virtual ::grpc::Status ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::fileengine::ReadFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>> AsyncReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>>(AsyncReadFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>>(PrepareAsyncGetFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>> PrepareAsyncReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>>(PrepareAsyncReadFileRaw(context, request, cq));
     }
-    // File information
-    virtual ::grpc::Status Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::fileengine_rpc::StatResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>> AsyncStat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>>(AsyncStatRaw(context, request, cq));
+    virtual ::grpc::Status GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::fileengine::GetFileInfoResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>> AsyncGetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>>(AsyncGetFileInfoRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>> PrepareAsyncStat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>>(PrepareAsyncStatRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>> PrepareAsyncGetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>>(PrepareAsyncGetFileInfoRaw(context, request, cq));
     }
-    virtual ::grpc::Status Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::fileengine_rpc::ExistsResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>> AsyncExists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>>(AsyncExistsRaw(context, request, cq));
+    virtual ::grpc::Status FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::fileengine::FileExistsResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>> AsyncFileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>>(AsyncFileExistsRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>> PrepareAsyncExists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>>(PrepareAsyncExistsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>> PrepareAsyncFileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>>(PrepareAsyncFileExistsRaw(context, request, cq));
     }
-    // File manipulation operations
-    virtual ::grpc::Status Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::fileengine_rpc::RenameResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>> AsyncRename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>>(AsyncRenameRaw(context, request, cq));
+    // File manipulation
+    virtual ::grpc::Status MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::fileengine::MoveFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>> AsyncMoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>>(AsyncMoveFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>> PrepareAsyncRename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>>(PrepareAsyncRenameRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>> PrepareAsyncMoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>>(PrepareAsyncMoveFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::fileengine_rpc::MoveResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>> AsyncMove(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>>(AsyncMoveRaw(context, request, cq));
+    virtual ::grpc::Status CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::fileengine::CopyFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>> AsyncCopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>>(AsyncCopyFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>> PrepareAsyncMove(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>>(PrepareAsyncMoveRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>> PrepareAsyncCopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>>(PrepareAsyncCopyFileRaw(context, request, cq));
     }
-    virtual ::grpc::Status Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::fileengine_rpc::CopyResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>> AsyncCopy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>>(AsyncCopyRaw(context, request, cq));
+    virtual ::grpc::Status RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::fileengine::RenameFileResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>> AsyncRenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>>(AsyncRenameFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>> PrepareAsyncCopy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>>(PrepareAsyncCopyRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>> PrepareAsyncRenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>>(PrepareAsyncRenameFileRaw(context, request, cq));
     }
-    // Version operations
-    virtual ::grpc::Status ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::fileengine_rpc::ListVersionsResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>> AsyncListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>>(AsyncListVersionsRaw(context, request, cq));
+    // Version control
+    virtual ::grpc::Status ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::fileengine::ListVersionsResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>> AsyncListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>>(AsyncListVersionsRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>> PrepareAsyncListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>>(PrepareAsyncListVersionsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>> PrepareAsyncListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>>(PrepareAsyncListVersionsRaw(context, request, cq));
     }
-    virtual ::grpc::Status GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::fileengine_rpc::GetVersionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>> AsyncGetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>>(AsyncGetVersionRaw(context, request, cq));
+    virtual ::grpc::Status ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::fileengine::ReadVersionResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>> AsyncReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>>(AsyncReadVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>> PrepareAsyncGetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>>(PrepareAsyncGetVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>> PrepareAsyncReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>>(PrepareAsyncReadVersionRaw(context, request, cq));
     }
-    virtual ::grpc::Status RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::fileengine_rpc::RestoreToVersionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>> AsyncRestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>>(AsyncRestoreToVersionRaw(context, request, cq));
+    // Metadata operations (versioned)
+    virtual ::grpc::Status SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::fileengine::SetMetadataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>> AsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>>(AsyncSetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>> PrepareAsyncRestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>>(PrepareAsyncRestoreToVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>> PrepareAsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>>(PrepareAsyncSetMetadataRaw(context, request, cq));
     }
-    // Metadata operations
-    virtual ::grpc::Status SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::fileengine_rpc::SetMetadataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>> AsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>>(AsyncSetMetadataRaw(context, request, cq));
+    virtual ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::fileengine::GetMetadataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>> PrepareAsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>>(PrepareAsyncSetMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
     }
-    virtual ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::fileengine_rpc::GetMetadataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
+    virtual ::grpc::Status GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::fileengine::GetAllMetadataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>> AsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>>(AsyncGetAllMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>> PrepareAsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>>(PrepareAsyncGetAllMetadataRaw(context, request, cq));
     }
-    virtual ::grpc::Status GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::fileengine_rpc::GetAllMetadataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>> AsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>>(AsyncGetAllMetadataRaw(context, request, cq));
+    virtual ::grpc::Status DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::fileengine::DeleteMetadataResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>> AsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>>(AsyncDeleteMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>> PrepareAsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>>(PrepareAsyncGetAllMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>> PrepareAsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>>(PrepareAsyncDeleteMetadataRaw(context, request, cq));
     }
-    virtual ::grpc::Status DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::fileengine_rpc::DeleteMetadataResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>> AsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>>(AsyncDeleteMetadataRaw(context, request, cq));
+    virtual ::grpc::Status GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::fileengine::GetMetadataForVersionResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>> AsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>>(AsyncGetMetadataForVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>> PrepareAsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>>(PrepareAsyncDeleteMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>> PrepareAsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>>(PrepareAsyncGetMetadataForVersionRaw(context, request, cq));
     }
-    virtual ::grpc::Status GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::fileengine_rpc::GetMetadataForVersionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>> AsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>>(AsyncGetMetadataForVersionRaw(context, request, cq));
+    virtual ::grpc::Status GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::fileengine::GetAllMetadataForVersionResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>> AsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>>(AsyncGetAllMetadataForVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>> PrepareAsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>>(PrepareAsyncGetMetadataForVersionRaw(context, request, cq));
-    }
-    virtual ::grpc::Status GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>> AsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>>(AsyncGetAllMetadataForVersionRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>> PrepareAsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>>(PrepareAsyncGetAllMetadataForVersionRaw(context, request, cq));
-    }
-    // ACL operations
-    virtual ::grpc::Status GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::fileengine_rpc::GrantPermissionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>> AsyncGrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>>(AsyncGrantPermissionRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>> PrepareAsyncGrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>>(PrepareAsyncGrantPermissionRaw(context, request, cq));
-    }
-    virtual ::grpc::Status RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::fileengine_rpc::RevokePermissionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>> AsyncRevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>>(AsyncRevokePermissionRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>> PrepareAsyncRevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>>(PrepareAsyncRevokePermissionRaw(context, request, cq));
-    }
-    virtual ::grpc::Status CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::fileengine_rpc::CheckPermissionResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>> AsyncCheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>>(AsyncCheckPermissionRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>> PrepareAsyncCheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>>(PrepareAsyncCheckPermissionRaw(context, request, cq));
-    }
-    // Role management operations
-    virtual ::grpc::Status CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::fileengine_rpc::CreateRoleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>> AsyncCreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>>(AsyncCreateRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>> PrepareAsyncCreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>>(PrepareAsyncCreateRoleRaw(context, request, cq));
-    }
-    virtual ::grpc::Status DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::fileengine_rpc::DeleteRoleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>> AsyncDeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>>(AsyncDeleteRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>> PrepareAsyncDeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>>(PrepareAsyncDeleteRoleRaw(context, request, cq));
-    }
-    virtual ::grpc::Status AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::fileengine_rpc::AssignUserToRoleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>> AsyncAssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>>(AsyncAssignUserToRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>> PrepareAsyncAssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>>(PrepareAsyncAssignUserToRoleRaw(context, request, cq));
-    }
-    virtual ::grpc::Status RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::fileengine_rpc::RemoveUserFromRoleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>> AsyncRemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>>(AsyncRemoveUserFromRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>> PrepareAsyncRemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>>(PrepareAsyncRemoveUserFromRoleRaw(context, request, cq));
-    }
-    virtual ::grpc::Status GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::fileengine_rpc::GetRolesForUserResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>> AsyncGetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>>(AsyncGetRolesForUserRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>> PrepareAsyncGetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>>(PrepareAsyncGetRolesForUserRaw(context, request, cq));
-    }
-    virtual ::grpc::Status GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::fileengine_rpc::GetUsersForRoleResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>> AsyncGetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>>(AsyncGetUsersForRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>> PrepareAsyncGetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>>(PrepareAsyncGetUsersForRoleRaw(context, request, cq));
-    }
-    virtual ::grpc::Status GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::fileengine_rpc::GetAllRolesResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>> AsyncGetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>>(AsyncGetAllRolesRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>> PrepareAsyncGetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>>(PrepareAsyncGetAllRolesRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>> PrepareAsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>>(PrepareAsyncGetAllMetadataForVersionRaw(context, request, cq));
     }
     // Streaming operations for large files
-    std::unique_ptr< ::grpc::ClientWriterInterface< ::fileengine_rpc::PutFileRequest>> StreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response) {
-      return std::unique_ptr< ::grpc::ClientWriterInterface< ::fileengine_rpc::PutFileRequest>>(StreamFileUploadRaw(context, response));
+    std::unique_ptr< ::grpc::ClientWriterInterface< ::fileengine::WriteFileStreamRequest>> WriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response) {
+      return std::unique_ptr< ::grpc::ClientWriterInterface< ::fileengine::WriteFileStreamRequest>>(WriteFileStreamRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>> AsyncStreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>>(AsyncStreamFileUploadRaw(context, response, cq, tag));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>> AsyncWriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>>(AsyncWriteFileStreamRaw(context, response, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>> PrepareAsyncStreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>>(PrepareAsyncStreamFileUploadRaw(context, response, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>> PrepareAsyncWriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>>(PrepareAsyncWriteFileStreamRaw(context, response, cq));
     }
-    std::unique_ptr< ::grpc::ClientReaderInterface< ::fileengine_rpc::GetFileResponse>> StreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request) {
-      return std::unique_ptr< ::grpc::ClientReaderInterface< ::fileengine_rpc::GetFileResponse>>(StreamFileDownloadRaw(context, request));
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::fileengine::ReadFileStreamResponse>> ReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::fileengine::ReadFileStreamResponse>>(ReadFileStreamRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>> AsyncStreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>>(AsyncStreamFileDownloadRaw(context, request, cq, tag));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>> AsyncReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>>(AsyncReadFileStreamRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>> PrepareAsyncStreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>>(PrepareAsyncStreamFileDownloadRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>> PrepareAsyncReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>>(PrepareAsyncReadFileStreamRaw(context, request, cq));
     }
-    // Administrative operations
-    virtual ::grpc::Status GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::fileengine_rpc::StorageUsageResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>> AsyncGetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>>(AsyncGetStorageUsageRaw(context, request, cq));
+    // Path resolution operations
+    virtual ::grpc::Status ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::fileengine::ResolvePathResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>> AsyncResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>>(AsyncResolvePathRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>> PrepareAsyncGetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>>(PrepareAsyncGetStorageUsageRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>> PrepareAsyncResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>>(PrepareAsyncResolvePathRaw(context, request, cq));
     }
-    virtual ::grpc::Status PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::fileengine_rpc::PurgeOldVersionsResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>> AsyncPurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>>(AsyncPurgeOldVersionsRaw(context, request, cq));
+    // ACL operations
+    virtual ::grpc::Status EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::fileengine::EvaluateACLResponse* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>> AsyncEvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>>(AsyncEvaluateACLRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>> PrepareAsyncPurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>>(PrepareAsyncPurgeOldVersionsRaw(context, request, cq));
-    }
-    virtual ::grpc::Status TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::fileengine_rpc::TriggerSyncResponse* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>> AsyncTriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>>(AsyncTriggerSyncRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>> PrepareAsyncTriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>>(PrepareAsyncTriggerSyncRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>> PrepareAsyncEvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>>(PrepareAsyncEvaluateACLRaw(context, request, cq));
     }
     class async_interface {
      public:
       virtual ~async_interface() {}
       // Directory operations
-      virtual void MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // File operations
-      virtual void Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // File information
-      virtual void Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // File manipulation operations
-      virtual void Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // Version operations
-      virtual void ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // Metadata operations
-      virtual void SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // ACL operations
-      virtual void GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      // Role management operations
-      virtual void CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // File manipulation
+      virtual void MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // Version control
+      virtual void ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // Metadata operations (versioned)
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       // Streaming operations for large files
-      virtual void StreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientWriteReactor< ::fileengine_rpc::PutFileRequest>* reactor) = 0;
-      virtual void StreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::grpc::ClientReadReactor< ::fileengine_rpc::GetFileResponse>* reactor) = 0;
-      // Administrative operations
-      virtual void GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-      virtual void TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void WriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::ClientWriteReactor< ::fileengine::WriteFileStreamRequest>* reactor) = 0;
+      virtual void ReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest* request, ::grpc::ClientReadReactor< ::fileengine::ReadFileStreamResponse>* reactor) = 0;
+      // Path resolution operations
+      virtual void ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // ACL operations
+      virtual void EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>* AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MakeDirectoryResponse>* PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>* AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveDirectoryResponse>* PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>* AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryResponse>* PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* AsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* PrepareAsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>* AsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TouchResponse>* PrepareAsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>* AsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveFileResponse>* PrepareAsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>* AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::UndeleteFileResponse>* PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>* AsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PutFileResponse>* PrepareAsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetFileResponse>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>* AsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StatResponse>* PrepareAsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>* AsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ExistsResponse>* PrepareAsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>* AsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RenameResponse>* PrepareAsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>* AsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::MoveResponse>* PrepareAsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>* AsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CopyResponse>* PrepareAsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>* AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::ListVersionsResponse>* PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>* AsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetVersionResponse>* PrepareAsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>* AsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RestoreToVersionResponse>* PrepareAsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::SetMetadataResponse>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>* AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataResponse>* PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>* AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteMetadataResponse>* PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>* AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetMetadataForVersionResponse>* PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>* AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllMetadataForVersionResponse>* PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>* AsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GrantPermissionResponse>* PrepareAsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>* AsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RevokePermissionResponse>* PrepareAsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>* AsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CheckPermissionResponse>* PrepareAsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>* AsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::CreateRoleResponse>* PrepareAsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>* AsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::DeleteRoleResponse>* PrepareAsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>* AsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::AssignUserToRoleResponse>* PrepareAsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>* AsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::RemoveUserFromRoleResponse>* PrepareAsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>* AsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetRolesForUserResponse>* PrepareAsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>* AsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetUsersForRoleResponse>* PrepareAsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>* AsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::GetAllRolesResponse>* PrepareAsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientWriterInterface< ::fileengine_rpc::PutFileRequest>* StreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>* AsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncWriterInterface< ::fileengine_rpc::PutFileRequest>* PrepareAsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientReaderInterface< ::fileengine_rpc::GetFileResponse>* StreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>* AsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
-    virtual ::grpc::ClientAsyncReaderInterface< ::fileengine_rpc::GetFileResponse>* PrepareAsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>* AsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::StorageUsageResponse>* PrepareAsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>* AsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::PurgeOldVersionsResponse>* PrepareAsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>* AsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine_rpc::TriggerSyncResponse>* PrepareAsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>* AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MakeDirectoryResponse>* PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>* AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RemoveDirectoryResponse>* PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>* AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListDirectoryResponse>* PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>* AsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CreateFileResponse>* PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>* AsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteFileResponse>* PrepareAsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>* AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::UndeleteFileResponse>* PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>* AsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::WriteFileResponse>* PrepareAsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>* AsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadFileResponse>* PrepareAsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>* AsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetFileInfoResponse>* PrepareAsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>* AsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::FileExistsResponse>* PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>* AsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::MoveFileResponse>* PrepareAsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>* AsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::CopyFileResponse>* PrepareAsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>* AsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::RenameFileResponse>* PrepareAsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>* AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ListVersionsResponse>* PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>* AsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ReadVersionResponse>* PrepareAsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::SetMetadataResponse>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>* AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataResponse>* PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>* AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::DeleteMetadataResponse>* PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>* AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetMetadataForVersionResponse>* PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>* AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::GetAllMetadataForVersionResponse>* PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientWriterInterface< ::fileengine::WriteFileStreamRequest>* WriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>* AsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncWriterInterface< ::fileengine::WriteFileStreamRequest>* PrepareAsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::fileengine::ReadFileStreamResponse>* ReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>* AsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::fileengine::ReadFileStreamResponse>* PrepareAsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>* AsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::ResolvePathResponse>* PrepareAsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>* AsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::fileengine::EvaluateACLResponse>* PrepareAsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::fileengine_rpc::MakeDirectoryResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>> AsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>>(AsyncMakeDirectoryRaw(context, request, cq));
+    ::grpc::Status MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::fileengine::MakeDirectoryResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>> AsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>>(AsyncMakeDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>> PrepareAsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>>(PrepareAsyncMakeDirectoryRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>> PrepareAsyncMakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>>(PrepareAsyncMakeDirectoryRaw(context, request, cq));
     }
-    ::grpc::Status RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::fileengine_rpc::RemoveDirectoryResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>> AsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>>(AsyncRemoveDirectoryRaw(context, request, cq));
+    ::grpc::Status RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::fileengine::RemoveDirectoryResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>> AsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>>(AsyncRemoveDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>> PrepareAsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>>(PrepareAsyncRemoveDirectoryRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>> PrepareAsyncRemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>>(PrepareAsyncRemoveDirectoryRaw(context, request, cq));
     }
-    ::grpc::Status ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::fileengine_rpc::ListDirectoryResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>> AsyncListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>>(AsyncListDirectoryRaw(context, request, cq));
+    ::grpc::Status ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::fileengine::ListDirectoryResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>> AsyncListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>>(AsyncListDirectoryRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>> PrepareAsyncListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>>(PrepareAsyncListDirectoryRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>> PrepareAsyncListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>>(PrepareAsyncListDirectoryRaw(context, request, cq));
     }
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>> AsyncListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>>(AsyncListDirectoryWithDeletedRaw(context, request, cq));
+    ::grpc::Status CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::fileengine::CreateFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>> AsyncCreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>>(AsyncCreateFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>> PrepareAsyncListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>>(PrepareAsyncListDirectoryWithDeletedRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>> PrepareAsyncCreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>>(PrepareAsyncCreateFileRaw(context, request, cq));
     }
-    ::grpc::Status Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::fileengine_rpc::TouchResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>> AsyncTouch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>>(AsyncTouchRaw(context, request, cq));
+    ::grpc::Status DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::fileengine::DeleteFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>> AsyncDeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>>(AsyncDeleteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>> PrepareAsyncTouch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>>(PrepareAsyncTouchRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>> PrepareAsyncDeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>>(PrepareAsyncDeleteFileRaw(context, request, cq));
     }
-    ::grpc::Status RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::fileengine_rpc::RemoveFileResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>> AsyncRemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>>(AsyncRemoveFileRaw(context, request, cq));
+    ::grpc::Status UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::fileengine::UndeleteFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>> AsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>>(AsyncUndeleteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>> PrepareAsyncRemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>>(PrepareAsyncRemoveFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>> PrepareAsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>>(PrepareAsyncUndeleteFileRaw(context, request, cq));
     }
-    ::grpc::Status UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::fileengine_rpc::UndeleteFileResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>> AsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>>(AsyncUndeleteFileRaw(context, request, cq));
+    ::grpc::Status WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::fileengine::WriteFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>> AsyncWriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>>(AsyncWriteFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>> PrepareAsyncUndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>>(PrepareAsyncUndeleteFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>> PrepareAsyncWriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>>(PrepareAsyncWriteFileRaw(context, request, cq));
     }
-    ::grpc::Status PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::fileengine_rpc::PutFileResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>> AsyncPutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>>(AsyncPutFileRaw(context, request, cq));
+    ::grpc::Status ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::fileengine::ReadFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>> AsyncReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>>(AsyncReadFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>> PrepareAsyncPutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>>(PrepareAsyncPutFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>> PrepareAsyncReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>>(PrepareAsyncReadFileRaw(context, request, cq));
     }
-    ::grpc::Status GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::fileengine_rpc::GetFileResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>> AsyncGetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>>(AsyncGetFileRaw(context, request, cq));
+    ::grpc::Status GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::fileengine::GetFileInfoResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>> AsyncGetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>>(AsyncGetFileInfoRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>> PrepareAsyncGetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>>(PrepareAsyncGetFileRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>> PrepareAsyncGetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>>(PrepareAsyncGetFileInfoRaw(context, request, cq));
     }
-    ::grpc::Status Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::fileengine_rpc::StatResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>> AsyncStat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>>(AsyncStatRaw(context, request, cq));
+    ::grpc::Status FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::fileengine::FileExistsResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>> AsyncFileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>>(AsyncFileExistsRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>> PrepareAsyncStat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>>(PrepareAsyncStatRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>> PrepareAsyncFileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>>(PrepareAsyncFileExistsRaw(context, request, cq));
     }
-    ::grpc::Status Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::fileengine_rpc::ExistsResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>> AsyncExists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>>(AsyncExistsRaw(context, request, cq));
+    ::grpc::Status MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::fileengine::MoveFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>> AsyncMoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>>(AsyncMoveFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>> PrepareAsyncExists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>>(PrepareAsyncExistsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>> PrepareAsyncMoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>>(PrepareAsyncMoveFileRaw(context, request, cq));
     }
-    ::grpc::Status Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::fileengine_rpc::RenameResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>> AsyncRename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>>(AsyncRenameRaw(context, request, cq));
+    ::grpc::Status CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::fileengine::CopyFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>> AsyncCopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>>(AsyncCopyFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>> PrepareAsyncRename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>>(PrepareAsyncRenameRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>> PrepareAsyncCopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>>(PrepareAsyncCopyFileRaw(context, request, cq));
     }
-    ::grpc::Status Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::fileengine_rpc::MoveResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>> AsyncMove(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>>(AsyncMoveRaw(context, request, cq));
+    ::grpc::Status RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::fileengine::RenameFileResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>> AsyncRenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>>(AsyncRenameFileRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>> PrepareAsyncMove(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>>(PrepareAsyncMoveRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>> PrepareAsyncRenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>>(PrepareAsyncRenameFileRaw(context, request, cq));
     }
-    ::grpc::Status Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::fileengine_rpc::CopyResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>> AsyncCopy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>>(AsyncCopyRaw(context, request, cq));
+    ::grpc::Status ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::fileengine::ListVersionsResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>> AsyncListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>>(AsyncListVersionsRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>> PrepareAsyncCopy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>>(PrepareAsyncCopyRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>> PrepareAsyncListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>>(PrepareAsyncListVersionsRaw(context, request, cq));
     }
-    ::grpc::Status ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::fileengine_rpc::ListVersionsResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>> AsyncListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>>(AsyncListVersionsRaw(context, request, cq));
+    ::grpc::Status ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::fileengine::ReadVersionResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>> AsyncReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>>(AsyncReadVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>> PrepareAsyncListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>>(PrepareAsyncListVersionsRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>> PrepareAsyncReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>>(PrepareAsyncReadVersionRaw(context, request, cq));
     }
-    ::grpc::Status GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::fileengine_rpc::GetVersionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>> AsyncGetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>>(AsyncGetVersionRaw(context, request, cq));
+    ::grpc::Status SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::fileengine::SetMetadataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>> AsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>>(AsyncSetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>> PrepareAsyncGetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>>(PrepareAsyncGetVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>> PrepareAsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>>(PrepareAsyncSetMetadataRaw(context, request, cq));
     }
-    ::grpc::Status RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::fileengine_rpc::RestoreToVersionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>> AsyncRestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>>(AsyncRestoreToVersionRaw(context, request, cq));
+    ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::fileengine::GetMetadataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>> PrepareAsyncRestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>>(PrepareAsyncRestoreToVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
     }
-    ::grpc::Status SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::fileengine_rpc::SetMetadataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>> AsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>>(AsyncSetMetadataRaw(context, request, cq));
+    ::grpc::Status GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::fileengine::GetAllMetadataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>> AsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>>(AsyncGetAllMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>> PrepareAsyncSetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>>(PrepareAsyncSetMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>> PrepareAsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>>(PrepareAsyncGetAllMetadataRaw(context, request, cq));
     }
-    ::grpc::Status GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::fileengine_rpc::GetMetadataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>> AsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>>(AsyncGetMetadataRaw(context, request, cq));
+    ::grpc::Status DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::fileengine::DeleteMetadataResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>> AsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>>(AsyncDeleteMetadataRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>> PrepareAsyncGetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>>(PrepareAsyncGetMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>> PrepareAsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>>(PrepareAsyncDeleteMetadataRaw(context, request, cq));
     }
-    ::grpc::Status GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::fileengine_rpc::GetAllMetadataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>> AsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>>(AsyncGetAllMetadataRaw(context, request, cq));
+    ::grpc::Status GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::fileengine::GetMetadataForVersionResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>> AsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>>(AsyncGetMetadataForVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>> PrepareAsyncGetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>>(PrepareAsyncGetAllMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>> PrepareAsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>>(PrepareAsyncGetMetadataForVersionRaw(context, request, cq));
     }
-    ::grpc::Status DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::fileengine_rpc::DeleteMetadataResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>> AsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>>(AsyncDeleteMetadataRaw(context, request, cq));
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::fileengine::GetAllMetadataForVersionResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>> AsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>>(AsyncGetAllMetadataForVersionRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>> PrepareAsyncDeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>>(PrepareAsyncDeleteMetadataRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>> PrepareAsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>>(PrepareAsyncGetAllMetadataForVersionRaw(context, request, cq));
     }
-    ::grpc::Status GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::fileengine_rpc::GetMetadataForVersionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>> AsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>>(AsyncGetMetadataForVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientWriter< ::fileengine::WriteFileStreamRequest>> WriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response) {
+      return std::unique_ptr< ::grpc::ClientWriter< ::fileengine::WriteFileStreamRequest>>(WriteFileStreamRaw(context, response));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>> PrepareAsyncGetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>>(PrepareAsyncGetMetadataForVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>> AsyncWriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>>(AsyncWriteFileStreamRaw(context, response, cq, tag));
     }
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>> AsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>>(AsyncGetAllMetadataForVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>> PrepareAsyncWriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>>(PrepareAsyncWriteFileStreamRaw(context, response, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>> PrepareAsyncGetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>>(PrepareAsyncGetAllMetadataForVersionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientReader< ::fileengine::ReadFileStreamResponse>> ReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::fileengine::ReadFileStreamResponse>>(ReadFileStreamRaw(context, request));
     }
-    ::grpc::Status GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::fileengine_rpc::GrantPermissionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>> AsyncGrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>>(AsyncGrantPermissionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>> AsyncReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>>(AsyncReadFileStreamRaw(context, request, cq, tag));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>> PrepareAsyncGrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>>(PrepareAsyncGrantPermissionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>> PrepareAsyncReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>>(PrepareAsyncReadFileStreamRaw(context, request, cq));
     }
-    ::grpc::Status RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::fileengine_rpc::RevokePermissionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>> AsyncRevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>>(AsyncRevokePermissionRaw(context, request, cq));
+    ::grpc::Status ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::fileengine::ResolvePathResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>> AsyncResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>>(AsyncResolvePathRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>> PrepareAsyncRevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>>(PrepareAsyncRevokePermissionRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>> PrepareAsyncResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>>(PrepareAsyncResolvePathRaw(context, request, cq));
     }
-    ::grpc::Status CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::fileengine_rpc::CheckPermissionResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>> AsyncCheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>>(AsyncCheckPermissionRaw(context, request, cq));
+    ::grpc::Status EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::fileengine::EvaluateACLResponse* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>> AsyncEvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>>(AsyncEvaluateACLRaw(context, request, cq));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>> PrepareAsyncCheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>>(PrepareAsyncCheckPermissionRaw(context, request, cq));
-    }
-    ::grpc::Status CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::fileengine_rpc::CreateRoleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>> AsyncCreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>>(AsyncCreateRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>> PrepareAsyncCreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>>(PrepareAsyncCreateRoleRaw(context, request, cq));
-    }
-    ::grpc::Status DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::fileengine_rpc::DeleteRoleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>> AsyncDeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>>(AsyncDeleteRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>> PrepareAsyncDeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>>(PrepareAsyncDeleteRoleRaw(context, request, cq));
-    }
-    ::grpc::Status AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::fileengine_rpc::AssignUserToRoleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>> AsyncAssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>>(AsyncAssignUserToRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>> PrepareAsyncAssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>>(PrepareAsyncAssignUserToRoleRaw(context, request, cq));
-    }
-    ::grpc::Status RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::fileengine_rpc::RemoveUserFromRoleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>> AsyncRemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>>(AsyncRemoveUserFromRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>> PrepareAsyncRemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>>(PrepareAsyncRemoveUserFromRoleRaw(context, request, cq));
-    }
-    ::grpc::Status GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::fileengine_rpc::GetRolesForUserResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>> AsyncGetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>>(AsyncGetRolesForUserRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>> PrepareAsyncGetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>>(PrepareAsyncGetRolesForUserRaw(context, request, cq));
-    }
-    ::grpc::Status GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::fileengine_rpc::GetUsersForRoleResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>> AsyncGetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>>(AsyncGetUsersForRoleRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>> PrepareAsyncGetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>>(PrepareAsyncGetUsersForRoleRaw(context, request, cq));
-    }
-    ::grpc::Status GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::fileengine_rpc::GetAllRolesResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>> AsyncGetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>>(AsyncGetAllRolesRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>> PrepareAsyncGetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>>(PrepareAsyncGetAllRolesRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientWriter< ::fileengine_rpc::PutFileRequest>> StreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response) {
-      return std::unique_ptr< ::grpc::ClientWriter< ::fileengine_rpc::PutFileRequest>>(StreamFileUploadRaw(context, response));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>> AsyncStreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>>(AsyncStreamFileUploadRaw(context, response, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>> PrepareAsyncStreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>>(PrepareAsyncStreamFileUploadRaw(context, response, cq));
-    }
-    std::unique_ptr< ::grpc::ClientReader< ::fileengine_rpc::GetFileResponse>> StreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request) {
-      return std::unique_ptr< ::grpc::ClientReader< ::fileengine_rpc::GetFileResponse>>(StreamFileDownloadRaw(context, request));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>> AsyncStreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq, void* tag) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>>(AsyncStreamFileDownloadRaw(context, request, cq, tag));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>> PrepareAsyncStreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>>(PrepareAsyncStreamFileDownloadRaw(context, request, cq));
-    }
-    ::grpc::Status GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::fileengine_rpc::StorageUsageResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>> AsyncGetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>>(AsyncGetStorageUsageRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>> PrepareAsyncGetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>>(PrepareAsyncGetStorageUsageRaw(context, request, cq));
-    }
-    ::grpc::Status PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::fileengine_rpc::PurgeOldVersionsResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>> AsyncPurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>>(AsyncPurgeOldVersionsRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>> PrepareAsyncPurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>>(PrepareAsyncPurgeOldVersionsRaw(context, request, cq));
-    }
-    ::grpc::Status TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::fileengine_rpc::TriggerSyncResponse* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>> AsyncTriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>>(AsyncTriggerSyncRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>> PrepareAsyncTriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>>(PrepareAsyncTriggerSyncRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>> PrepareAsyncEvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>>(PrepareAsyncEvaluateACLRaw(context, request, cq));
     }
     class async final :
       public StubInterface::async_interface {
      public:
-      void MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
-      void MakeDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
-      void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
-      void ListDirectory(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, std::function<void(::grpc::Status)>) override;
-      void ListDirectoryWithDeleted(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, std::function<void(::grpc::Status)>) override;
-      void Touch(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, std::function<void(::grpc::Status)>) override;
-      void RemoveFile(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, std::function<void(::grpc::Status)>) override;
-      void UndeleteFile(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, std::function<void(::grpc::Status)>) override;
-      void PutFile(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetFile(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, std::function<void(::grpc::Status)>) override;
-      void Stat(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, std::function<void(::grpc::Status)>) override;
-      void Exists(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, std::function<void(::grpc::Status)>) override;
-      void Rename(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, std::function<void(::grpc::Status)>) override;
-      void Move(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, std::function<void(::grpc::Status)>) override;
-      void Copy(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, std::function<void(::grpc::Status)>) override;
-      void ListVersions(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, std::function<void(::grpc::Status)>) override;
-      void RestoreToVersion(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
-      void SetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, std::function<void(::grpc::Status)>) override;
-      void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, std::function<void(::grpc::Status)>) override;
-      void GrantPermission(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, std::function<void(::grpc::Status)>) override;
-      void RevokePermission(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, std::function<void(::grpc::Status)>) override;
-      void CheckPermission(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, std::function<void(::grpc::Status)>) override;
-      void CreateRole(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, std::function<void(::grpc::Status)>) override;
-      void DeleteRole(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, std::function<void(::grpc::Status)>) override;
-      void AssignUserToRole(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, std::function<void(::grpc::Status)>) override;
-      void RemoveUserFromRole(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetRolesForUser(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetUsersForRole(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetAllRoles(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void StreamFileUpload(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::ClientWriteReactor< ::fileengine_rpc::PutFileRequest>* reactor) override;
-      void StreamFileDownload(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest* request, ::grpc::ClientReadReactor< ::fileengine_rpc::GetFileResponse>* reactor) override;
-      void GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, std::function<void(::grpc::Status)>) override;
-      void GetStorageUsage(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, std::function<void(::grpc::Status)>) override;
-      void PurgeOldVersions(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
-      void TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, std::function<void(::grpc::Status)>) override;
-      void TriggerSync(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
+      void MakeDirectory(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
+      void RemoveDirectory(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, std::function<void(::grpc::Status)>) override;
+      void ListDirectory(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void CreateFile(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void DeleteFile(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void UndeleteFile(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void WriteFile(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void ReadFile(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetFileInfo(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, std::function<void(::grpc::Status)>) override;
+      void FileExists(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void MoveFile(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void CopyFile(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, std::function<void(::grpc::Status)>) override;
+      void RenameFile(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, std::function<void(::grpc::Status)>) override;
+      void ListVersions(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, std::function<void(::grpc::Status)>) override;
+      void ReadVersion(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void SetMetadata(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetMetadata(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetAllMetadata(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, std::function<void(::grpc::Status)>) override;
+      void DeleteMetadata(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, std::function<void(::grpc::Status)>) override;
+      void GetAllMetadataForVersion(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void WriteFileStream(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::ClientWriteReactor< ::fileengine::WriteFileStreamRequest>* reactor) override;
+      void ReadFileStream(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest* request, ::grpc::ClientReadReactor< ::fileengine::ReadFileStreamResponse>* reactor) override;
+      void ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, std::function<void(::grpc::Status)>) override;
+      void ResolvePath(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, std::function<void(::grpc::Status)>) override;
+      void EvaluateACL(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -849,122 +584,83 @@ class FileService final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>* AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MakeDirectoryResponse>* PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>* AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveDirectoryResponse>* PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>* AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryResponse>* PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* AsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* PrepareAsyncListDirectoryWithDeletedRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>* AsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TouchResponse>* PrepareAsyncTouchRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TouchRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>* AsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveFileResponse>* PrepareAsyncRemoveFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>* AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::UndeleteFileResponse>* PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>* AsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PutFileResponse>* PrepareAsyncPutFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PutFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>* AsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetFileResponse>* PrepareAsyncGetFileRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>* AsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StatResponse>* PrepareAsyncStatRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StatRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>* AsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ExistsResponse>* PrepareAsyncExistsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ExistsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>* AsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RenameResponse>* PrepareAsyncRenameRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RenameRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>* AsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::MoveResponse>* PrepareAsyncMoveRaw(::grpc::ClientContext* context, const ::fileengine_rpc::MoveRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>* AsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CopyResponse>* PrepareAsyncCopyRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CopyRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>* AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::ListVersionsResponse>* PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>* AsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetVersionResponse>* PrepareAsyncGetVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>* AsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RestoreToVersionResponse>* PrepareAsyncRestoreToVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RestoreToVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::SetMetadataResponse>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>* AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataResponse>* PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>* AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteMetadataResponse>* PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>* AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetMetadataForVersionResponse>* PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>* AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllMetadataForVersionResponse>* PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>* AsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GrantPermissionResponse>* PrepareAsyncGrantPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GrantPermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>* AsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RevokePermissionResponse>* PrepareAsyncRevokePermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RevokePermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>* AsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CheckPermissionResponse>* PrepareAsyncCheckPermissionRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CheckPermissionRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>* AsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::CreateRoleResponse>* PrepareAsyncCreateRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::CreateRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>* AsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::DeleteRoleResponse>* PrepareAsyncDeleteRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::DeleteRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>* AsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::AssignUserToRoleResponse>* PrepareAsyncAssignUserToRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::AssignUserToRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>* AsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::RemoveUserFromRoleResponse>* PrepareAsyncRemoveUserFromRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>* AsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetRolesForUserResponse>* PrepareAsyncGetRolesForUserRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetRolesForUserRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>* AsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetUsersForRoleResponse>* PrepareAsyncGetUsersForRoleRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetUsersForRoleRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>* AsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::GetAllRolesResponse>* PrepareAsyncGetAllRolesRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetAllRolesRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientWriter< ::fileengine_rpc::PutFileRequest>* StreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response) override;
-    ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>* AsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncWriter< ::fileengine_rpc::PutFileRequest>* PrepareAsyncStreamFileUploadRaw(::grpc::ClientContext* context, ::fileengine_rpc::PutFileResponse* response, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientReader< ::fileengine_rpc::GetFileResponse>* StreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request) override;
-    ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>* AsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
-    ::grpc::ClientAsyncReader< ::fileengine_rpc::GetFileResponse>* PrepareAsyncStreamFileDownloadRaw(::grpc::ClientContext* context, const ::fileengine_rpc::GetFileRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>* AsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::StorageUsageResponse>* PrepareAsyncGetStorageUsageRaw(::grpc::ClientContext* context, const ::fileengine_rpc::StorageUsageRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>* AsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::PurgeOldVersionsResponse>* PrepareAsyncPurgeOldVersionsRaw(::grpc::ClientContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>* AsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::fileengine_rpc::TriggerSyncResponse>* PrepareAsyncTriggerSyncRaw(::grpc::ClientContext* context, const ::fileengine_rpc::TriggerSyncRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>* AsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::MakeDirectoryResponse>* PrepareAsyncMakeDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::MakeDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>* AsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::RemoveDirectoryResponse>* PrepareAsyncRemoveDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::RemoveDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>* AsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ListDirectoryResponse>* PrepareAsyncListDirectoryRaw(::grpc::ClientContext* context, const ::fileengine::ListDirectoryRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>* AsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::CreateFileResponse>* PrepareAsyncCreateFileRaw(::grpc::ClientContext* context, const ::fileengine::CreateFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>* AsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteFileResponse>* PrepareAsyncDeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::DeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>* AsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::UndeleteFileResponse>* PrepareAsyncUndeleteFileRaw(::grpc::ClientContext* context, const ::fileengine::UndeleteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>* AsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::WriteFileResponse>* PrepareAsyncWriteFileRaw(::grpc::ClientContext* context, const ::fileengine::WriteFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>* AsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ReadFileResponse>* PrepareAsyncReadFileRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>* AsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetFileInfoResponse>* PrepareAsyncGetFileInfoRaw(::grpc::ClientContext* context, const ::fileengine::GetFileInfoRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>* AsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::FileExistsResponse>* PrepareAsyncFileExistsRaw(::grpc::ClientContext* context, const ::fileengine::FileExistsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>* AsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::MoveFileResponse>* PrepareAsyncMoveFileRaw(::grpc::ClientContext* context, const ::fileengine::MoveFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>* AsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::CopyFileResponse>* PrepareAsyncCopyFileRaw(::grpc::ClientContext* context, const ::fileengine::CopyFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>* AsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::RenameFileResponse>* PrepareAsyncRenameFileRaw(::grpc::ClientContext* context, const ::fileengine::RenameFileRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>* AsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ListVersionsResponse>* PrepareAsyncListVersionsRaw(::grpc::ClientContext* context, const ::fileengine::ListVersionsRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>* AsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ReadVersionResponse>* PrepareAsyncReadVersionRaw(::grpc::ClientContext* context, const ::fileengine::ReadVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>* AsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::SetMetadataResponse>* PrepareAsyncSetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::SetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>* AsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataResponse>* PrepareAsyncGetMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>* AsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataResponse>* PrepareAsyncGetAllMetadataRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>* AsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::DeleteMetadataResponse>* PrepareAsyncDeleteMetadataRaw(::grpc::ClientContext* context, const ::fileengine::DeleteMetadataRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>* AsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetMetadataForVersionResponse>* PrepareAsyncGetMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>* AsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::GetAllMetadataForVersionResponse>* PrepareAsyncGetAllMetadataForVersionRaw(::grpc::ClientContext* context, const ::fileengine::GetAllMetadataForVersionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientWriter< ::fileengine::WriteFileStreamRequest>* WriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response) override;
+    ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>* AsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncWriter< ::fileengine::WriteFileStreamRequest>* PrepareAsyncWriteFileStreamRaw(::grpc::ClientContext* context, ::fileengine::WriteFileStreamResponse* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::fileengine::ReadFileStreamResponse>* ReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request) override;
+    ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>* AsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::fileengine::ReadFileStreamResponse>* PrepareAsyncReadFileStreamRaw(::grpc::ClientContext* context, const ::fileengine::ReadFileStreamRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>* AsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::ResolvePathResponse>* PrepareAsyncResolvePathRaw(::grpc::ClientContext* context, const ::fileengine::ResolvePathRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>* AsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::fileengine::EvaluateACLResponse>* PrepareAsyncEvaluateACLRaw(::grpc::ClientContext* context, const ::fileengine::EvaluateACLRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_MakeDirectory_;
     const ::grpc::internal::RpcMethod rpcmethod_RemoveDirectory_;
     const ::grpc::internal::RpcMethod rpcmethod_ListDirectory_;
-    const ::grpc::internal::RpcMethod rpcmethod_ListDirectoryWithDeleted_;
-    const ::grpc::internal::RpcMethod rpcmethod_Touch_;
-    const ::grpc::internal::RpcMethod rpcmethod_RemoveFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_DeleteFile_;
     const ::grpc::internal::RpcMethod rpcmethod_UndeleteFile_;
-    const ::grpc::internal::RpcMethod rpcmethod_PutFile_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetFile_;
-    const ::grpc::internal::RpcMethod rpcmethod_Stat_;
-    const ::grpc::internal::RpcMethod rpcmethod_Exists_;
-    const ::grpc::internal::RpcMethod rpcmethod_Rename_;
-    const ::grpc::internal::RpcMethod rpcmethod_Move_;
-    const ::grpc::internal::RpcMethod rpcmethod_Copy_;
+    const ::grpc::internal::RpcMethod rpcmethod_WriteFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReadFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_GetFileInfo_;
+    const ::grpc::internal::RpcMethod rpcmethod_FileExists_;
+    const ::grpc::internal::RpcMethod rpcmethod_MoveFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_CopyFile_;
+    const ::grpc::internal::RpcMethod rpcmethod_RenameFile_;
     const ::grpc::internal::RpcMethod rpcmethod_ListVersions_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetVersion_;
-    const ::grpc::internal::RpcMethod rpcmethod_RestoreToVersion_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReadVersion_;
     const ::grpc::internal::RpcMethod rpcmethod_SetMetadata_;
     const ::grpc::internal::RpcMethod rpcmethod_GetMetadata_;
     const ::grpc::internal::RpcMethod rpcmethod_GetAllMetadata_;
     const ::grpc::internal::RpcMethod rpcmethod_DeleteMetadata_;
     const ::grpc::internal::RpcMethod rpcmethod_GetMetadataForVersion_;
     const ::grpc::internal::RpcMethod rpcmethod_GetAllMetadataForVersion_;
-    const ::grpc::internal::RpcMethod rpcmethod_GrantPermission_;
-    const ::grpc::internal::RpcMethod rpcmethod_RevokePermission_;
-    const ::grpc::internal::RpcMethod rpcmethod_CheckPermission_;
-    const ::grpc::internal::RpcMethod rpcmethod_CreateRole_;
-    const ::grpc::internal::RpcMethod rpcmethod_DeleteRole_;
-    const ::grpc::internal::RpcMethod rpcmethod_AssignUserToRole_;
-    const ::grpc::internal::RpcMethod rpcmethod_RemoveUserFromRole_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetRolesForUser_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetUsersForRole_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetAllRoles_;
-    const ::grpc::internal::RpcMethod rpcmethod_StreamFileUpload_;
-    const ::grpc::internal::RpcMethod rpcmethod_StreamFileDownload_;
-    const ::grpc::internal::RpcMethod rpcmethod_GetStorageUsage_;
-    const ::grpc::internal::RpcMethod rpcmethod_PurgeOldVersions_;
-    const ::grpc::internal::RpcMethod rpcmethod_TriggerSync_;
+    const ::grpc::internal::RpcMethod rpcmethod_WriteFileStream_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReadFileStream_;
+    const ::grpc::internal::RpcMethod rpcmethod_ResolvePath_;
+    const ::grpc::internal::RpcMethod rpcmethod_EvaluateACL_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -973,53 +669,38 @@ class FileService final {
     Service();
     virtual ~Service();
     // Directory operations
-    virtual ::grpc::Status MakeDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response);
-    virtual ::grpc::Status RemoveDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response);
-    virtual ::grpc::Status ListDirectory(::grpc::ServerContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response);
-    virtual ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response);
+    virtual ::grpc::Status MakeDirectory(::grpc::ServerContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response);
+    virtual ::grpc::Status RemoveDirectory(::grpc::ServerContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response);
+    virtual ::grpc::Status ListDirectory(::grpc::ServerContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response);
     // File operations
-    virtual ::grpc::Status Touch(::grpc::ServerContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response);
-    virtual ::grpc::Status RemoveFile(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response);
-    virtual ::grpc::Status UndeleteFile(::grpc::ServerContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response);
-    virtual ::grpc::Status PutFile(::grpc::ServerContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response);
-    virtual ::grpc::Status GetFile(::grpc::ServerContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response);
-    // File information
-    virtual ::grpc::Status Stat(::grpc::ServerContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response);
-    virtual ::grpc::Status Exists(::grpc::ServerContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response);
-    // File manipulation operations
-    virtual ::grpc::Status Rename(::grpc::ServerContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response);
-    virtual ::grpc::Status Move(::grpc::ServerContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response);
-    virtual ::grpc::Status Copy(::grpc::ServerContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response);
-    // Version operations
-    virtual ::grpc::Status ListVersions(::grpc::ServerContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response);
-    virtual ::grpc::Status GetVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response);
-    virtual ::grpc::Status RestoreToVersion(::grpc::ServerContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response);
-    // Metadata operations
-    virtual ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response);
-    virtual ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response);
-    virtual ::grpc::Status GetAllMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response);
-    virtual ::grpc::Status DeleteMetadata(::grpc::ServerContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response);
-    virtual ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response);
-    virtual ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response);
-    // ACL operations
-    virtual ::grpc::Status GrantPermission(::grpc::ServerContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response);
-    virtual ::grpc::Status RevokePermission(::grpc::ServerContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response);
-    virtual ::grpc::Status CheckPermission(::grpc::ServerContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response);
-    // Role management operations
-    virtual ::grpc::Status CreateRole(::grpc::ServerContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response);
-    virtual ::grpc::Status DeleteRole(::grpc::ServerContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response);
-    virtual ::grpc::Status AssignUserToRole(::grpc::ServerContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response);
-    virtual ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response);
-    virtual ::grpc::Status GetRolesForUser(::grpc::ServerContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response);
-    virtual ::grpc::Status GetUsersForRole(::grpc::ServerContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response);
-    virtual ::grpc::Status GetAllRoles(::grpc::ServerContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response);
+    virtual ::grpc::Status CreateFile(::grpc::ServerContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response);
+    virtual ::grpc::Status DeleteFile(::grpc::ServerContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response);
+    virtual ::grpc::Status UndeleteFile(::grpc::ServerContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response);
+    virtual ::grpc::Status WriteFile(::grpc::ServerContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response);
+    virtual ::grpc::Status ReadFile(::grpc::ServerContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response);
+    virtual ::grpc::Status GetFileInfo(::grpc::ServerContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response);
+    virtual ::grpc::Status FileExists(::grpc::ServerContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response);
+    // File manipulation
+    virtual ::grpc::Status MoveFile(::grpc::ServerContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response);
+    virtual ::grpc::Status CopyFile(::grpc::ServerContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response);
+    virtual ::grpc::Status RenameFile(::grpc::ServerContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response);
+    // Version control
+    virtual ::grpc::Status ListVersions(::grpc::ServerContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response);
+    virtual ::grpc::Status ReadVersion(::grpc::ServerContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response);
+    // Metadata operations (versioned)
+    virtual ::grpc::Status SetMetadata(::grpc::ServerContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response);
+    virtual ::grpc::Status GetMetadata(::grpc::ServerContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response);
+    virtual ::grpc::Status GetAllMetadata(::grpc::ServerContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response);
+    virtual ::grpc::Status DeleteMetadata(::grpc::ServerContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response);
+    virtual ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response);
+    virtual ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response);
     // Streaming operations for large files
-    virtual ::grpc::Status StreamFileUpload(::grpc::ServerContext* context, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* reader, ::fileengine_rpc::PutFileResponse* response);
-    virtual ::grpc::Status StreamFileDownload(::grpc::ServerContext* context, const ::fileengine_rpc::GetFileRequest* request, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* writer);
-    // Administrative operations
-    virtual ::grpc::Status GetStorageUsage(::grpc::ServerContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response);
-    virtual ::grpc::Status PurgeOldVersions(::grpc::ServerContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response);
-    virtual ::grpc::Status TriggerSync(::grpc::ServerContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response);
+    virtual ::grpc::Status WriteFileStream(::grpc::ServerContext* context, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* reader, ::fileengine::WriteFileStreamResponse* response);
+    virtual ::grpc::Status ReadFileStream(::grpc::ServerContext* context, const ::fileengine::ReadFileStreamRequest* request, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* writer);
+    // Path resolution operations
+    virtual ::grpc::Status ResolvePath(::grpc::ServerContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response);
+    // ACL operations
+    virtual ::grpc::Status EvaluateACL(::grpc::ServerContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_MakeDirectory : public BaseClass {
@@ -1033,11 +714,11 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestMakeDirectory(::grpc::ServerContext* context, ::fileengine_rpc::MakeDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::MakeDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestMakeDirectory(::grpc::ServerContext* context, ::fileengine::MakeDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::MakeDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1053,11 +734,11 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRemoveDirectory(::grpc::ServerContext* context, ::fileengine_rpc::RemoveDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RemoveDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestRemoveDirectory(::grpc::ServerContext* context, ::fileengine::RemoveDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::RemoveDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -1073,72 +754,52 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestListDirectory(::grpc::ServerContext* context, ::fileengine_rpc::ListDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::ListDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestListDirectory(::grpc::ServerContext* context, ::fileengine::ListDirectoryRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::ListDirectoryResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithAsyncMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_ListDirectoryWithDeleted() {
+    WithAsyncMethod_CreateFile() {
       ::grpc::Service::MarkMethodAsync(3);
     }
-    ~WithAsyncMethod_ListDirectoryWithDeleted() override {
+    ~WithAsyncMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestListDirectoryWithDeleted(::grpc::ServerContext* context, ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::ListDirectoryWithDeletedResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCreateFile(::grpc::ServerContext* context, ::fileengine::CreateFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::CreateFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_Touch : public BaseClass {
+  class WithAsyncMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Touch() {
+    WithAsyncMethod_DeleteFile() {
       ::grpc::Service::MarkMethodAsync(4);
     }
-    ~WithAsyncMethod_Touch() override {
+    ~WithAsyncMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestTouch(::grpc::ServerContext* context, ::fileengine_rpc::TouchRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::TouchResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestDeleteFile(::grpc::ServerContext* context, ::fileengine::DeleteFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::DeleteFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodAsync(5);
-    }
-    ~WithAsyncMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRemoveFile(::grpc::ServerContext* context, ::fileengine_rpc::RemoveFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RemoveFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1147,158 +808,158 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodAsync(6);
+      ::grpc::Service::MarkMethodAsync(5);
     }
     ~WithAsyncMethod_UndeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestUndeleteFile(::grpc::ServerContext* context, ::fileengine_rpc::UndeleteFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::UndeleteFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestUndeleteFile(::grpc::ServerContext* context, ::fileengine::UndeleteFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::UndeleteFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_WriteFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_WriteFile() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestWriteFile(::grpc::ServerContext* context, ::fileengine::WriteFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::WriteFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_PutFile : public BaseClass {
+  class WithAsyncMethod_ReadFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_PutFile() {
+    WithAsyncMethod_ReadFile() {
       ::grpc::Service::MarkMethodAsync(7);
     }
-    ~WithAsyncMethod_PutFile() override {
+    ~WithAsyncMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestPutFile(::grpc::ServerContext* context, ::fileengine_rpc::PutFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::PutFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestReadFile(::grpc::ServerContext* context, ::fileengine::ReadFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::ReadFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_GetFile : public BaseClass {
+  class WithAsyncMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_GetFile() {
+    WithAsyncMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodAsync(8);
     }
-    ~WithAsyncMethod_GetFile() override {
+    ~WithAsyncMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetFile(::grpc::ServerContext* context, ::fileengine_rpc::GetFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetFileInfo(::grpc::ServerContext* context, ::fileengine::GetFileInfoRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::GetFileInfoResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_Stat : public BaseClass {
+  class WithAsyncMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Stat() {
+    WithAsyncMethod_FileExists() {
       ::grpc::Service::MarkMethodAsync(9);
     }
-    ~WithAsyncMethod_Stat() override {
+    ~WithAsyncMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestStat(::grpc::ServerContext* context, ::fileengine_rpc::StatRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::StatResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestFileExists(::grpc::ServerContext* context, ::fileengine::FileExistsRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::FileExistsResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_Exists : public BaseClass {
+  class WithAsyncMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Exists() {
+    WithAsyncMethod_MoveFile() {
       ::grpc::Service::MarkMethodAsync(10);
     }
-    ~WithAsyncMethod_Exists() override {
+    ~WithAsyncMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestExists(::grpc::ServerContext* context, ::fileengine_rpc::ExistsRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::ExistsResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestMoveFile(::grpc::ServerContext* context, ::fileengine::MoveFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::MoveFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_Rename : public BaseClass {
+  class WithAsyncMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Rename() {
+    WithAsyncMethod_CopyFile() {
       ::grpc::Service::MarkMethodAsync(11);
     }
-    ~WithAsyncMethod_Rename() override {
+    ~WithAsyncMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRename(::grpc::ServerContext* context, ::fileengine_rpc::RenameRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RenameResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCopyFile(::grpc::ServerContext* context, ::fileengine::CopyFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::CopyFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_Move : public BaseClass {
+  class WithAsyncMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_Move() {
+    WithAsyncMethod_RenameFile() {
       ::grpc::Service::MarkMethodAsync(12);
     }
-    ~WithAsyncMethod_Move() override {
+    ~WithAsyncMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestMove(::grpc::ServerContext* context, ::fileengine_rpc::MoveRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::MoveResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestRenameFile(::grpc::ServerContext* context, ::fileengine::RenameFileRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::RenameFileResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_Copy() {
-      ::grpc::Service::MarkMethodAsync(13);
-    }
-    ~WithAsyncMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCopy(::grpc::ServerContext* context, ::fileengine_rpc::CopyRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::CopyResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1307,58 +968,38 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ListVersions() {
-      ::grpc::Service::MarkMethodAsync(14);
+      ::grpc::Service::MarkMethodAsync(13);
     }
     ~WithAsyncMethod_ListVersions() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestListVersions(::grpc::ServerContext* context, ::fileengine_rpc::ListVersionsRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::ListVersionsResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestListVersions(::grpc::ServerContext* context, ::fileengine::ListVersionsRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::ListVersionsResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ReadVersion : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodAsync(14);
+    }
+    ~WithAsyncMethod_ReadVersion() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReadVersion(::grpc::ServerContext* context, ::fileengine::ReadVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::ReadVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_GetVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_GetVersion() {
-      ::grpc::Service::MarkMethodAsync(15);
-    }
-    ~WithAsyncMethod_GetVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetVersion(::grpc::ServerContext* context, ::fileengine_rpc::GetVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodAsync(16);
-    }
-    ~WithAsyncMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRestoreToVersion(::grpc::ServerContext* context, ::fileengine_rpc::RestoreToVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RestoreToVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1367,18 +1008,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodAsync(17);
+      ::grpc::Service::MarkMethodAsync(15);
     }
     ~WithAsyncMethod_SetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestSetMetadata(::grpc::ServerContext* context, ::fileengine_rpc::SetMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::SetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestSetMetadata(::grpc::ServerContext* context, ::fileengine::SetMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::SetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1387,18 +1028,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodAsync(18);
+      ::grpc::Service::MarkMethodAsync(16);
     }
     ~WithAsyncMethod_GetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetMetadata(::grpc::ServerContext* context, ::fileengine_rpc::GetMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestGetMetadata(::grpc::ServerContext* context, ::fileengine::GetMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::GetMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1407,18 +1048,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodAsync(19);
+      ::grpc::Service::MarkMethodAsync(17);
     }
     ~WithAsyncMethod_GetAllMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetAllMetadata(::grpc::ServerContext* context, ::fileengine_rpc::GetAllMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetAllMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestGetAllMetadata(::grpc::ServerContext* context, ::fileengine::GetAllMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::GetAllMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1427,18 +1068,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodAsync(20);
+      ::grpc::Service::MarkMethodAsync(18);
     }
     ~WithAsyncMethod_DeleteMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestDeleteMetadata(::grpc::ServerContext* context, ::fileengine_rpc::DeleteMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::DeleteMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestDeleteMetadata(::grpc::ServerContext* context, ::fileengine::DeleteMetadataRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::DeleteMetadataResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1447,18 +1088,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodAsync(21);
+      ::grpc::Service::MarkMethodAsync(19);
     }
     ~WithAsyncMethod_GetMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetMetadataForVersion(::grpc::ServerContext* context, ::fileengine_rpc::GetMetadataForVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetMetadataForVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(21, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestGetMetadataForVersion(::grpc::ServerContext* context, ::fileengine::GetMetadataForVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::GetMetadataForVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1467,321 +1108,101 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodAsync(22);
+      ::grpc::Service::MarkMethodAsync(20);
     }
     ~WithAsyncMethod_GetAllMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetAllMetadataForVersion(::grpc::ServerContext* context, ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetAllMetadataForVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(22, context, request, response, new_call_cq, notification_cq, tag);
+    void RequestGetAllMetadataForVersion(::grpc::ServerContext* context, ::fileengine::GetAllMetadataForVersionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::GetAllMetadataForVersionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_GrantPermission : public BaseClass {
+  class WithAsyncMethod_WriteFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_GrantPermission() {
-      ::grpc::Service::MarkMethodAsync(23);
+    WithAsyncMethod_WriteFileStream() {
+      ::grpc::Service::MarkMethodAsync(21);
     }
-    ~WithAsyncMethod_GrantPermission() override {
+    ~WithAsyncMethod_WriteFileStream() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
+    ::grpc::Status WriteFileStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* /*reader*/, ::fileengine::WriteFileStreamResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGrantPermission(::grpc::ServerContext* context, ::fileengine_rpc::GrantPermissionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GrantPermissionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestWriteFileStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::fileengine::WriteFileStreamResponse, ::fileengine::WriteFileStreamRequest>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(21, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ReadFileStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodAsync(22);
+    }
+    ~WithAsyncMethod_ReadFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReadFileStream(::grpc::ServerContext* context, ::fileengine::ReadFileStreamRequest* request, ::grpc::ServerAsyncWriter< ::fileengine::ReadFileStreamResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(22, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ResolvePath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ResolvePath() {
+      ::grpc::Service::MarkMethodAsync(23);
+    }
+    ~WithAsyncMethod_ResolvePath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestResolvePath(::grpc::ServerContext* context, ::fileengine::ResolvePathRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::ResolvePathResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(23, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_RevokePermission : public BaseClass {
+  class WithAsyncMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithAsyncMethod_RevokePermission() {
+    WithAsyncMethod_EvaluateACL() {
       ::grpc::Service::MarkMethodAsync(24);
     }
-    ~WithAsyncMethod_RevokePermission() override {
+    ~WithAsyncMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRevokePermission(::grpc::ServerContext* context, ::fileengine_rpc::RevokePermissionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RevokePermissionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestEvaluateACL(::grpc::ServerContext* context, ::fileengine::EvaluateACLRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine::EvaluateACLResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(24, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  template <class BaseClass>
-  class WithAsyncMethod_CheckPermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodAsync(25);
-    }
-    ~WithAsyncMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCheckPermission(::grpc::ServerContext* context, ::fileengine_rpc::CheckPermissionRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::CheckPermissionResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(25, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_CreateRole() {
-      ::grpc::Service::MarkMethodAsync(26);
-    }
-    ~WithAsyncMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCreateRole(::grpc::ServerContext* context, ::fileengine_rpc::CreateRoleRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::CreateRoleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(26, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodAsync(27);
-    }
-    ~WithAsyncMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestDeleteRole(::grpc::ServerContext* context, ::fileengine_rpc::DeleteRoleRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::DeleteRoleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(27, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodAsync(28);
-    }
-    ~WithAsyncMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestAssignUserToRole(::grpc::ServerContext* context, ::fileengine_rpc::AssignUserToRoleRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::AssignUserToRoleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(28, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodAsync(29);
-    }
-    ~WithAsyncMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRemoveUserFromRole(::grpc::ServerContext* context, ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::RemoveUserFromRoleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(29, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodAsync(30);
-    }
-    ~WithAsyncMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetRolesForUser(::grpc::ServerContext* context, ::fileengine_rpc::GetRolesForUserRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetRolesForUserResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(30, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodAsync(31);
-    }
-    ~WithAsyncMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetUsersForRole(::grpc::ServerContext* context, ::fileengine_rpc::GetUsersForRoleRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetUsersForRoleResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(31, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodAsync(32);
-    }
-    ~WithAsyncMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetAllRoles(::grpc::ServerContext* context, ::fileengine_rpc::GetAllRolesRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::GetAllRolesResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(32, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_StreamFileUpload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_StreamFileUpload() {
-      ::grpc::Service::MarkMethodAsync(33);
-    }
-    ~WithAsyncMethod_StreamFileUpload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileUpload(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* /*reader*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestStreamFileUpload(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::fileengine_rpc::PutFileResponse, ::fileengine_rpc::PutFileRequest>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(33, context, reader, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_StreamFileDownload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodAsync(34);
-    }
-    ~WithAsyncMethod_StreamFileDownload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestStreamFileDownload(::grpc::ServerContext* context, ::fileengine_rpc::GetFileRequest* request, ::grpc::ServerAsyncWriter< ::fileengine_rpc::GetFileResponse>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(34, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_GetStorageUsage : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodAsync(35);
-    }
-    ~WithAsyncMethod_GetStorageUsage() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetStorageUsage(::grpc::ServerContext* context, ::fileengine_rpc::StorageUsageRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::StorageUsageResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(35, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_PurgeOldVersions : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodAsync(36);
-    }
-    ~WithAsyncMethod_PurgeOldVersions() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestPurgeOldVersions(::grpc::ServerContext* context, ::fileengine_rpc::PurgeOldVersionsRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::PurgeOldVersionsResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(36, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodAsync(37);
-    }
-    ~WithAsyncMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestTriggerSync(::grpc::ServerContext* context, ::fileengine_rpc::TriggerSyncRequest* request, ::grpc::ServerAsyncResponseWriter< ::fileengine_rpc::TriggerSyncResponse>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(37, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  typedef WithAsyncMethod_MakeDirectory<WithAsyncMethod_RemoveDirectory<WithAsyncMethod_ListDirectory<WithAsyncMethod_ListDirectoryWithDeleted<WithAsyncMethod_Touch<WithAsyncMethod_RemoveFile<WithAsyncMethod_UndeleteFile<WithAsyncMethod_PutFile<WithAsyncMethod_GetFile<WithAsyncMethod_Stat<WithAsyncMethod_Exists<WithAsyncMethod_Rename<WithAsyncMethod_Move<WithAsyncMethod_Copy<WithAsyncMethod_ListVersions<WithAsyncMethod_GetVersion<WithAsyncMethod_RestoreToVersion<WithAsyncMethod_SetMetadata<WithAsyncMethod_GetMetadata<WithAsyncMethod_GetAllMetadata<WithAsyncMethod_DeleteMetadata<WithAsyncMethod_GetMetadataForVersion<WithAsyncMethod_GetAllMetadataForVersion<WithAsyncMethod_GrantPermission<WithAsyncMethod_RevokePermission<WithAsyncMethod_CheckPermission<WithAsyncMethod_CreateRole<WithAsyncMethod_DeleteRole<WithAsyncMethod_AssignUserToRole<WithAsyncMethod_RemoveUserFromRole<WithAsyncMethod_GetRolesForUser<WithAsyncMethod_GetUsersForRole<WithAsyncMethod_GetAllRoles<WithAsyncMethod_StreamFileUpload<WithAsyncMethod_StreamFileDownload<WithAsyncMethod_GetStorageUsage<WithAsyncMethod_PurgeOldVersions<WithAsyncMethod_TriggerSync<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_MakeDirectory<WithAsyncMethod_RemoveDirectory<WithAsyncMethod_ListDirectory<WithAsyncMethod_CreateFile<WithAsyncMethod_DeleteFile<WithAsyncMethod_UndeleteFile<WithAsyncMethod_WriteFile<WithAsyncMethod_ReadFile<WithAsyncMethod_GetFileInfo<WithAsyncMethod_FileExists<WithAsyncMethod_MoveFile<WithAsyncMethod_CopyFile<WithAsyncMethod_RenameFile<WithAsyncMethod_ListVersions<WithAsyncMethod_ReadVersion<WithAsyncMethod_SetMetadata<WithAsyncMethod_GetMetadata<WithAsyncMethod_GetAllMetadata<WithAsyncMethod_DeleteMetadata<WithAsyncMethod_GetMetadataForVersion<WithAsyncMethod_GetAllMetadataForVersion<WithAsyncMethod_WriteFileStream<WithAsyncMethod_ReadFileStream<WithAsyncMethod_ResolvePath<WithAsyncMethod_EvaluateACL<Service > > > > > > > > > > > > > > > > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_MakeDirectory : public BaseClass {
    private:
@@ -1789,25 +1210,25 @@ class FileService final {
    public:
     WithCallbackMethod_MakeDirectory() {
       ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::MakeDirectoryRequest* request, ::fileengine_rpc::MakeDirectoryResponse* response) { return this->MakeDirectory(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::MakeDirectoryRequest* request, ::fileengine::MakeDirectoryResponse* response) { return this->MakeDirectory(context, request, response); }));}
     void SetMessageAllocatorFor_MakeDirectory(
-        ::grpc::MessageAllocator< ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse>* allocator) {
+        ::grpc::MessageAllocator< ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_MakeDirectory() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* MakeDirectory(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_RemoveDirectory : public BaseClass {
@@ -1816,25 +1237,25 @@ class FileService final {
    public:
     WithCallbackMethod_RemoveDirectory() {
       ::grpc::Service::MarkMethodCallback(1,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RemoveDirectoryRequest* request, ::fileengine_rpc::RemoveDirectoryResponse* response) { return this->RemoveDirectory(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::RemoveDirectoryRequest* request, ::fileengine::RemoveDirectoryResponse* response) { return this->RemoveDirectory(context, request, response); }));}
     void SetMessageAllocatorFor_RemoveDirectory(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse>* allocator) {
+        ::grpc::MessageAllocator< ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_RemoveDirectory() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* RemoveDirectory(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_ListDirectory : public BaseClass {
@@ -1843,106 +1264,79 @@ class FileService final {
    public:
     WithCallbackMethod_ListDirectory() {
       ::grpc::Service::MarkMethodCallback(2,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::ListDirectoryRequest* request, ::fileengine_rpc::ListDirectoryResponse* response) { return this->ListDirectory(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ListDirectoryRequest* request, ::fileengine::ListDirectoryResponse* response) { return this->ListDirectory(context, request, response); }));}
     void SetMessageAllocatorFor_ListDirectory(
-        ::grpc::MessageAllocator< ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse>* allocator) {
+        ::grpc::MessageAllocator< ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_ListDirectory() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* ListDirectory(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithCallbackMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_ListDirectoryWithDeleted() {
+    WithCallbackMethod_CreateFile() {
       ::grpc::Service::MarkMethodCallback(3,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* request, ::fileengine_rpc::ListDirectoryWithDeletedResponse* response) { return this->ListDirectoryWithDeleted(context, request, response); }));}
-    void SetMessageAllocatorFor_ListDirectoryWithDeleted(
-        ::grpc::MessageAllocator< ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::CreateFileRequest* request, ::fileengine::CreateFileResponse* response) { return this->CreateFile(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateFile(
+        ::grpc::MessageAllocator< ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_ListDirectoryWithDeleted() override {
+    ~WithCallbackMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* ListDirectoryWithDeleted(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* CreateFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_Touch : public BaseClass {
+  class WithCallbackMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_Touch() {
+    WithCallbackMethod_DeleteFile() {
       ::grpc::Service::MarkMethodCallback(4,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::TouchRequest* request, ::fileengine_rpc::TouchResponse* response) { return this->Touch(context, request, response); }));}
-    void SetMessageAllocatorFor_Touch(
-        ::grpc::MessageAllocator< ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::DeleteFileRequest* request, ::fileengine::DeleteFileResponse* response) { return this->DeleteFile(context, request, response); }));}
+    void SetMessageAllocatorFor_DeleteFile(
+        ::grpc::MessageAllocator< ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_Touch() override {
+    ~WithCallbackMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Touch(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodCallback(5,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RemoveFileRequest* request, ::fileengine_rpc::RemoveFileResponse* response) { return this->RemoveFile(context, request, response); }));}
-    void SetMessageAllocatorFor_RemoveFile(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RemoveFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* DeleteFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_UndeleteFile : public BaseClass {
@@ -1950,215 +1344,215 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodCallback(6,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse>(
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::UndeleteFileRequest* request, ::fileengine_rpc::UndeleteFileResponse* response) { return this->UndeleteFile(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::UndeleteFileRequest* request, ::fileengine::UndeleteFileResponse* response) { return this->UndeleteFile(context, request, response); }));}
     void SetMessageAllocatorFor_UndeleteFile(
-        ::grpc::MessageAllocator< ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_UndeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* UndeleteFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_PutFile : public BaseClass {
+  class WithCallbackMethod_WriteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_PutFile() {
+    WithCallbackMethod_WriteFile() {
+      ::grpc::Service::MarkMethodCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::fileengine::WriteFileRequest* request, ::fileengine::WriteFileResponse* response) { return this->WriteFile(context, request, response); }));}
+    void SetMessageAllocatorFor_WriteFile(
+        ::grpc::MessageAllocator< ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* WriteFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ReadFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ReadFile() {
       ::grpc::Service::MarkMethodCallback(7,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::PutFileRequest* request, ::fileengine_rpc::PutFileResponse* response) { return this->PutFile(context, request, response); }));}
-    void SetMessageAllocatorFor_PutFile(
-        ::grpc::MessageAllocator< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ReadFileRequest* request, ::fileengine::ReadFileResponse* response) { return this->ReadFile(context, request, response); }));}
+    void SetMessageAllocatorFor_ReadFile(
+        ::grpc::MessageAllocator< ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_PutFile() override {
+    ~WithCallbackMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* PutFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* ReadFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_GetFile : public BaseClass {
+  class WithCallbackMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_GetFile() {
+    WithCallbackMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodCallback(8,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetFileRequest* request, ::fileengine_rpc::GetFileResponse* response) { return this->GetFile(context, request, response); }));}
-    void SetMessageAllocatorFor_GetFile(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::GetFileInfoRequest* request, ::fileengine::GetFileInfoResponse* response) { return this->GetFileInfo(context, request, response); }));}
+    void SetMessageAllocatorFor_GetFileInfo(
+        ::grpc::MessageAllocator< ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_GetFile() override {
+    ~WithCallbackMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GetFile(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* GetFileInfo(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_Stat : public BaseClass {
+  class WithCallbackMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_Stat() {
+    WithCallbackMethod_FileExists() {
       ::grpc::Service::MarkMethodCallback(9,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::StatRequest* request, ::fileengine_rpc::StatResponse* response) { return this->Stat(context, request, response); }));}
-    void SetMessageAllocatorFor_Stat(
-        ::grpc::MessageAllocator< ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::FileExistsRequest* request, ::fileengine::FileExistsResponse* response) { return this->FileExists(context, request, response); }));}
+    void SetMessageAllocatorFor_FileExists(
+        ::grpc::MessageAllocator< ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_Stat() override {
+    ~WithCallbackMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Stat(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* FileExists(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_Exists : public BaseClass {
+  class WithCallbackMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_Exists() {
+    WithCallbackMethod_MoveFile() {
       ::grpc::Service::MarkMethodCallback(10,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::ExistsRequest* request, ::fileengine_rpc::ExistsResponse* response) { return this->Exists(context, request, response); }));}
-    void SetMessageAllocatorFor_Exists(
-        ::grpc::MessageAllocator< ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::MoveFileRequest* request, ::fileengine::MoveFileResponse* response) { return this->MoveFile(context, request, response); }));}
+    void SetMessageAllocatorFor_MoveFile(
+        ::grpc::MessageAllocator< ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_Exists() override {
+    ~WithCallbackMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Exists(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* MoveFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_Rename : public BaseClass {
+  class WithCallbackMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_Rename() {
+    WithCallbackMethod_CopyFile() {
       ::grpc::Service::MarkMethodCallback(11,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RenameRequest* request, ::fileengine_rpc::RenameResponse* response) { return this->Rename(context, request, response); }));}
-    void SetMessageAllocatorFor_Rename(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::CopyFileRequest* request, ::fileengine::CopyFileResponse* response) { return this->CopyFile(context, request, response); }));}
+    void SetMessageAllocatorFor_CopyFile(
+        ::grpc::MessageAllocator< ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(11);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_Rename() override {
+    ~WithCallbackMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Rename(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* CopyFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_Move : public BaseClass {
+  class WithCallbackMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_Move() {
+    WithCallbackMethod_RenameFile() {
       ::grpc::Service::MarkMethodCallback(12,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::MoveRequest* request, ::fileengine_rpc::MoveResponse* response) { return this->Move(context, request, response); }));}
-    void SetMessageAllocatorFor_Move(
-        ::grpc::MessageAllocator< ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::RenameFileRequest* request, ::fileengine::RenameFileResponse* response) { return this->RenameFile(context, request, response); }));}
+    void SetMessageAllocatorFor_RenameFile(
+        ::grpc::MessageAllocator< ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(12);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_Move() override {
+    ~WithCallbackMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Move(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_Copy() {
-      ::grpc::Service::MarkMethodCallback(13,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::CopyRequest* request, ::fileengine_rpc::CopyResponse* response) { return this->Copy(context, request, response); }));}
-    void SetMessageAllocatorFor_Copy(
-        ::grpc::MessageAllocator< ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* Copy(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* RenameFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_ListVersions : public BaseClass {
@@ -2166,80 +1560,53 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ListVersions() {
-      ::grpc::Service::MarkMethodCallback(14,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse>(
+      ::grpc::Service::MarkMethodCallback(13,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::ListVersionsRequest* request, ::fileengine_rpc::ListVersionsResponse* response) { return this->ListVersions(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ListVersionsRequest* request, ::fileengine::ListVersionsResponse* response) { return this->ListVersions(context, request, response); }));}
     void SetMessageAllocatorFor_ListVersions(
-        ::grpc::MessageAllocator< ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(13);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_ListVersions() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* ListVersions(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_GetVersion : public BaseClass {
+  class WithCallbackMethod_ReadVersion : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_GetVersion() {
-      ::grpc::Service::MarkMethodCallback(15,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse>(
+    WithCallbackMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodCallback(14,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetVersionRequest* request, ::fileengine_rpc::GetVersionResponse* response) { return this->GetVersion(context, request, response); }));}
-    void SetMessageAllocatorFor_GetVersion(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse>*>(handler)
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ReadVersionRequest* request, ::fileengine::ReadVersionResponse* response) { return this->ReadVersion(context, request, response); }));}
+    void SetMessageAllocatorFor_ReadVersion(
+        ::grpc::MessageAllocator< ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(14);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_GetVersion() override {
+    ~WithCallbackMethod_ReadVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GetVersion(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodCallback(16,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RestoreToVersionRequest* request, ::fileengine_rpc::RestoreToVersionResponse* response) { return this->RestoreToVersion(context, request, response); }));}
-    void SetMessageAllocatorFor_RestoreToVersion(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(16);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RestoreToVersion(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* ReadVersion(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_SetMetadata : public BaseClass {
@@ -2247,26 +1614,26 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodCallback(17,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse>(
+      ::grpc::Service::MarkMethodCallback(15,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::SetMetadataRequest* request, ::fileengine_rpc::SetMetadataResponse* response) { return this->SetMetadata(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::SetMetadataRequest* request, ::fileengine::SetMetadataResponse* response) { return this->SetMetadata(context, request, response); }));}
     void SetMessageAllocatorFor_SetMetadata(
-        ::grpc::MessageAllocator< ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(17);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(15);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_SetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* SetMetadata(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetMetadata : public BaseClass {
@@ -2274,26 +1641,26 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodCallback(18,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse>(
+      ::grpc::Service::MarkMethodCallback(16,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetMetadataRequest* request, ::fileengine_rpc::GetMetadataResponse* response) { return this->GetMetadata(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::GetMetadataRequest* request, ::fileengine::GetMetadataResponse* response) { return this->GetMetadata(context, request, response); }));}
     void SetMessageAllocatorFor_GetMetadata(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(18);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(16);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetMetadata(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetAllMetadata : public BaseClass {
@@ -2301,26 +1668,26 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodCallback(19,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse>(
+      ::grpc::Service::MarkMethodCallback(17,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetAllMetadataRequest* request, ::fileengine_rpc::GetAllMetadataResponse* response) { return this->GetAllMetadata(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::GetAllMetadataRequest* request, ::fileengine::GetAllMetadataResponse* response) { return this->GetAllMetadata(context, request, response); }));}
     void SetMessageAllocatorFor_GetAllMetadata(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(19);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(17);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetAllMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetAllMetadata(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_DeleteMetadata : public BaseClass {
@@ -2328,26 +1695,26 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodCallback(20,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse>(
+      ::grpc::Service::MarkMethodCallback(18,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::DeleteMetadataRequest* request, ::fileengine_rpc::DeleteMetadataResponse* response) { return this->DeleteMetadata(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::DeleteMetadataRequest* request, ::fileengine::DeleteMetadataResponse* response) { return this->DeleteMetadata(context, request, response); }));}
     void SetMessageAllocatorFor_DeleteMetadata(
-        ::grpc::MessageAllocator< ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(20);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(18);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_DeleteMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* DeleteMetadata(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetMetadataForVersion : public BaseClass {
@@ -2355,26 +1722,26 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodCallback(21,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse>(
+      ::grpc::Service::MarkMethodCallback(19,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetMetadataForVersionRequest* request, ::fileengine_rpc::GetMetadataForVersionResponse* response) { return this->GetMetadataForVersion(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::GetMetadataForVersionRequest* request, ::fileengine::GetMetadataForVersionResponse* response) { return this->GetMetadataForVersion(context, request, response); }));}
     void SetMessageAllocatorFor_GetMetadataForVersion(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(21);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(19);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetMetadataForVersion(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithCallbackMethod_GetAllMetadataForVersion : public BaseClass {
@@ -2382,423 +1749,126 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodCallback(22,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse>(
+      ::grpc::Service::MarkMethodCallback(20,
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetAllMetadataForVersionRequest* request, ::fileengine_rpc::GetAllMetadataForVersionResponse* response) { return this->GetAllMetadataForVersion(context, request, response); }));}
+                   ::grpc::CallbackServerContext* context, const ::fileengine::GetAllMetadataForVersionRequest* request, ::fileengine::GetAllMetadataForVersionResponse* response) { return this->GetAllMetadataForVersion(context, request, response); }));}
     void SetMessageAllocatorFor_GetAllMetadataForVersion(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(22);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse>*>(handler)
+        ::grpc::MessageAllocator< ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(20);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~WithCallbackMethod_GetAllMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetAllMetadataForVersion(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/)  { return nullptr; }
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_GrantPermission : public BaseClass {
+  class WithCallbackMethod_WriteFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_GrantPermission() {
+    WithCallbackMethod_WriteFileStream() {
+      ::grpc::Service::MarkMethodCallback(21,
+          new ::grpc::internal::CallbackClientStreamingHandler< ::fileengine::WriteFileStreamRequest, ::fileengine::WriteFileStreamResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, ::fileengine::WriteFileStreamResponse* response) { return this->WriteFileStream(context, response); }));
+    }
+    ~WithCallbackMethod_WriteFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFileStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* /*reader*/, ::fileengine::WriteFileStreamResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerReadReactor< ::fileengine::WriteFileStreamRequest>* WriteFileStream(
+      ::grpc::CallbackServerContext* /*context*/, ::fileengine::WriteFileStreamResponse* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ReadFileStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodCallback(22,
+          new ::grpc::internal::CallbackServerStreamingHandler< ::fileengine::ReadFileStreamRequest, ::fileengine::ReadFileStreamResponse>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ReadFileStreamRequest* request) { return this->ReadFileStream(context, request); }));
+    }
+    ~WithCallbackMethod_ReadFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerWriteReactor< ::fileengine::ReadFileStreamResponse>* ReadFileStream(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ResolvePath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ResolvePath() {
       ::grpc::Service::MarkMethodCallback(23,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GrantPermissionRequest* request, ::fileengine_rpc::GrantPermissionResponse* response) { return this->GrantPermission(context, request, response); }));}
-    void SetMessageAllocatorFor_GrantPermission(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::ResolvePathRequest* request, ::fileengine::ResolvePathResponse* response) { return this->ResolvePath(context, request, response); }));}
+    void SetMessageAllocatorFor_ResolvePath(
+        ::grpc::MessageAllocator< ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(23);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_GrantPermission() override {
+    ~WithCallbackMethod_ResolvePath() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GrantPermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* ResolvePath(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithCallbackMethod_RevokePermission : public BaseClass {
+  class WithCallbackMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithCallbackMethod_RevokePermission() {
+    WithCallbackMethod_EvaluateACL() {
       ::grpc::Service::MarkMethodCallback(24,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse>(
+          new ::grpc::internal::CallbackUnaryHandler< ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RevokePermissionRequest* request, ::fileengine_rpc::RevokePermissionResponse* response) { return this->RevokePermission(context, request, response); }));}
-    void SetMessageAllocatorFor_RevokePermission(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse>* allocator) {
+                   ::grpc::CallbackServerContext* context, const ::fileengine::EvaluateACLRequest* request, ::fileengine::EvaluateACLResponse* response) { return this->EvaluateACL(context, request, response); }));}
+    void SetMessageAllocatorFor_EvaluateACL(
+        ::grpc::MessageAllocator< ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse>* allocator) {
       ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(24);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse>*>(handler)
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
-    ~WithCallbackMethod_RevokePermission() override {
+    ~WithCallbackMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* RevokePermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/)  { return nullptr; }
+    virtual ::grpc::ServerUnaryReactor* EvaluateACL(
+      ::grpc::CallbackServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/)  { return nullptr; }
   };
-  template <class BaseClass>
-  class WithCallbackMethod_CheckPermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodCallback(25,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::CheckPermissionRequest* request, ::fileengine_rpc::CheckPermissionResponse* response) { return this->CheckPermission(context, request, response); }));}
-    void SetMessageAllocatorFor_CheckPermission(
-        ::grpc::MessageAllocator< ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(25);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CheckPermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_CreateRole() {
-      ::grpc::Service::MarkMethodCallback(26,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::CreateRoleRequest* request, ::fileengine_rpc::CreateRoleResponse* response) { return this->CreateRole(context, request, response); }));}
-    void SetMessageAllocatorFor_CreateRole(
-        ::grpc::MessageAllocator< ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(26);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CreateRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodCallback(27,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::DeleteRoleRequest* request, ::fileengine_rpc::DeleteRoleResponse* response) { return this->DeleteRole(context, request, response); }));}
-    void SetMessageAllocatorFor_DeleteRole(
-        ::grpc::MessageAllocator< ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(27);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* DeleteRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodCallback(28,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::AssignUserToRoleRequest* request, ::fileengine_rpc::AssignUserToRoleResponse* response) { return this->AssignUserToRole(context, request, response); }));}
-    void SetMessageAllocatorFor_AssignUserToRole(
-        ::grpc::MessageAllocator< ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(28);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* AssignUserToRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodCallback(29,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::RemoveUserFromRoleRequest* request, ::fileengine_rpc::RemoveUserFromRoleResponse* response) { return this->RemoveUserFromRole(context, request, response); }));}
-    void SetMessageAllocatorFor_RemoveUserFromRole(
-        ::grpc::MessageAllocator< ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(29);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RemoveUserFromRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodCallback(30,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetRolesForUserRequest* request, ::fileengine_rpc::GetRolesForUserResponse* response) { return this->GetRolesForUser(context, request, response); }));}
-    void SetMessageAllocatorFor_GetRolesForUser(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(30);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetRolesForUser(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodCallback(31,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetUsersForRoleRequest* request, ::fileengine_rpc::GetUsersForRoleResponse* response) { return this->GetUsersForRole(context, request, response); }));}
-    void SetMessageAllocatorFor_GetUsersForRole(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(31);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetUsersForRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodCallback(32,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetAllRolesRequest* request, ::fileengine_rpc::GetAllRolesResponse* response) { return this->GetAllRoles(context, request, response); }));}
-    void SetMessageAllocatorFor_GetAllRoles(
-        ::grpc::MessageAllocator< ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(32);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetAllRoles(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_StreamFileUpload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_StreamFileUpload() {
-      ::grpc::Service::MarkMethodCallback(33,
-          new ::grpc::internal::CallbackClientStreamingHandler< ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, ::fileengine_rpc::PutFileResponse* response) { return this->StreamFileUpload(context, response); }));
-    }
-    ~WithCallbackMethod_StreamFileUpload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileUpload(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* /*reader*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerReadReactor< ::fileengine_rpc::PutFileRequest>* StreamFileUpload(
-      ::grpc::CallbackServerContext* /*context*/, ::fileengine_rpc::PutFileResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_StreamFileDownload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodCallback(34,
-          new ::grpc::internal::CallbackServerStreamingHandler< ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::GetFileRequest* request) { return this->StreamFileDownload(context, request); }));
-    }
-    ~WithCallbackMethod_StreamFileDownload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerWriteReactor< ::fileengine_rpc::GetFileResponse>* StreamFileDownload(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_GetStorageUsage : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodCallback(35,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::StorageUsageRequest* request, ::fileengine_rpc::StorageUsageResponse* response) { return this->GetStorageUsage(context, request, response); }));}
-    void SetMessageAllocatorFor_GetStorageUsage(
-        ::grpc::MessageAllocator< ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(35);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_GetStorageUsage() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetStorageUsage(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_PurgeOldVersions : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodCallback(36,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::PurgeOldVersionsRequest* request, ::fileengine_rpc::PurgeOldVersionsResponse* response) { return this->PurgeOldVersions(context, request, response); }));}
-    void SetMessageAllocatorFor_PurgeOldVersions(
-        ::grpc::MessageAllocator< ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(36);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_PurgeOldVersions() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* PurgeOldVersions(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithCallbackMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodCallback(37,
-          new ::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::fileengine_rpc::TriggerSyncRequest* request, ::fileengine_rpc::TriggerSyncResponse* response) { return this->TriggerSync(context, request, response); }));}
-    void SetMessageAllocatorFor_TriggerSync(
-        ::grpc::MessageAllocator< ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(37);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* TriggerSync(
-      ::grpc::CallbackServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/)  { return nullptr; }
-  };
-  typedef WithCallbackMethod_MakeDirectory<WithCallbackMethod_RemoveDirectory<WithCallbackMethod_ListDirectory<WithCallbackMethod_ListDirectoryWithDeleted<WithCallbackMethod_Touch<WithCallbackMethod_RemoveFile<WithCallbackMethod_UndeleteFile<WithCallbackMethod_PutFile<WithCallbackMethod_GetFile<WithCallbackMethod_Stat<WithCallbackMethod_Exists<WithCallbackMethod_Rename<WithCallbackMethod_Move<WithCallbackMethod_Copy<WithCallbackMethod_ListVersions<WithCallbackMethod_GetVersion<WithCallbackMethod_RestoreToVersion<WithCallbackMethod_SetMetadata<WithCallbackMethod_GetMetadata<WithCallbackMethod_GetAllMetadata<WithCallbackMethod_DeleteMetadata<WithCallbackMethod_GetMetadataForVersion<WithCallbackMethod_GetAllMetadataForVersion<WithCallbackMethod_GrantPermission<WithCallbackMethod_RevokePermission<WithCallbackMethod_CheckPermission<WithCallbackMethod_CreateRole<WithCallbackMethod_DeleteRole<WithCallbackMethod_AssignUserToRole<WithCallbackMethod_RemoveUserFromRole<WithCallbackMethod_GetRolesForUser<WithCallbackMethod_GetUsersForRole<WithCallbackMethod_GetAllRoles<WithCallbackMethod_StreamFileUpload<WithCallbackMethod_StreamFileDownload<WithCallbackMethod_GetStorageUsage<WithCallbackMethod_PurgeOldVersions<WithCallbackMethod_TriggerSync<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > CallbackService;
+  typedef WithCallbackMethod_MakeDirectory<WithCallbackMethod_RemoveDirectory<WithCallbackMethod_ListDirectory<WithCallbackMethod_CreateFile<WithCallbackMethod_DeleteFile<WithCallbackMethod_UndeleteFile<WithCallbackMethod_WriteFile<WithCallbackMethod_ReadFile<WithCallbackMethod_GetFileInfo<WithCallbackMethod_FileExists<WithCallbackMethod_MoveFile<WithCallbackMethod_CopyFile<WithCallbackMethod_RenameFile<WithCallbackMethod_ListVersions<WithCallbackMethod_ReadVersion<WithCallbackMethod_SetMetadata<WithCallbackMethod_GetMetadata<WithCallbackMethod_GetAllMetadata<WithCallbackMethod_DeleteMetadata<WithCallbackMethod_GetMetadataForVersion<WithCallbackMethod_GetAllMetadataForVersion<WithCallbackMethod_WriteFileStream<WithCallbackMethod_ReadFileStream<WithCallbackMethod_ResolvePath<WithCallbackMethod_EvaluateACL<Service > > > > > > > > > > > > > > > > > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_MakeDirectory : public BaseClass {
@@ -2812,7 +1882,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2829,7 +1899,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2846,58 +1916,41 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithGenericMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_ListDirectoryWithDeleted() {
+    WithGenericMethod_CreateFile() {
       ::grpc::Service::MarkMethodGeneric(3);
     }
-    ~WithGenericMethod_ListDirectoryWithDeleted() override {
+    ~WithGenericMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_Touch : public BaseClass {
+  class WithGenericMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Touch() {
+    WithGenericMethod_DeleteFile() {
       ::grpc::Service::MarkMethodGeneric(4);
     }
-    ~WithGenericMethod_Touch() override {
+    ~WithGenericMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodGeneric(5);
-    }
-    ~WithGenericMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -2908,132 +1961,132 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodGeneric(6);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_UndeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_PutFile : public BaseClass {
+  class WithGenericMethod_WriteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_PutFile() {
+    WithGenericMethod_WriteFile() {
+      ::grpc::Service::MarkMethodGeneric(6);
+    }
+    ~WithGenericMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ReadFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ReadFile() {
       ::grpc::Service::MarkMethodGeneric(7);
     }
-    ~WithGenericMethod_PutFile() override {
+    ~WithGenericMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_GetFile : public BaseClass {
+  class WithGenericMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_GetFile() {
+    WithGenericMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodGeneric(8);
     }
-    ~WithGenericMethod_GetFile() override {
+    ~WithGenericMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_Stat : public BaseClass {
+  class WithGenericMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Stat() {
+    WithGenericMethod_FileExists() {
       ::grpc::Service::MarkMethodGeneric(9);
     }
-    ~WithGenericMethod_Stat() override {
+    ~WithGenericMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_Exists : public BaseClass {
+  class WithGenericMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Exists() {
+    WithGenericMethod_MoveFile() {
       ::grpc::Service::MarkMethodGeneric(10);
     }
-    ~WithGenericMethod_Exists() override {
+    ~WithGenericMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_Rename : public BaseClass {
+  class WithGenericMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Rename() {
+    WithGenericMethod_CopyFile() {
       ::grpc::Service::MarkMethodGeneric(11);
     }
-    ~WithGenericMethod_Rename() override {
+    ~WithGenericMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_Move : public BaseClass {
+  class WithGenericMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_Move() {
+    WithGenericMethod_RenameFile() {
       ::grpc::Service::MarkMethodGeneric(12);
     }
-    ~WithGenericMethod_Move() override {
+    ~WithGenericMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_Copy() {
-      ::grpc::Service::MarkMethodGeneric(13);
-    }
-    ~WithGenericMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3044,47 +2097,30 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ListVersions() {
-      ::grpc::Service::MarkMethodGeneric(14);
+      ::grpc::Service::MarkMethodGeneric(13);
     }
     ~WithGenericMethod_ListVersions() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_GetVersion : public BaseClass {
+  class WithGenericMethod_ReadVersion : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_GetVersion() {
-      ::grpc::Service::MarkMethodGeneric(15);
+    WithGenericMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodGeneric(14);
     }
-    ~WithGenericMethod_GetVersion() override {
+    ~WithGenericMethod_ReadVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodGeneric(16);
-    }
-    ~WithGenericMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3095,13 +2131,13 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodGeneric(17);
+      ::grpc::Service::MarkMethodGeneric(15);
     }
     ~WithGenericMethod_SetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3112,13 +2148,13 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodGeneric(18);
+      ::grpc::Service::MarkMethodGeneric(16);
     }
     ~WithGenericMethod_GetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3129,13 +2165,13 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodGeneric(19);
+      ::grpc::Service::MarkMethodGeneric(17);
     }
     ~WithGenericMethod_GetAllMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3146,13 +2182,13 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodGeneric(20);
+      ::grpc::Service::MarkMethodGeneric(18);
     }
     ~WithGenericMethod_DeleteMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3163,13 +2199,13 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodGeneric(21);
+      ::grpc::Service::MarkMethodGeneric(19);
     }
     ~WithGenericMethod_GetMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3180,268 +2216,81 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodGeneric(22);
+      ::grpc::Service::MarkMethodGeneric(20);
     }
     ~WithGenericMethod_GetAllMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_GrantPermission : public BaseClass {
+  class WithGenericMethod_WriteFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_GrantPermission() {
+    WithGenericMethod_WriteFileStream() {
+      ::grpc::Service::MarkMethodGeneric(21);
+    }
+    ~WithGenericMethod_WriteFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFileStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* /*reader*/, ::fileengine::WriteFileStreamResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ReadFileStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodGeneric(22);
+    }
+    ~WithGenericMethod_ReadFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ResolvePath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ResolvePath() {
       ::grpc::Service::MarkMethodGeneric(23);
     }
-    ~WithGenericMethod_GrantPermission() override {
+    ~WithGenericMethod_ResolvePath() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_RevokePermission : public BaseClass {
+  class WithGenericMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithGenericMethod_RevokePermission() {
+    WithGenericMethod_EvaluateACL() {
       ::grpc::Service::MarkMethodGeneric(24);
     }
-    ~WithGenericMethod_RevokePermission() override {
+    ~WithGenericMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_CheckPermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodGeneric(25);
-    }
-    ~WithGenericMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_CreateRole() {
-      ::grpc::Service::MarkMethodGeneric(26);
-    }
-    ~WithGenericMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodGeneric(27);
-    }
-    ~WithGenericMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodGeneric(28);
-    }
-    ~WithGenericMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodGeneric(29);
-    }
-    ~WithGenericMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodGeneric(30);
-    }
-    ~WithGenericMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodGeneric(31);
-    }
-    ~WithGenericMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodGeneric(32);
-    }
-    ~WithGenericMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_StreamFileUpload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_StreamFileUpload() {
-      ::grpc::Service::MarkMethodGeneric(33);
-    }
-    ~WithGenericMethod_StreamFileUpload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileUpload(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* /*reader*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_StreamFileDownload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodGeneric(34);
-    }
-    ~WithGenericMethod_StreamFileDownload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_GetStorageUsage : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodGeneric(35);
-    }
-    ~WithGenericMethod_GetStorageUsage() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_PurgeOldVersions : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodGeneric(36);
-    }
-    ~WithGenericMethod_PurgeOldVersions() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithGenericMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodGeneric(37);
-    }
-    ~WithGenericMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3458,7 +2307,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3478,7 +2327,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3498,7 +2347,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -3507,63 +2356,43 @@ class FileService final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithRawMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_ListDirectoryWithDeleted() {
+    WithRawMethod_CreateFile() {
       ::grpc::Service::MarkMethodRaw(3);
     }
-    ~WithRawMethod_ListDirectoryWithDeleted() override {
+    ~WithRawMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestListDirectoryWithDeleted(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCreateFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Touch : public BaseClass {
+  class WithRawMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Touch() {
+    WithRawMethod_DeleteFile() {
       ::grpc::Service::MarkMethodRaw(4);
     }
-    ~WithRawMethod_Touch() override {
+    ~WithRawMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestTouch(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestDeleteFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodRaw(5);
-    }
-    ~WithRawMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRemoveFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3572,158 +2401,158 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodRaw(6);
+      ::grpc::Service::MarkMethodRaw(5);
     }
     ~WithRawMethod_UndeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestUndeleteFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_WriteFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_WriteFile() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestWriteFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_PutFile : public BaseClass {
+  class WithRawMethod_ReadFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_PutFile() {
+    WithRawMethod_ReadFile() {
       ::grpc::Service::MarkMethodRaw(7);
     }
-    ~WithRawMethod_PutFile() override {
+    ~WithRawMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestPutFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestReadFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_GetFile : public BaseClass {
+  class WithRawMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_GetFile() {
+    WithRawMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodRaw(8);
     }
-    ~WithRawMethod_GetFile() override {
+    ~WithRawMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGetFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestGetFileInfo(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Stat : public BaseClass {
+  class WithRawMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Stat() {
+    WithRawMethod_FileExists() {
       ::grpc::Service::MarkMethodRaw(9);
     }
-    ~WithRawMethod_Stat() override {
+    ~WithRawMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestStat(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestFileExists(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Exists : public BaseClass {
+  class WithRawMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Exists() {
+    WithRawMethod_MoveFile() {
       ::grpc::Service::MarkMethodRaw(10);
     }
-    ~WithRawMethod_Exists() override {
+    ~WithRawMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestExists(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestMoveFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Rename : public BaseClass {
+  class WithRawMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Rename() {
+    WithRawMethod_CopyFile() {
       ::grpc::Service::MarkMethodRaw(11);
     }
-    ~WithRawMethod_Rename() override {
+    ~WithRawMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRename(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestCopyFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_Move : public BaseClass {
+  class WithRawMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_Move() {
+    WithRawMethod_RenameFile() {
       ::grpc::Service::MarkMethodRaw(12);
     }
-    ~WithRawMethod_Move() override {
+    ~WithRawMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestMove(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestRenameFile(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(12, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_Copy() {
-      ::grpc::Service::MarkMethodRaw(13);
-    }
-    ~WithRawMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCopy(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3732,58 +2561,38 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ListVersions() {
-      ::grpc::Service::MarkMethodRaw(14);
+      ::grpc::Service::MarkMethodRaw(13);
     }
     ~WithRawMethod_ListVersions() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListVersions(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(13, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ReadVersion : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodRaw(14);
+    }
+    ~WithRawMethod_ReadVersion() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReadVersion(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(14, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_GetVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_GetVersion() {
-      ::grpc::Service::MarkMethodRaw(15);
-    }
-    ~WithRawMethod_GetVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetVersion(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodRaw(16);
-    }
-    ~WithRawMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRestoreToVersion(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3792,18 +2601,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodRaw(17);
+      ::grpc::Service::MarkMethodRaw(15);
     }
     ~WithRawMethod_SetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSetMetadata(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(15, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3812,18 +2621,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodRaw(18);
+      ::grpc::Service::MarkMethodRaw(16);
     }
     ~WithRawMethod_GetMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetMetadata(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(16, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3832,18 +2641,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodRaw(19);
+      ::grpc::Service::MarkMethodRaw(17);
     }
     ~WithRawMethod_GetAllMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetAllMetadata(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(17, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3852,18 +2661,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodRaw(20);
+      ::grpc::Service::MarkMethodRaw(18);
     }
     ~WithRawMethod_DeleteMetadata() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestDeleteMetadata(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(18, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3872,18 +2681,18 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodRaw(21);
+      ::grpc::Service::MarkMethodRaw(19);
     }
     ~WithRawMethod_GetMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetMetadataForVersion(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(21, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(19, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -3892,318 +2701,98 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodRaw(22);
+      ::grpc::Service::MarkMethodRaw(20);
     }
     ~WithRawMethod_GetAllMetadataForVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetAllMetadataForVersion(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(22, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(20, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_GrantPermission : public BaseClass {
+  class WithRawMethod_WriteFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_GrantPermission() {
-      ::grpc::Service::MarkMethodRaw(23);
+    WithRawMethod_WriteFileStream() {
+      ::grpc::Service::MarkMethodRaw(21);
     }
-    ~WithRawMethod_GrantPermission() override {
+    ~WithRawMethod_WriteFileStream() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
+    ::grpc::Status WriteFileStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* /*reader*/, ::fileengine::WriteFileStreamResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestGrantPermission(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestWriteFileStream(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(21, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ReadFileStream : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodRaw(22);
+    }
+    ~WithRawMethod_ReadFileStream() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReadFileStream(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(22, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ResolvePath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ResolvePath() {
+      ::grpc::Service::MarkMethodRaw(23);
+    }
+    ~WithRawMethod_ResolvePath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestResolvePath(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(23, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
-  class WithRawMethod_RevokePermission : public BaseClass {
+  class WithRawMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawMethod_RevokePermission() {
+    WithRawMethod_EvaluateACL() {
       ::grpc::Service::MarkMethodRaw(24);
     }
-    ~WithRawMethod_RevokePermission() override {
+    ~WithRawMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void RequestRevokePermission(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void RequestEvaluateACL(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(24, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_CheckPermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodRaw(25);
-    }
-    ~WithRawMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCheckPermission(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(25, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_CreateRole() {
-      ::grpc::Service::MarkMethodRaw(26);
-    }
-    ~WithRawMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestCreateRole(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(26, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodRaw(27);
-    }
-    ~WithRawMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestDeleteRole(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(27, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodRaw(28);
-    }
-    ~WithRawMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestAssignUserToRole(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(28, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodRaw(29);
-    }
-    ~WithRawMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestRemoveUserFromRole(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(29, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodRaw(30);
-    }
-    ~WithRawMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetRolesForUser(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(30, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodRaw(31);
-    }
-    ~WithRawMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetUsersForRole(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(31, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodRaw(32);
-    }
-    ~WithRawMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetAllRoles(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(32, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_StreamFileUpload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_StreamFileUpload() {
-      ::grpc::Service::MarkMethodRaw(33);
-    }
-    ~WithRawMethod_StreamFileUpload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileUpload(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* /*reader*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestStreamFileUpload(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncClientStreaming(33, context, reader, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_StreamFileDownload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodRaw(34);
-    }
-    ~WithRawMethod_StreamFileDownload() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestStreamFileDownload(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(34, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_GetStorageUsage : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodRaw(35);
-    }
-    ~WithRawMethod_GetStorageUsage() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestGetStorageUsage(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(35, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_PurgeOldVersions : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodRaw(36);
-    }
-    ~WithRawMethod_PurgeOldVersions() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestPurgeOldVersions(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(36, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodRaw(37);
-    }
-    ~WithRawMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestTriggerSync(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(37, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -4221,7 +2810,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4243,7 +2832,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4265,7 +2854,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4273,69 +2862,47 @@ class FileService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithRawCallbackMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_ListDirectoryWithDeleted() {
+    WithRawCallbackMethod_CreateFile() {
       ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListDirectoryWithDeleted(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_ListDirectoryWithDeleted() override {
+    ~WithRawCallbackMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* ListDirectoryWithDeleted(
+    virtual ::grpc::ServerUnaryReactor* CreateFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_Touch : public BaseClass {
+  class WithRawCallbackMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_Touch() {
+    WithRawCallbackMethod_DeleteFile() {
       ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Touch(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_Touch() override {
+    ~WithRawCallbackMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Touch(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodRawCallback(5,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RemoveFile(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RemoveFile(
+    virtual ::grpc::ServerUnaryReactor* DeleteFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -4344,7 +2911,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodRawCallback(6,
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->UndeleteFile(context, request, response); }));
@@ -4353,7 +2920,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4361,157 +2928,157 @@ class FileService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_PutFile : public BaseClass {
+  class WithRawCallbackMethod_WriteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_PutFile() {
+    WithRawCallbackMethod_WriteFile() {
+      ::grpc::Service::MarkMethodRawCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->WriteFile(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* WriteFile(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ReadFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ReadFile() {
       ::grpc::Service::MarkMethodRawCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PutFile(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReadFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_PutFile() override {
+    ~WithRawCallbackMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* PutFile(
+    virtual ::grpc::ServerUnaryReactor* ReadFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_GetFile : public BaseClass {
+  class WithRawCallbackMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_GetFile() {
+    WithRawCallbackMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodRawCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetFile(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetFileInfo(context, request, response); }));
     }
-    ~WithRawCallbackMethod_GetFile() override {
+    ~WithRawCallbackMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GetFile(
+    virtual ::grpc::ServerUnaryReactor* GetFileInfo(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_Stat : public BaseClass {
+  class WithRawCallbackMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_Stat() {
+    WithRawCallbackMethod_FileExists() {
       ::grpc::Service::MarkMethodRawCallback(9,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Stat(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->FileExists(context, request, response); }));
     }
-    ~WithRawCallbackMethod_Stat() override {
+    ~WithRawCallbackMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Stat(
+    virtual ::grpc::ServerUnaryReactor* FileExists(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_Exists : public BaseClass {
+  class WithRawCallbackMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_Exists() {
+    WithRawCallbackMethod_MoveFile() {
       ::grpc::Service::MarkMethodRawCallback(10,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Exists(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->MoveFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_Exists() override {
+    ~WithRawCallbackMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Exists(
+    virtual ::grpc::ServerUnaryReactor* MoveFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_Rename : public BaseClass {
+  class WithRawCallbackMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_Rename() {
+    WithRawCallbackMethod_CopyFile() {
       ::grpc::Service::MarkMethodRawCallback(11,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Rename(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CopyFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_Rename() override {
+    ~WithRawCallbackMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Rename(
+    virtual ::grpc::ServerUnaryReactor* CopyFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_Move : public BaseClass {
+  class WithRawCallbackMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_Move() {
+    WithRawCallbackMethod_RenameFile() {
       ::grpc::Service::MarkMethodRawCallback(12,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Move(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RenameFile(context, request, response); }));
     }
-    ~WithRawCallbackMethod_Move() override {
+    ~WithRawCallbackMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* Move(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_Copy() {
-      ::grpc::Service::MarkMethodRawCallback(13,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Copy(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* Copy(
+    virtual ::grpc::ServerUnaryReactor* RenameFile(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -4520,7 +3087,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ListVersions() {
-      ::grpc::Service::MarkMethodRawCallback(14,
+      ::grpc::Service::MarkMethodRawCallback(13,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListVersions(context, request, response); }));
@@ -4529,7 +3096,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4537,47 +3104,25 @@ class FileService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_GetVersion : public BaseClass {
+  class WithRawCallbackMethod_ReadVersion : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_GetVersion() {
-      ::grpc::Service::MarkMethodRawCallback(15,
+    WithRawCallbackMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodRawCallback(14,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetVersion(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReadVersion(context, request, response); }));
     }
-    ~WithRawCallbackMethod_GetVersion() override {
+    ~WithRawCallbackMethod_ReadVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GetVersion(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodRawCallback(16,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RestoreToVersion(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RestoreToVersion(
+    virtual ::grpc::ServerUnaryReactor* ReadVersion(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -4586,7 +3131,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodRawCallback(17,
+      ::grpc::Service::MarkMethodRawCallback(15,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SetMetadata(context, request, response); }));
@@ -4595,7 +3140,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4608,7 +3153,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodRawCallback(18,
+      ::grpc::Service::MarkMethodRawCallback(16,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetMetadata(context, request, response); }));
@@ -4617,7 +3162,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4630,7 +3175,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodRawCallback(19,
+      ::grpc::Service::MarkMethodRawCallback(17,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetAllMetadata(context, request, response); }));
@@ -4639,7 +3184,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4652,7 +3197,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodRawCallback(20,
+      ::grpc::Service::MarkMethodRawCallback(18,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteMetadata(context, request, response); }));
@@ -4661,7 +3206,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4674,7 +3219,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodRawCallback(21,
+      ::grpc::Service::MarkMethodRawCallback(19,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetMetadataForVersion(context, request, response); }));
@@ -4683,7 +3228,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4696,7 +3241,7 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodRawCallback(22,
+      ::grpc::Service::MarkMethodRawCallback(20,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetAllMetadataForVersion(context, request, response); }));
@@ -4705,7 +3250,7 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -4713,333 +3258,91 @@ class FileService final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_GrantPermission : public BaseClass {
+  class WithRawCallbackMethod_WriteFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_GrantPermission() {
-      ::grpc::Service::MarkMethodRawCallback(23,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GrantPermission(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_GrantPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GrantPermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_RevokePermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_RevokePermission() {
-      ::grpc::Service::MarkMethodRawCallback(24,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RevokePermission(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_RevokePermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RevokePermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_CheckPermission : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodRawCallback(25,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CheckPermission(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CheckPermission(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_CreateRole() {
-      ::grpc::Service::MarkMethodRawCallback(26,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateRole(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* CreateRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodRawCallback(27,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DeleteRole(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* DeleteRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodRawCallback(28,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->AssignUserToRole(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* AssignUserToRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodRawCallback(29,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RemoveUserFromRole(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* RemoveUserFromRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodRawCallback(30,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetRolesForUser(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetRolesForUser(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodRawCallback(31,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetUsersForRole(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetUsersForRole(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodRawCallback(32,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetAllRoles(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* GetAllRoles(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_StreamFileUpload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_StreamFileUpload() {
-      ::grpc::Service::MarkMethodRawCallback(33,
+    WithRawCallbackMethod_WriteFileStream() {
+      ::grpc::Service::MarkMethodRawCallback(21,
           new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->StreamFileUpload(context, response); }));
+                   ::grpc::CallbackServerContext* context, ::grpc::ByteBuffer* response) { return this->WriteFileStream(context, response); }));
     }
-    ~WithRawCallbackMethod_StreamFileUpload() override {
+    ~WithRawCallbackMethod_WriteFileStream() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status StreamFileUpload(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine_rpc::PutFileRequest>* /*reader*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status WriteFileStream(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::fileengine::WriteFileStreamRequest>* /*reader*/, ::fileengine::WriteFileStreamResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerReadReactor< ::grpc::ByteBuffer>* StreamFileUpload(
+    virtual ::grpc::ServerReadReactor< ::grpc::ByteBuffer>* WriteFileStream(
       ::grpc::CallbackServerContext* /*context*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_StreamFileDownload : public BaseClass {
+  class WithRawCallbackMethod_ReadFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodRawCallback(34,
+    WithRawCallbackMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodRawCallback(22,
           new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->StreamFileDownload(context, request); }));
+                   ::grpc::CallbackServerContext* context, const::grpc::ByteBuffer* request) { return this->ReadFileStream(context, request); }));
     }
-    ~WithRawCallbackMethod_StreamFileDownload() override {
+    ~WithRawCallbackMethod_ReadFileStream() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* StreamFileDownload(
+    virtual ::grpc::ServerWriteReactor< ::grpc::ByteBuffer>* ReadFileStream(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_GetStorageUsage : public BaseClass {
+  class WithRawCallbackMethod_ResolvePath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodRawCallback(35,
+    WithRawCallbackMethod_ResolvePath() {
+      ::grpc::Service::MarkMethodRawCallback(23,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetStorageUsage(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ResolvePath(context, request, response); }));
     }
-    ~WithRawCallbackMethod_GetStorageUsage() override {
+    ~WithRawCallbackMethod_ResolvePath() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* GetStorageUsage(
+    virtual ::grpc::ServerUnaryReactor* ResolvePath(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
-  class WithRawCallbackMethod_PurgeOldVersions : public BaseClass {
+  class WithRawCallbackMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithRawCallbackMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodRawCallback(36,
+    WithRawCallbackMethod_EvaluateACL() {
+      ::grpc::Service::MarkMethodRawCallback(24,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->PurgeOldVersions(context, request, response); }));
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->EvaluateACL(context, request, response); }));
     }
-    ~WithRawCallbackMethod_PurgeOldVersions() override {
+    ~WithRawCallbackMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual ::grpc::ServerUnaryReactor* PurgeOldVersions(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodRawCallback(37,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->TriggerSync(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* TriggerSync(
+    virtual ::grpc::ServerUnaryReactor* EvaluateACL(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -5050,10 +3353,10 @@ class FileService final {
     WithStreamedUnaryMethod_MakeDirectory() {
       ::grpc::Service::MarkMethodStreamed(0,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse>(
+          ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::MakeDirectoryRequest, ::fileengine_rpc::MakeDirectoryResponse>* streamer) {
+                     ::fileengine::MakeDirectoryRequest, ::fileengine::MakeDirectoryResponse>* streamer) {
                        return this->StreamedMakeDirectory(context,
                          streamer);
                   }));
@@ -5062,12 +3365,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MakeDirectoryRequest* /*request*/, ::fileengine_rpc::MakeDirectoryResponse* /*response*/) override {
+    ::grpc::Status MakeDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::MakeDirectoryRequest* /*request*/, ::fileengine::MakeDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedMakeDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::MakeDirectoryRequest,::fileengine_rpc::MakeDirectoryResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedMakeDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::MakeDirectoryRequest,::fileengine::MakeDirectoryResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_RemoveDirectory : public BaseClass {
@@ -5077,10 +3380,10 @@ class FileService final {
     WithStreamedUnaryMethod_RemoveDirectory() {
       ::grpc::Service::MarkMethodStreamed(1,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse>(
+          ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RemoveDirectoryRequest, ::fileengine_rpc::RemoveDirectoryResponse>* streamer) {
+                     ::fileengine::RemoveDirectoryRequest, ::fileengine::RemoveDirectoryResponse>* streamer) {
                        return this->StreamedRemoveDirectory(context,
                          streamer);
                   }));
@@ -5089,12 +3392,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveDirectoryRequest* /*request*/, ::fileengine_rpc::RemoveDirectoryResponse* /*response*/) override {
+    ::grpc::Status RemoveDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::RemoveDirectoryRequest* /*request*/, ::fileengine::RemoveDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRemoveDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RemoveDirectoryRequest,::fileengine_rpc::RemoveDirectoryResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedRemoveDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::RemoveDirectoryRequest,::fileengine::RemoveDirectoryResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_ListDirectory : public BaseClass {
@@ -5104,10 +3407,10 @@ class FileService final {
     WithStreamedUnaryMethod_ListDirectory() {
       ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse>(
+          ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::ListDirectoryRequest, ::fileengine_rpc::ListDirectoryResponse>* streamer) {
+                     ::fileengine::ListDirectoryRequest, ::fileengine::ListDirectoryResponse>* streamer) {
                        return this->StreamedListDirectory(context,
                          streamer);
                   }));
@@ -5116,93 +3419,66 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryRequest* /*request*/, ::fileengine_rpc::ListDirectoryResponse* /*response*/) override {
+    ::grpc::Status ListDirectory(::grpc::ServerContext* /*context*/, const ::fileengine::ListDirectoryRequest* /*request*/, ::fileengine::ListDirectoryResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedListDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::ListDirectoryRequest,::fileengine_rpc::ListDirectoryResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedListDirectory(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::ListDirectoryRequest,::fileengine::ListDirectoryResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_ListDirectoryWithDeleted : public BaseClass {
+  class WithStreamedUnaryMethod_CreateFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_ListDirectoryWithDeleted() {
+    WithStreamedUnaryMethod_CreateFile() {
       ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse>(
+          ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::ListDirectoryWithDeletedRequest, ::fileengine_rpc::ListDirectoryWithDeletedResponse>* streamer) {
-                       return this->StreamedListDirectoryWithDeleted(context,
+                     ::fileengine::CreateFileRequest, ::fileengine::CreateFileResponse>* streamer) {
+                       return this->StreamedCreateFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_ListDirectoryWithDeleted() override {
+    ~WithStreamedUnaryMethod_CreateFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ListDirectoryWithDeleted(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListDirectoryWithDeletedRequest* /*request*/, ::fileengine_rpc::ListDirectoryWithDeletedResponse* /*response*/) override {
+    ::grpc::Status CreateFile(::grpc::ServerContext* /*context*/, const ::fileengine::CreateFileRequest* /*request*/, ::fileengine::CreateFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedListDirectoryWithDeleted(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::ListDirectoryWithDeletedRequest,::fileengine_rpc::ListDirectoryWithDeletedResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCreateFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::CreateFileRequest,::fileengine::CreateFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Touch : public BaseClass {
+  class WithStreamedUnaryMethod_DeleteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Touch() {
+    WithStreamedUnaryMethod_DeleteFile() {
       ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse>(
+          ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::TouchRequest, ::fileengine_rpc::TouchResponse>* streamer) {
-                       return this->StreamedTouch(context,
+                     ::fileengine::DeleteFileRequest, ::fileengine::DeleteFileResponse>* streamer) {
+                       return this->StreamedDeleteFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_Touch() override {
+    ~WithStreamedUnaryMethod_DeleteFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Touch(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TouchRequest* /*request*/, ::fileengine_rpc::TouchResponse* /*response*/) override {
+    ::grpc::Status DeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteFileRequest* /*request*/, ::fileengine::DeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedTouch(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::TouchRequest,::fileengine_rpc::TouchResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_RemoveFile : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_RemoveFile() {
-      ::grpc::Service::MarkMethodStreamed(5,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RemoveFileRequest, ::fileengine_rpc::RemoveFileResponse>* streamer) {
-                       return this->StreamedRemoveFile(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_RemoveFile() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status RemoveFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveFileRequest* /*request*/, ::fileengine_rpc::RemoveFileResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRemoveFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RemoveFileRequest,::fileengine_rpc::RemoveFileResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedDeleteFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::DeleteFileRequest,::fileengine::DeleteFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_UndeleteFile : public BaseClass {
@@ -5210,12 +3486,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_UndeleteFile() {
-      ::grpc::Service::MarkMethodStreamed(6,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse>(
+          ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::UndeleteFileRequest, ::fileengine_rpc::UndeleteFileResponse>* streamer) {
+                     ::fileengine::UndeleteFileRequest, ::fileengine::UndeleteFileResponse>* streamer) {
                        return this->StreamedUndeleteFile(context,
                          streamer);
                   }));
@@ -5224,201 +3500,201 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::UndeleteFileRequest* /*request*/, ::fileengine_rpc::UndeleteFileResponse* /*response*/) override {
+    ::grpc::Status UndeleteFile(::grpc::ServerContext* /*context*/, const ::fileengine::UndeleteFileRequest* /*request*/, ::fileengine::UndeleteFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedUndeleteFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::UndeleteFileRequest,::fileengine_rpc::UndeleteFileResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedUndeleteFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::UndeleteFileRequest,::fileengine::UndeleteFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_PutFile : public BaseClass {
+  class WithStreamedUnaryMethod_WriteFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_PutFile() {
+    WithStreamedUnaryMethod_WriteFile() {
+      ::grpc::Service::MarkMethodStreamed(6,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::fileengine::WriteFileRequest, ::fileengine::WriteFileResponse>* streamer) {
+                       return this->StreamedWriteFile(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_WriteFile() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status WriteFile(::grpc::ServerContext* /*context*/, const ::fileengine::WriteFileRequest* /*request*/, ::fileengine::WriteFileResponse* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedWriteFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::WriteFileRequest,::fileengine::WriteFileResponse>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ReadFile : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ReadFile() {
       ::grpc::Service::MarkMethodStreamed(7,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>(
+          ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::PutFileRequest, ::fileengine_rpc::PutFileResponse>* streamer) {
-                       return this->StreamedPutFile(context,
+                     ::fileengine::ReadFileRequest, ::fileengine::ReadFileResponse>* streamer) {
+                       return this->StreamedReadFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_PutFile() override {
+    ~WithStreamedUnaryMethod_ReadFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PutFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PutFileRequest* /*request*/, ::fileengine_rpc::PutFileResponse* /*response*/) override {
+    ::grpc::Status ReadFile(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileRequest* /*request*/, ::fileengine::ReadFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedPutFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::PutFileRequest,::fileengine_rpc::PutFileResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedReadFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::ReadFileRequest,::fileengine::ReadFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_GetFile : public BaseClass {
+  class WithStreamedUnaryMethod_GetFileInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_GetFile() {
+    WithStreamedUnaryMethod_GetFileInfo() {
       ::grpc::Service::MarkMethodStreamed(8,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>(
+          ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>* streamer) {
-                       return this->StreamedGetFile(context,
+                     ::fileengine::GetFileInfoRequest, ::fileengine::GetFileInfoResponse>* streamer) {
+                       return this->StreamedGetFileInfo(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_GetFile() override {
+    ~WithStreamedUnaryMethod_GetFileInfo() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetFile(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::fileengine_rpc::GetFileResponse* /*response*/) override {
+    ::grpc::Status GetFileInfo(::grpc::ServerContext* /*context*/, const ::fileengine::GetFileInfoRequest* /*request*/, ::fileengine::GetFileInfoResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetFileRequest,::fileengine_rpc::GetFileResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetFileInfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::GetFileInfoRequest,::fileengine::GetFileInfoResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Stat : public BaseClass {
+  class WithStreamedUnaryMethod_FileExists : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Stat() {
+    WithStreamedUnaryMethod_FileExists() {
       ::grpc::Service::MarkMethodStreamed(9,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse>(
+          ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::StatRequest, ::fileengine_rpc::StatResponse>* streamer) {
-                       return this->StreamedStat(context,
+                     ::fileengine::FileExistsRequest, ::fileengine::FileExistsResponse>* streamer) {
+                       return this->StreamedFileExists(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_Stat() override {
+    ~WithStreamedUnaryMethod_FileExists() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Stat(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StatRequest* /*request*/, ::fileengine_rpc::StatResponse* /*response*/) override {
+    ::grpc::Status FileExists(::grpc::ServerContext* /*context*/, const ::fileengine::FileExistsRequest* /*request*/, ::fileengine::FileExistsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedStat(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::StatRequest,::fileengine_rpc::StatResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedFileExists(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::FileExistsRequest,::fileengine::FileExistsResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Exists : public BaseClass {
+  class WithStreamedUnaryMethod_MoveFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Exists() {
+    WithStreamedUnaryMethod_MoveFile() {
       ::grpc::Service::MarkMethodStreamed(10,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse>(
+          ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::ExistsRequest, ::fileengine_rpc::ExistsResponse>* streamer) {
-                       return this->StreamedExists(context,
+                     ::fileengine::MoveFileRequest, ::fileengine::MoveFileResponse>* streamer) {
+                       return this->StreamedMoveFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_Exists() override {
+    ~WithStreamedUnaryMethod_MoveFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Exists(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ExistsRequest* /*request*/, ::fileengine_rpc::ExistsResponse* /*response*/) override {
+    ::grpc::Status MoveFile(::grpc::ServerContext* /*context*/, const ::fileengine::MoveFileRequest* /*request*/, ::fileengine::MoveFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedExists(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::ExistsRequest,::fileengine_rpc::ExistsResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedMoveFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::MoveFileRequest,::fileengine::MoveFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Rename : public BaseClass {
+  class WithStreamedUnaryMethod_CopyFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Rename() {
+    WithStreamedUnaryMethod_CopyFile() {
       ::grpc::Service::MarkMethodStreamed(11,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse>(
+          ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RenameRequest, ::fileengine_rpc::RenameResponse>* streamer) {
-                       return this->StreamedRename(context,
+                     ::fileengine::CopyFileRequest, ::fileengine::CopyFileResponse>* streamer) {
+                       return this->StreamedCopyFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_Rename() override {
+    ~WithStreamedUnaryMethod_CopyFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Rename(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RenameRequest* /*request*/, ::fileengine_rpc::RenameResponse* /*response*/) override {
+    ::grpc::Status CopyFile(::grpc::ServerContext* /*context*/, const ::fileengine::CopyFileRequest* /*request*/, ::fileengine::CopyFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRename(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RenameRequest,::fileengine_rpc::RenameResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedCopyFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::CopyFileRequest,::fileengine::CopyFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_Move : public BaseClass {
+  class WithStreamedUnaryMethod_RenameFile : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_Move() {
+    WithStreamedUnaryMethod_RenameFile() {
       ::grpc::Service::MarkMethodStreamed(12,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse>(
+          ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::MoveRequest, ::fileengine_rpc::MoveResponse>* streamer) {
-                       return this->StreamedMove(context,
+                     ::fileengine::RenameFileRequest, ::fileengine::RenameFileResponse>* streamer) {
+                       return this->StreamedRenameFile(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_Move() override {
+    ~WithStreamedUnaryMethod_RenameFile() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Move(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::MoveRequest* /*request*/, ::fileengine_rpc::MoveResponse* /*response*/) override {
+    ::grpc::Status RenameFile(::grpc::ServerContext* /*context*/, const ::fileengine::RenameFileRequest* /*request*/, ::fileengine::RenameFileResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedMove(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::MoveRequest,::fileengine_rpc::MoveResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_Copy : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_Copy() {
-      ::grpc::Service::MarkMethodStreamed(13,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::CopyRequest, ::fileengine_rpc::CopyResponse>* streamer) {
-                       return this->StreamedCopy(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_Copy() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status Copy(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CopyRequest* /*request*/, ::fileengine_rpc::CopyResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCopy(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::CopyRequest,::fileengine_rpc::CopyResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedRenameFile(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::RenameFileRequest,::fileengine::RenameFileResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_ListVersions : public BaseClass {
@@ -5426,12 +3702,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ListVersions() {
-      ::grpc::Service::MarkMethodStreamed(14,
+      ::grpc::Service::MarkMethodStreamed(13,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse>(
+          ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::ListVersionsRequest, ::fileengine_rpc::ListVersionsResponse>* streamer) {
+                     ::fileengine::ListVersionsRequest, ::fileengine::ListVersionsResponse>* streamer) {
                        return this->StreamedListVersions(context,
                          streamer);
                   }));
@@ -5440,66 +3716,39 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::ListVersionsRequest* /*request*/, ::fileengine_rpc::ListVersionsResponse* /*response*/) override {
+    ::grpc::Status ListVersions(::grpc::ServerContext* /*context*/, const ::fileengine::ListVersionsRequest* /*request*/, ::fileengine::ListVersionsResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedListVersions(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::ListVersionsRequest,::fileengine_rpc::ListVersionsResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedListVersions(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::ListVersionsRequest,::fileengine::ListVersionsResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_GetVersion : public BaseClass {
+  class WithStreamedUnaryMethod_ReadVersion : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_GetVersion() {
-      ::grpc::Service::MarkMethodStreamed(15,
+    WithStreamedUnaryMethod_ReadVersion() {
+      ::grpc::Service::MarkMethodStreamed(14,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse>(
+          ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetVersionRequest, ::fileengine_rpc::GetVersionResponse>* streamer) {
-                       return this->StreamedGetVersion(context,
+                     ::fileengine::ReadVersionRequest, ::fileengine::ReadVersionResponse>* streamer) {
+                       return this->StreamedReadVersion(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_GetVersion() override {
+    ~WithStreamedUnaryMethod_ReadVersion() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetVersionRequest* /*request*/, ::fileengine_rpc::GetVersionResponse* /*response*/) override {
+    ::grpc::Status ReadVersion(::grpc::ServerContext* /*context*/, const ::fileengine::ReadVersionRequest* /*request*/, ::fileengine::ReadVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetVersionRequest,::fileengine_rpc::GetVersionResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_RestoreToVersion : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_RestoreToVersion() {
-      ::grpc::Service::MarkMethodStreamed(16,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RestoreToVersionRequest, ::fileengine_rpc::RestoreToVersionResponse>* streamer) {
-                       return this->StreamedRestoreToVersion(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_RestoreToVersion() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status RestoreToVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RestoreToVersionRequest* /*request*/, ::fileengine_rpc::RestoreToVersionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRestoreToVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RestoreToVersionRequest,::fileengine_rpc::RestoreToVersionResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedReadVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::ReadVersionRequest,::fileengine::ReadVersionResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_SetMetadata : public BaseClass {
@@ -5507,12 +3756,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SetMetadata() {
-      ::grpc::Service::MarkMethodStreamed(17,
+      ::grpc::Service::MarkMethodStreamed(15,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse>(
+          ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::SetMetadataRequest, ::fileengine_rpc::SetMetadataResponse>* streamer) {
+                     ::fileengine::SetMetadataRequest, ::fileengine::SetMetadataResponse>* streamer) {
                        return this->StreamedSetMetadata(context,
                          streamer);
                   }));
@@ -5521,12 +3770,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::SetMetadataRequest* /*request*/, ::fileengine_rpc::SetMetadataResponse* /*response*/) override {
+    ::grpc::Status SetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::SetMetadataRequest* /*request*/, ::fileengine::SetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedSetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::SetMetadataRequest,::fileengine_rpc::SetMetadataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedSetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::SetMetadataRequest,::fileengine::SetMetadataResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetMetadata : public BaseClass {
@@ -5534,12 +3783,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetMetadata() {
-      ::grpc::Service::MarkMethodStreamed(18,
+      ::grpc::Service::MarkMethodStreamed(16,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse>(
+          ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetMetadataRequest, ::fileengine_rpc::GetMetadataResponse>* streamer) {
+                     ::fileengine::GetMetadataRequest, ::fileengine::GetMetadataResponse>* streamer) {
                        return this->StreamedGetMetadata(context,
                          streamer);
                   }));
@@ -5548,12 +3797,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataRequest* /*request*/, ::fileengine_rpc::GetMetadataResponse* /*response*/) override {
+    ::grpc::Status GetMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataRequest* /*request*/, ::fileengine::GetMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetMetadataRequest,::fileengine_rpc::GetMetadataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::GetMetadataRequest,::fileengine::GetMetadataResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetAllMetadata : public BaseClass {
@@ -5561,12 +3810,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetAllMetadata() {
-      ::grpc::Service::MarkMethodStreamed(19,
+      ::grpc::Service::MarkMethodStreamed(17,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse>(
+          ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetAllMetadataRequest, ::fileengine_rpc::GetAllMetadataResponse>* streamer) {
+                     ::fileengine::GetAllMetadataRequest, ::fileengine::GetAllMetadataResponse>* streamer) {
                        return this->StreamedGetAllMetadata(context,
                          streamer);
                   }));
@@ -5575,12 +3824,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataRequest* /*request*/, ::fileengine_rpc::GetAllMetadataResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataRequest* /*request*/, ::fileengine::GetAllMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetAllMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetAllMetadataRequest,::fileengine_rpc::GetAllMetadataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetAllMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::GetAllMetadataRequest,::fileengine::GetAllMetadataResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_DeleteMetadata : public BaseClass {
@@ -5588,12 +3837,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_DeleteMetadata() {
-      ::grpc::Service::MarkMethodStreamed(20,
+      ::grpc::Service::MarkMethodStreamed(18,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse>(
+          ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::DeleteMetadataRequest, ::fileengine_rpc::DeleteMetadataResponse>* streamer) {
+                     ::fileengine::DeleteMetadataRequest, ::fileengine::DeleteMetadataResponse>* streamer) {
                        return this->StreamedDeleteMetadata(context,
                          streamer);
                   }));
@@ -5602,12 +3851,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteMetadataRequest* /*request*/, ::fileengine_rpc::DeleteMetadataResponse* /*response*/) override {
+    ::grpc::Status DeleteMetadata(::grpc::ServerContext* /*context*/, const ::fileengine::DeleteMetadataRequest* /*request*/, ::fileengine::DeleteMetadataResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedDeleteMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::DeleteMetadataRequest,::fileengine_rpc::DeleteMetadataResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedDeleteMetadata(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::DeleteMetadataRequest,::fileengine::DeleteMetadataResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetMetadataForVersion : public BaseClass {
@@ -5615,12 +3864,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetMetadataForVersion() {
-      ::grpc::Service::MarkMethodStreamed(21,
+      ::grpc::Service::MarkMethodStreamed(19,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse>(
+          ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetMetadataForVersionRequest, ::fileengine_rpc::GetMetadataForVersionResponse>* streamer) {
+                     ::fileengine::GetMetadataForVersionRequest, ::fileengine::GetMetadataForVersionResponse>* streamer) {
                        return this->StreamedGetMetadataForVersion(context,
                          streamer);
                   }));
@@ -5629,12 +3878,12 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetMetadataForVersionRequest* /*request*/, ::fileengine::GetMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetMetadataForVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetMetadataForVersionRequest,::fileengine_rpc::GetMetadataForVersionResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetMetadataForVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::GetMetadataForVersionRequest,::fileengine::GetMetadataForVersionResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetAllMetadataForVersion : public BaseClass {
@@ -5642,12 +3891,12 @@ class FileService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetAllMetadataForVersion() {
-      ::grpc::Service::MarkMethodStreamed(22,
+      ::grpc::Service::MarkMethodStreamed(20,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse>(
+          ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetAllMetadataForVersionRequest, ::fileengine_rpc::GetAllMetadataForVersionResponse>* streamer) {
+                     ::fileengine::GetAllMetadataForVersionRequest, ::fileengine::GetAllMetadataForVersionResponse>* streamer) {
                        return this->StreamedGetAllMetadataForVersion(context,
                          streamer);
                   }));
@@ -5656,398 +3905,100 @@ class FileService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllMetadataForVersionRequest* /*request*/, ::fileengine_rpc::GetAllMetadataForVersionResponse* /*response*/) override {
+    ::grpc::Status GetAllMetadataForVersion(::grpc::ServerContext* /*context*/, const ::fileengine::GetAllMetadataForVersionRequest* /*request*/, ::fileengine::GetAllMetadataForVersionResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetAllMetadataForVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetAllMetadataForVersionRequest,::fileengine_rpc::GetAllMetadataForVersionResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedGetAllMetadataForVersion(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::GetAllMetadataForVersionRequest,::fileengine::GetAllMetadataForVersionResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_GrantPermission : public BaseClass {
+  class WithStreamedUnaryMethod_ResolvePath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_GrantPermission() {
+    WithStreamedUnaryMethod_ResolvePath() {
       ::grpc::Service::MarkMethodStreamed(23,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse>(
+          ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GrantPermissionRequest, ::fileengine_rpc::GrantPermissionResponse>* streamer) {
-                       return this->StreamedGrantPermission(context,
+                     ::fileengine::ResolvePathRequest, ::fileengine::ResolvePathResponse>* streamer) {
+                       return this->StreamedResolvePath(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_GrantPermission() override {
+    ~WithStreamedUnaryMethod_ResolvePath() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GrantPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GrantPermissionRequest* /*request*/, ::fileengine_rpc::GrantPermissionResponse* /*response*/) override {
+    ::grpc::Status ResolvePath(::grpc::ServerContext* /*context*/, const ::fileengine::ResolvePathRequest* /*request*/, ::fileengine::ResolvePathResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGrantPermission(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GrantPermissionRequest,::fileengine_rpc::GrantPermissionResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedResolvePath(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::ResolvePathRequest,::fileengine::ResolvePathResponse>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
-  class WithStreamedUnaryMethod_RevokePermission : public BaseClass {
+  class WithStreamedUnaryMethod_EvaluateACL : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_RevokePermission() {
+    WithStreamedUnaryMethod_EvaluateACL() {
       ::grpc::Service::MarkMethodStreamed(24,
         new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse>(
+          ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RevokePermissionRequest, ::fileengine_rpc::RevokePermissionResponse>* streamer) {
-                       return this->StreamedRevokePermission(context,
+                     ::fileengine::EvaluateACLRequest, ::fileengine::EvaluateACLResponse>* streamer) {
+                       return this->StreamedEvaluateACL(context,
                          streamer);
                   }));
     }
-    ~WithStreamedUnaryMethod_RevokePermission() override {
+    ~WithStreamedUnaryMethod_EvaluateACL() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status RevokePermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RevokePermissionRequest* /*request*/, ::fileengine_rpc::RevokePermissionResponse* /*response*/) override {
+    ::grpc::Status EvaluateACL(::grpc::ServerContext* /*context*/, const ::fileengine::EvaluateACLRequest* /*request*/, ::fileengine::EvaluateACLResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRevokePermission(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RevokePermissionRequest,::fileengine_rpc::RevokePermissionResponse>* server_unary_streamer) = 0;
+    virtual ::grpc::Status StreamedEvaluateACL(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine::EvaluateACLRequest,::fileengine::EvaluateACLResponse>* server_unary_streamer) = 0;
   };
+  typedef WithStreamedUnaryMethod_MakeDirectory<WithStreamedUnaryMethod_RemoveDirectory<WithStreamedUnaryMethod_ListDirectory<WithStreamedUnaryMethod_CreateFile<WithStreamedUnaryMethod_DeleteFile<WithStreamedUnaryMethod_UndeleteFile<WithStreamedUnaryMethod_WriteFile<WithStreamedUnaryMethod_ReadFile<WithStreamedUnaryMethod_GetFileInfo<WithStreamedUnaryMethod_FileExists<WithStreamedUnaryMethod_MoveFile<WithStreamedUnaryMethod_CopyFile<WithStreamedUnaryMethod_RenameFile<WithStreamedUnaryMethod_ListVersions<WithStreamedUnaryMethod_ReadVersion<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_GetAllMetadata<WithStreamedUnaryMethod_DeleteMetadata<WithStreamedUnaryMethod_GetMetadataForVersion<WithStreamedUnaryMethod_GetAllMetadataForVersion<WithStreamedUnaryMethod_ResolvePath<WithStreamedUnaryMethod_EvaluateACL<Service > > > > > > > > > > > > > > > > > > > > > > > StreamedUnaryService;
   template <class BaseClass>
-  class WithStreamedUnaryMethod_CheckPermission : public BaseClass {
+  class WithSplitStreamingMethod_ReadFileStream : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
-    WithStreamedUnaryMethod_CheckPermission() {
-      ::grpc::Service::MarkMethodStreamed(25,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::CheckPermissionRequest, ::fileengine_rpc::CheckPermissionResponse>* streamer) {
-                       return this->StreamedCheckPermission(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_CheckPermission() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status CheckPermission(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CheckPermissionRequest* /*request*/, ::fileengine_rpc::CheckPermissionResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCheckPermission(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::CheckPermissionRequest,::fileengine_rpc::CheckPermissionResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_CreateRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_CreateRole() {
-      ::grpc::Service::MarkMethodStreamed(26,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::CreateRoleRequest, ::fileengine_rpc::CreateRoleResponse>* streamer) {
-                       return this->StreamedCreateRole(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_CreateRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status CreateRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::CreateRoleRequest* /*request*/, ::fileengine_rpc::CreateRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedCreateRole(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::CreateRoleRequest,::fileengine_rpc::CreateRoleResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_DeleteRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_DeleteRole() {
-      ::grpc::Service::MarkMethodStreamed(27,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::DeleteRoleRequest, ::fileengine_rpc::DeleteRoleResponse>* streamer) {
-                       return this->StreamedDeleteRole(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_DeleteRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status DeleteRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::DeleteRoleRequest* /*request*/, ::fileengine_rpc::DeleteRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedDeleteRole(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::DeleteRoleRequest,::fileengine_rpc::DeleteRoleResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_AssignUserToRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_AssignUserToRole() {
-      ::grpc::Service::MarkMethodStreamed(28,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::AssignUserToRoleRequest, ::fileengine_rpc::AssignUserToRoleResponse>* streamer) {
-                       return this->StreamedAssignUserToRole(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_AssignUserToRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status AssignUserToRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::AssignUserToRoleRequest* /*request*/, ::fileengine_rpc::AssignUserToRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedAssignUserToRole(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::AssignUserToRoleRequest,::fileengine_rpc::AssignUserToRoleResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_RemoveUserFromRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_RemoveUserFromRole() {
-      ::grpc::Service::MarkMethodStreamed(29,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::RemoveUserFromRoleRequest, ::fileengine_rpc::RemoveUserFromRoleResponse>* streamer) {
-                       return this->StreamedRemoveUserFromRole(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_RemoveUserFromRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status RemoveUserFromRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::RemoveUserFromRoleRequest* /*request*/, ::fileengine_rpc::RemoveUserFromRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedRemoveUserFromRole(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::RemoveUserFromRoleRequest,::fileengine_rpc::RemoveUserFromRoleResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_GetRolesForUser : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_GetRolesForUser() {
-      ::grpc::Service::MarkMethodStreamed(30,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetRolesForUserRequest, ::fileengine_rpc::GetRolesForUserResponse>* streamer) {
-                       return this->StreamedGetRolesForUser(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_GetRolesForUser() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status GetRolesForUser(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetRolesForUserRequest* /*request*/, ::fileengine_rpc::GetRolesForUserResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetRolesForUser(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetRolesForUserRequest,::fileengine_rpc::GetRolesForUserResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_GetUsersForRole : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_GetUsersForRole() {
-      ::grpc::Service::MarkMethodStreamed(31,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetUsersForRoleRequest, ::fileengine_rpc::GetUsersForRoleResponse>* streamer) {
-                       return this->StreamedGetUsersForRole(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_GetUsersForRole() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status GetUsersForRole(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetUsersForRoleRequest* /*request*/, ::fileengine_rpc::GetUsersForRoleResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetUsersForRole(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetUsersForRoleRequest,::fileengine_rpc::GetUsersForRoleResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_GetAllRoles : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_GetAllRoles() {
-      ::grpc::Service::MarkMethodStreamed(32,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::GetAllRolesRequest, ::fileengine_rpc::GetAllRolesResponse>* streamer) {
-                       return this->StreamedGetAllRoles(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_GetAllRoles() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status GetAllRoles(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetAllRolesRequest* /*request*/, ::fileengine_rpc::GetAllRolesResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetAllRoles(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::GetAllRolesRequest,::fileengine_rpc::GetAllRolesResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_GetStorageUsage : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_GetStorageUsage() {
-      ::grpc::Service::MarkMethodStreamed(35,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::StorageUsageRequest, ::fileengine_rpc::StorageUsageResponse>* streamer) {
-                       return this->StreamedGetStorageUsage(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_GetStorageUsage() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status GetStorageUsage(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::StorageUsageRequest* /*request*/, ::fileengine_rpc::StorageUsageResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedGetStorageUsage(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::StorageUsageRequest,::fileengine_rpc::StorageUsageResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_PurgeOldVersions : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_PurgeOldVersions() {
-      ::grpc::Service::MarkMethodStreamed(36,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::PurgeOldVersionsRequest, ::fileengine_rpc::PurgeOldVersionsResponse>* streamer) {
-                       return this->StreamedPurgeOldVersions(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_PurgeOldVersions() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status PurgeOldVersions(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::PurgeOldVersionsRequest* /*request*/, ::fileengine_rpc::PurgeOldVersionsResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedPurgeOldVersions(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::PurgeOldVersionsRequest,::fileengine_rpc::PurgeOldVersionsResponse>* server_unary_streamer) = 0;
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_TriggerSync : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_TriggerSync() {
-      ::grpc::Service::MarkMethodStreamed(37,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::fileengine_rpc::TriggerSyncRequest, ::fileengine_rpc::TriggerSyncResponse>* streamer) {
-                       return this->StreamedTriggerSync(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_TriggerSync() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status TriggerSync(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::TriggerSyncRequest* /*request*/, ::fileengine_rpc::TriggerSyncResponse* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedTriggerSync(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::fileengine_rpc::TriggerSyncRequest,::fileengine_rpc::TriggerSyncResponse>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_MakeDirectory<WithStreamedUnaryMethod_RemoveDirectory<WithStreamedUnaryMethod_ListDirectory<WithStreamedUnaryMethod_ListDirectoryWithDeleted<WithStreamedUnaryMethod_Touch<WithStreamedUnaryMethod_RemoveFile<WithStreamedUnaryMethod_UndeleteFile<WithStreamedUnaryMethod_PutFile<WithStreamedUnaryMethod_GetFile<WithStreamedUnaryMethod_Stat<WithStreamedUnaryMethod_Exists<WithStreamedUnaryMethod_Rename<WithStreamedUnaryMethod_Move<WithStreamedUnaryMethod_Copy<WithStreamedUnaryMethod_ListVersions<WithStreamedUnaryMethod_GetVersion<WithStreamedUnaryMethod_RestoreToVersion<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_GetAllMetadata<WithStreamedUnaryMethod_DeleteMetadata<WithStreamedUnaryMethod_GetMetadataForVersion<WithStreamedUnaryMethod_GetAllMetadataForVersion<WithStreamedUnaryMethod_GrantPermission<WithStreamedUnaryMethod_RevokePermission<WithStreamedUnaryMethod_CheckPermission<WithStreamedUnaryMethod_CreateRole<WithStreamedUnaryMethod_DeleteRole<WithStreamedUnaryMethod_AssignUserToRole<WithStreamedUnaryMethod_RemoveUserFromRole<WithStreamedUnaryMethod_GetRolesForUser<WithStreamedUnaryMethod_GetUsersForRole<WithStreamedUnaryMethod_GetAllRoles<WithStreamedUnaryMethod_GetStorageUsage<WithStreamedUnaryMethod_PurgeOldVersions<WithStreamedUnaryMethod_TriggerSync<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedUnaryService;
-  template <class BaseClass>
-  class WithSplitStreamingMethod_StreamFileDownload : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithSplitStreamingMethod_StreamFileDownload() {
-      ::grpc::Service::MarkMethodStreamed(34,
+    WithSplitStreamingMethod_ReadFileStream() {
+      ::grpc::Service::MarkMethodStreamed(22,
         new ::grpc::internal::SplitServerStreamingHandler<
-          ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>(
+          ::fileengine::ReadFileStreamRequest, ::fileengine::ReadFileStreamResponse>(
             [this](::grpc::ServerContext* context,
                    ::grpc::ServerSplitStreamer<
-                     ::fileengine_rpc::GetFileRequest, ::fileengine_rpc::GetFileResponse>* streamer) {
-                       return this->StreamedStreamFileDownload(context,
+                     ::fileengine::ReadFileStreamRequest, ::fileengine::ReadFileStreamResponse>* streamer) {
+                       return this->StreamedReadFileStream(context,
                          streamer);
                   }));
     }
-    ~WithSplitStreamingMethod_StreamFileDownload() override {
+    ~WithSplitStreamingMethod_ReadFileStream() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status StreamFileDownload(::grpc::ServerContext* /*context*/, const ::fileengine_rpc::GetFileRequest* /*request*/, ::grpc::ServerWriter< ::fileengine_rpc::GetFileResponse>* /*writer*/) override {
+    ::grpc::Status ReadFileStream(::grpc::ServerContext* /*context*/, const ::fileengine::ReadFileStreamRequest* /*request*/, ::grpc::ServerWriter< ::fileengine::ReadFileStreamResponse>* /*writer*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     // replace default version of method with split streamed
-    virtual ::grpc::Status StreamedStreamFileDownload(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::fileengine_rpc::GetFileRequest,::fileengine_rpc::GetFileResponse>* server_split_streamer) = 0;
+    virtual ::grpc::Status StreamedReadFileStream(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::fileengine::ReadFileStreamRequest,::fileengine::ReadFileStreamResponse>* server_split_streamer) = 0;
   };
-  typedef WithSplitStreamingMethod_StreamFileDownload<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_MakeDirectory<WithStreamedUnaryMethod_RemoveDirectory<WithStreamedUnaryMethod_ListDirectory<WithStreamedUnaryMethod_ListDirectoryWithDeleted<WithStreamedUnaryMethod_Touch<WithStreamedUnaryMethod_RemoveFile<WithStreamedUnaryMethod_UndeleteFile<WithStreamedUnaryMethod_PutFile<WithStreamedUnaryMethod_GetFile<WithStreamedUnaryMethod_Stat<WithStreamedUnaryMethod_Exists<WithStreamedUnaryMethod_Rename<WithStreamedUnaryMethod_Move<WithStreamedUnaryMethod_Copy<WithStreamedUnaryMethod_ListVersions<WithStreamedUnaryMethod_GetVersion<WithStreamedUnaryMethod_RestoreToVersion<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_GetAllMetadata<WithStreamedUnaryMethod_DeleteMetadata<WithStreamedUnaryMethod_GetMetadataForVersion<WithStreamedUnaryMethod_GetAllMetadataForVersion<WithStreamedUnaryMethod_GrantPermission<WithStreamedUnaryMethod_RevokePermission<WithStreamedUnaryMethod_CheckPermission<WithStreamedUnaryMethod_CreateRole<WithStreamedUnaryMethod_DeleteRole<WithStreamedUnaryMethod_AssignUserToRole<WithStreamedUnaryMethod_RemoveUserFromRole<WithStreamedUnaryMethod_GetRolesForUser<WithStreamedUnaryMethod_GetUsersForRole<WithStreamedUnaryMethod_GetAllRoles<WithSplitStreamingMethod_StreamFileDownload<WithStreamedUnaryMethod_GetStorageUsage<WithStreamedUnaryMethod_PurgeOldVersions<WithStreamedUnaryMethod_TriggerSync<Service > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > StreamedService;
+  typedef WithSplitStreamingMethod_ReadFileStream<Service > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_MakeDirectory<WithStreamedUnaryMethod_RemoveDirectory<WithStreamedUnaryMethod_ListDirectory<WithStreamedUnaryMethod_CreateFile<WithStreamedUnaryMethod_DeleteFile<WithStreamedUnaryMethod_UndeleteFile<WithStreamedUnaryMethod_WriteFile<WithStreamedUnaryMethod_ReadFile<WithStreamedUnaryMethod_GetFileInfo<WithStreamedUnaryMethod_FileExists<WithStreamedUnaryMethod_MoveFile<WithStreamedUnaryMethod_CopyFile<WithStreamedUnaryMethod_RenameFile<WithStreamedUnaryMethod_ListVersions<WithStreamedUnaryMethod_ReadVersion<WithStreamedUnaryMethod_SetMetadata<WithStreamedUnaryMethod_GetMetadata<WithStreamedUnaryMethod_GetAllMetadata<WithStreamedUnaryMethod_DeleteMetadata<WithStreamedUnaryMethod_GetMetadataForVersion<WithStreamedUnaryMethod_GetAllMetadataForVersion<WithSplitStreamingMethod_ReadFileStream<WithStreamedUnaryMethod_ResolvePath<WithStreamedUnaryMethod_EvaluateACL<Service > > > > > > > > > > > > > > > > > > > > > > > > StreamedService;
 };
 
-}  // namespace fileengine_rpc
+}  // namespace fileengine
 
 
-#include <grpcpp/ports_undef.inc>
 #endif  // GRPC_fileservice_2eproto__INCLUDED

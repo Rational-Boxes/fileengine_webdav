@@ -8,8 +8,8 @@ public:
     MockGRPCClientWrapperForPathResolver(const std::string& server_address) 
         : GRPCClientWrapper(server_address) {}
     
-    MOCK_METHOD(fileengine_rpc::StatResponse, stat, 
-                (const fileengine_rpc::StatRequest&), (override));
+    MOCK_METHOD(fileengine::GetFileInfoResponse, getFileInfo,
+                (const fileengine::GetFileInfoRequest&), (override));
 };
 
 class PathResolverTest : public ::testing::Test {

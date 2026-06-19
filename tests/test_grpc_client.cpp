@@ -5,65 +5,68 @@
 class MockGRPCClientWrapper : public webdav::GRPCClientWrapper {
 public:
     MockGRPCClientWrapper() : GRPCClientWrapper("localhost:50051") {}
-    
-    MOCK_METHOD(fileengine_rpc::MakeDirectoryResponse, makeDirectory, 
-                (const fileengine_rpc::MakeDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RemoveDirectoryResponse, removeDirectory, 
-                (const fileengine_rpc::RemoveDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::ListDirectoryResponse, listDirectory, 
-                (const fileengine_rpc::ListDirectoryRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::ListDirectoryWithDeletedResponse, listDirectoryWithDeleted, 
-                (const fileengine_rpc::ListDirectoryWithDeletedRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::TouchResponse, touch, 
-                (const fileengine_rpc::TouchRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RemoveFileResponse, removeFile, 
-                (const fileengine_rpc::RemoveFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::UndeleteFileResponse, undeleteFile, 
-                (const fileengine_rpc::UndeleteFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::PutFileResponse, putFile, 
-                (const fileengine_rpc::PutFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetFileResponse, getFile, 
-                (const fileengine_rpc::GetFileRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::StatResponse, stat, 
-                (const fileengine_rpc::StatRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::ExistsResponse, exists, 
-                (const fileengine_rpc::ExistsRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RenameResponse, rename, 
-                (const fileengine_rpc::RenameRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::MoveResponse, move, 
-                (const fileengine_rpc::MoveRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::CopyResponse, copy, 
-                (const fileengine_rpc::CopyRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::ListVersionsResponse, listVersions, 
-                (const fileengine_rpc::ListVersionsRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetVersionResponse, getVersion, 
-                (const fileengine_rpc::GetVersionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RestoreToVersionResponse, restoreToVersion, 
-                (const fileengine_rpc::RestoreToVersionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::SetMetadataResponse, setMetadata, 
-                (const fileengine_rpc::SetMetadataRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetMetadataResponse, getMetadata, 
-                (const fileengine_rpc::GetMetadataRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetAllMetadataResponse, getAllMetadata, 
-                (const fileengine_rpc::GetAllMetadataRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::DeleteMetadataResponse, deleteMetadata, 
-                (const fileengine_rpc::DeleteMetadataRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetMetadataForVersionResponse, getMetadataForVersion, 
-                (const fileengine_rpc::GetMetadataForVersionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GetAllMetadataForVersionResponse, getAllMetadataForVersion, 
-                (const fileengine_rpc::GetAllMetadataForVersionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::GrantPermissionResponse, grantPermission, 
-                (const fileengine_rpc::GrantPermissionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::RevokePermissionResponse, revokePermission, 
-                (const fileengine_rpc::RevokePermissionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::CheckPermissionResponse, checkPermission, 
-                (const fileengine_rpc::CheckPermissionRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::StorageUsageResponse, getStorageUsage, 
-                (const fileengine_rpc::StorageUsageRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::PurgeOldVersionsResponse, purgeOldVersions, 
-                (const fileengine_rpc::PurgeOldVersionsRequest&), (override));
-    MOCK_METHOD(fileengine_rpc::TriggerSyncResponse, triggerSync, 
-                (const fileengine_rpc::TriggerSyncRequest&), (override));
+
+    // Directory operations
+    MOCK_METHOD(fileengine::MakeDirectoryResponse, makeDirectory,
+                (const fileengine::MakeDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine::RemoveDirectoryResponse, removeDirectory,
+                (const fileengine::RemoveDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine::ListDirectoryResponse, listDirectory,
+                (const fileengine::ListDirectoryRequest&), (override));
+
+    // File operations
+    MOCK_METHOD(fileengine::CreateFileResponse, createFile,
+                (const fileengine::CreateFileRequest&), (override));
+    MOCK_METHOD(fileengine::DeleteFileResponse, deleteFile,
+                (const fileengine::DeleteFileRequest&), (override));
+    MOCK_METHOD(fileengine::UndeleteFileResponse, undeleteFile,
+                (const fileengine::UndeleteFileRequest&), (override));
+    MOCK_METHOD(fileengine::WriteFileResponse, writeFile,
+                (const fileengine::WriteFileRequest&), (override));
+    MOCK_METHOD(fileengine::ReadFileResponse, readFile,
+                (const fileengine::ReadFileRequest&), (override));
+
+    // File information
+    MOCK_METHOD(fileengine::GetFileInfoResponse, getFileInfo,
+                (const fileengine::GetFileInfoRequest&), (override));
+    MOCK_METHOD(fileengine::FileExistsResponse, fileExists,
+                (const fileengine::FileExistsRequest&), (override));
+
+    // File manipulation operations
+    MOCK_METHOD(fileengine::RenameFileResponse, renameFile,
+                (const fileengine::RenameFileRequest&), (override));
+    MOCK_METHOD(fileengine::MoveFileResponse, moveFile,
+                (const fileengine::MoveFileRequest&), (override));
+    MOCK_METHOD(fileengine::CopyFileResponse, copyFile,
+                (const fileengine::CopyFileRequest&), (override));
+
+    // Version operations
+    MOCK_METHOD(fileengine::ListVersionsResponse, listVersions,
+                (const fileengine::ListVersionsRequest&), (override));
+    MOCK_METHOD(fileengine::ReadVersionResponse, readVersion,
+                (const fileengine::ReadVersionRequest&), (override));
+
+    // Metadata operations
+    MOCK_METHOD(fileengine::SetMetadataResponse, setMetadata,
+                (const fileengine::SetMetadataRequest&), (override));
+    MOCK_METHOD(fileengine::GetMetadataResponse, getMetadata,
+                (const fileengine::GetMetadataRequest&), (override));
+    MOCK_METHOD(fileengine::GetAllMetadataResponse, getAllMetadata,
+                (const fileengine::GetAllMetadataRequest&), (override));
+    MOCK_METHOD(fileengine::DeleteMetadataResponse, deleteMetadata,
+                (const fileengine::DeleteMetadataRequest&), (override));
+    MOCK_METHOD(fileengine::GetMetadataForVersionResponse, getMetadataForVersion,
+                (const fileengine::GetMetadataForVersionRequest&), (override));
+    MOCK_METHOD(fileengine::GetAllMetadataForVersionResponse, getAllMetadataForVersion,
+                (const fileengine::GetAllMetadataForVersionRequest&), (override));
+
+    // Path resolution
+    MOCK_METHOD(fileengine::ResolvePathResponse, resolvePath,
+                (const fileengine::ResolvePathRequest&), (override));
+
+    // ACL operations
+    MOCK_METHOD(fileengine::EvaluateACLResponse, evaluateACL,
+                (const fileengine::EvaluateACLRequest&), (override));
 };
 
 class GRPCClientWrapperTest : public ::testing::Test {
@@ -81,17 +84,17 @@ protected:
 
 TEST_F(GRPCClientWrapperTest, MakeDirectoryTest) {
     // Create a mock request
-    fileengine_rpc::MakeDirectoryRequest request;
+    fileengine::MakeDirectoryRequest request;
     request.set_parent_uid("parent-uuid");
     request.set_name("test-dir");
-    
-    fileengine_rpc::AuthenticationContext* auth = request.mutable_auth();
+
+    fileengine::AuthContext* auth = request.mutable_auth();
     auth->set_user("test-user");
     auth->set_tenant("test-tenant");
     auth->add_roles("users");
 
     // Create a mock response
-    fileengine_rpc::MakeDirectoryResponse response;
+    fileengine::MakeDirectoryResponse response;
     response.set_success(true);
     response.set_uid("new-dir-uuid");
 
@@ -107,28 +110,28 @@ TEST_F(GRPCClientWrapperTest, MakeDirectoryTest) {
     EXPECT_EQ(result.uid(), "new-dir-uuid");
 }
 
-TEST_F(GRPCClientWrapperTest, GetFileTest) {
+TEST_F(GRPCClientWrapperTest, ReadFileTest) {
     // Create a mock request
-    fileengine_rpc::GetFileRequest request;
+    fileengine::ReadFileRequest request;
     request.set_uid("file-uuid");
-    
-    fileengine_rpc::AuthenticationContext* auth = request.mutable_auth();
+
+    fileengine::AuthContext* auth = request.mutable_auth();
     auth->set_user("test-user");
     auth->set_tenant("test-tenant");
     auth->add_roles("users");
 
     // Create a mock response
-    fileengine_rpc::GetFileResponse response;
+    fileengine::ReadFileResponse response;
     response.set_success(true);
     std::string testData = "test file content";
     response.set_data(testData);
 
     // Set up the expectation
-    EXPECT_CALL(*client, getFile(::testing::_))
+    EXPECT_CALL(*client, readFile(::testing::_))
         .WillOnce(::testing::Return(response));
 
     // Call the method
-    auto result = client->getFile(request);
+    auto result = client->readFile(request);
 
     // Verify the result
     EXPECT_TRUE(result.success());
