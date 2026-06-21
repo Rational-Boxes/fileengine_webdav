@@ -120,29 +120,36 @@ std::string calculateDigestResponse(const std::string& ha1, const std::string& n
 }
 
 std::string extractTenantFromHostname(const std::string& hostname) {
-    // Example: tenant1.example.com -> tenant1
-    // Example: tenant-dev.example.com -> tenant (before hyphen)
-    // Example: www.example.com -> "" (www excluded)
-    
-    size_t first_dot = hostname.find('.');
+    // The first DNS label of the host is the tenant name. Hyphens are valid in
+    // labels and tenant names, so the WHOLE label is used (no truncation):
+    //   acme.example.com          -> "acme"
+    //   acme-staging.example.com  -> "acme-staging"
+    //   www.example.com           -> ""  (reserved; default tenant)
+    //   example.com / localhost   -> ""  (no subdomain; default tenant)
+    //   127.0.0.1                 -> ""  (IP literal; default tenant)
+
+    // Drop any ":port" suffix so the port can't be mistaken for part of a label.
+    std::string host = hostname.substr(0, hostname.find(':'));
+
+    size_t first_dot = host.find('.');
     if (first_dot == std::string::npos) {
+        return "";  // bare host (e.g. "localhost") -> default tenant
+    }
+
+    std::string subdomain = host.substr(0, first_dot);
+
+    // Reserved / non-tenant first labels.
+    if (subdomain.empty() || subdomain == "www") {
         return "";
     }
-    
-    std::string subdomain = hostname.substr(0, first_dot);
-    
-    // Exclude www
-    if (subdomain == "www") {
+
+    // An all-numeric first label means the host is an IPv4 literal, not a
+    // tenant subdomain.
+    if (subdomain.find_first_not_of("0123456789") == std::string::npos) {
         return "";
     }
-    
-    // If subdomain contains a hyphen, only take the part before it
-    size_t hyphen_pos = subdomain.find('-');
-    if (hyphen_pos != std::string::npos) {
-        return subdomain.substr(0, hyphen_pos);
-    }
-    
-    return subdomain;
+
+    return subdomain;  // full label; hyphens preserved
 }
 
 std::string getEnvOrDefault(const std::string& env_var, const std::string& default_val) {
