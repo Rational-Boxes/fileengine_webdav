@@ -7,368 +7,145 @@ namespace webdav {
 GRPCClientWrapper::GRPCClientWrapper(const std::string& server_address) {
     webdav::debugLog("GRPCClientWrapper: Creating gRPC channel to: " + server_address);
     auto channel = grpc::CreateCustomChannel(server_address, grpc::InsecureChannelCredentials(), channel_args_);
-    webdav::debugLog("GRPCClientWrapper: Channel created, creating stub");
-    stub_ = fileengine::FileService::NewStub(channel);
+    stub_ = fileengine_rpc::FileService::NewStub(channel);
     webdav::debugLog("GRPCClientWrapper: gRPC client initialized successfully");
 }
 
 GRPCClientWrapper::~GRPCClientWrapper() = default;
 
+// Uniform unary-call helper: invokes `fn`, and on transport failure marks the
+// response as a failure with the gRPC error message. `Resp` must expose
+// set_success(bool) and set_error(const std::string&).
+namespace {
+template <typename Resp, typename Fn>
+Resp invoke(const char* name, Fn&& fn) {
+    Resp response;
+    grpc::ClientContext context;
+    grpc::Status status = fn(context, response);
+    if (!status.ok()) {
+        webdav::errorLog(std::string(name) + " failed: " + status.error_message());
+        response.set_success(false);
+        response.set_error(status.error_message());
+    }
+    return response;
+}
+}  // namespace
+
 // Directory operations
-fileengine::MakeDirectoryResponse GRPCClientWrapper::makeDirectory(const fileengine::MakeDirectoryRequest& request) {
-    webdav::debugLog("gRPC MakeDirectory called with parent_uid: " + request.parent_uid() +
-                     ", name: " + request.name() +
-                     ", tenant: " + request.auth().tenant() +
-                     ", user: " + request.auth().user());
-
-    fileengine::MakeDirectoryResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->MakeDirectory(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("MakeDirectory failed: " + std::string(status.error_message()));
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        webdav::debugLog("MakeDirectory succeeded, returned uid: " + response.uid());
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::MakeDirectoryResponse GRPCClientWrapper::makeDirectory(const fileengine_rpc::MakeDirectoryRequest& request) {
+    return invoke<fileengine_rpc::MakeDirectoryResponse>("MakeDirectory",
+        [&](grpc::ClientContext& c, fileengine_rpc::MakeDirectoryResponse& r) { return stub_->MakeDirectory(&c, request, &r); });
 }
 
-fileengine::RemoveDirectoryResponse GRPCClientWrapper::removeDirectory(const fileengine::RemoveDirectoryRequest& request) {
-    webdav::debugLog("gRPC RemoveDirectory called with uid: " + request.uid() +
-                     ", tenant: " + request.auth().tenant() +
-                     ", user: " + request.auth().user());
-
-    fileengine::RemoveDirectoryResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->RemoveDirectory(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("RemoveDirectory failed: " + std::string(status.error_message()));
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        webdav::debugLog("RemoveDirectory succeeded for uid: " + request.uid());
-    }
-
-    return response;
+fileengine_rpc::RemoveDirectoryResponse GRPCClientWrapper::removeDirectory(const fileengine_rpc::RemoveDirectoryRequest& request) {
+    return invoke<fileengine_rpc::RemoveDirectoryResponse>("RemoveDirectory",
+        [&](grpc::ClientContext& c, fileengine_rpc::RemoveDirectoryResponse& r) { return stub_->RemoveDirectory(&c, request, &r); });
 }
 
-fileengine::ListDirectoryResponse GRPCClientWrapper::listDirectory(const fileengine::ListDirectoryRequest& request) {
-    webdav::debugLog("gRPC ListDirectory called with uid: " + request.uid() +
-                     ", tenant: " + request.auth().tenant() +
-                     ", user: " + request.auth().user() +
-                     ", roles count: " + std::to_string(request.auth().roles_size()));
+fileengine_rpc::ListDirectoryResponse GRPCClientWrapper::listDirectory(const fileengine_rpc::ListDirectoryRequest& request) {
+    return invoke<fileengine_rpc::ListDirectoryResponse>("ListDirectory",
+        [&](grpc::ClientContext& c, fileengine_rpc::ListDirectoryResponse& r) { return stub_->ListDirectory(&c, request, &r); });
+}
 
-    // Log all roles in the request
-    for (int i = 0; i < request.auth().roles_size(); i++) {
-        webdav::debugLog("gRPC ListDirectory - role[" + std::to_string(i) + "]: " + request.auth().roles(i));
-    }
-
-    fileengine::ListDirectoryResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->ListDirectory(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("ListDirectory failed: " + std::string(status.error_message()) +
-                         ", error code: " + std::to_string(status.error_code()));
-
-        // Check if this is a permission error that might be resolved by checking ACLs
-        if (status.error_code() == grpc::PERMISSION_DENIED || status.error_code() == grpc::NOT_FOUND) {
-            webdav::debugLog("ListDirectory failed with permission error, this might be resolved by proper ACL configuration");
-        }
-
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        webdav::debugLog("ListDirectory succeeded, returned " + std::to_string(response.entries_size()) + " entries");
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::ListDirectoryWithDeletedResponse GRPCClientWrapper::listDirectoryWithDeleted(const fileengine_rpc::ListDirectoryWithDeletedRequest& request) {
+    return invoke<fileengine_rpc::ListDirectoryWithDeletedResponse>("ListDirectoryWithDeleted",
+        [&](grpc::ClientContext& c, fileengine_rpc::ListDirectoryWithDeletedResponse& r) { return stub_->ListDirectoryWithDeleted(&c, request, &r); });
 }
 
 // File operations
-fileengine::CreateFileResponse GRPCClientWrapper::createFile(const fileengine::CreateFileRequest& request) {
-    fileengine::CreateFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->CreateFile(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("CreateFile failed: " + std::string(status.error_message()));
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::TouchResponse GRPCClientWrapper::touch(const fileengine_rpc::TouchRequest& request) {
+    return invoke<fileengine_rpc::TouchResponse>("Touch",
+        [&](grpc::ClientContext& c, fileengine_rpc::TouchResponse& r) { return stub_->Touch(&c, request, &r); });
 }
 
-fileengine::DeleteFileResponse GRPCClientWrapper::deleteFile(const fileengine::DeleteFileRequest& request) {
-    fileengine::DeleteFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->DeleteFile(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "DeleteFile failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::RemoveFileResponse GRPCClientWrapper::removeFile(const fileengine_rpc::RemoveFileRequest& request) {
+    return invoke<fileengine_rpc::RemoveFileResponse>("RemoveFile",
+        [&](grpc::ClientContext& c, fileengine_rpc::RemoveFileResponse& r) { return stub_->RemoveFile(&c, request, &r); });
 }
 
-fileengine::UndeleteFileResponse GRPCClientWrapper::undeleteFile(const fileengine::UndeleteFileRequest& request) {
-    fileengine::UndeleteFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->UndeleteFile(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "UndeleteFile failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::UndeleteFileResponse GRPCClientWrapper::undeleteFile(const fileengine_rpc::UndeleteFileRequest& request) {
+    return invoke<fileengine_rpc::UndeleteFileResponse>("UndeleteFile",
+        [&](grpc::ClientContext& c, fileengine_rpc::UndeleteFileResponse& r) { return stub_->UndeleteFile(&c, request, &r); });
 }
 
-fileengine::WriteFileResponse GRPCClientWrapper::writeFile(const fileengine::WriteFileRequest& request) {
-    webdav::debugLog("gRPC WriteFile called with uid: " + request.uid() +
-                     ", data size: " + std::to_string(request.data().size()) + " bytes" +
-                     ", tenant: " + request.auth().tenant() +
-                     ", user: " + request.auth().user());
-
-    fileengine::WriteFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->WriteFile(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("WriteFile failed: " + std::string(status.error_message()));
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        webdav::debugLog("WriteFile succeeded for uid: " + request.uid());
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::PutFileResponse GRPCClientWrapper::putFile(const fileengine_rpc::PutFileRequest& request) {
+    return invoke<fileengine_rpc::PutFileResponse>("PutFile",
+        [&](grpc::ClientContext& c, fileengine_rpc::PutFileResponse& r) { return stub_->PutFile(&c, request, &r); });
 }
 
-fileengine::ReadFileResponse GRPCClientWrapper::readFile(const fileengine::ReadFileRequest& request) {
-    webdav::debugLog("gRPC ReadFile called with uid: " + request.uid() +
-                     ", tenant: " + request.auth().tenant() +
-                     ", user: " + request.auth().user());
-
-    fileengine::ReadFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->ReadFile(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("ReadFile failed: " + std::string(status.error_message()));
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        webdav::debugLog("ReadFile succeeded, returned data of size: " + std::to_string(response.data().size()) + " bytes");
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::GetFileResponse GRPCClientWrapper::getFile(const fileengine_rpc::GetFileRequest& request) {
+    return invoke<fileengine_rpc::GetFileResponse>("GetFile",
+        [&](grpc::ClientContext& c, fileengine_rpc::GetFileResponse& r) { return stub_->GetFile(&c, request, &r); });
 }
 
 // File information
-fileengine::GetFileInfoResponse GRPCClientWrapper::getFileInfo(const fileengine::GetFileInfoRequest& request) {
-    fileengine::GetFileInfoResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->GetFileInfo(&context, request, &response);
-    if (!status.ok()) {
-        webdav::errorLog("GetFileInfo failed: " + std::string(status.error_message()));
-        // Set response as failure
-        response.set_success(false);
-        response.set_error(status.error_message());
-    } else {
-        response.set_success(true);
-    }
-
-    return response;
+fileengine_rpc::StatResponse GRPCClientWrapper::stat(const fileengine_rpc::StatRequest& request) {
+    return invoke<fileengine_rpc::StatResponse>("Stat",
+        [&](grpc::ClientContext& c, fileengine_rpc::StatResponse& r) { return stub_->Stat(&c, request, &r); });
 }
 
-fileengine::FileExistsResponse GRPCClientWrapper::fileExists(const fileengine::FileExistsRequest& request) {
-    fileengine::FileExistsResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->FileExists(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "FileExists failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::ExistsResponse GRPCClientWrapper::exists(const fileengine_rpc::ExistsRequest& request) {
+    return invoke<fileengine_rpc::ExistsResponse>("Exists",
+        [&](grpc::ClientContext& c, fileengine_rpc::ExistsResponse& r) { return stub_->Exists(&c, request, &r); });
 }
 
 // File manipulation operations
-fileengine::RenameFileResponse GRPCClientWrapper::renameFile(const fileengine::RenameFileRequest& request) {
-    fileengine::RenameFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->RenameFile(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "RenameFile failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::RenameResponse GRPCClientWrapper::rename(const fileengine_rpc::RenameRequest& request) {
+    return invoke<fileengine_rpc::RenameResponse>("Rename",
+        [&](grpc::ClientContext& c, fileengine_rpc::RenameResponse& r) { return stub_->Rename(&c, request, &r); });
 }
 
-fileengine::MoveFileResponse GRPCClientWrapper::moveFile(const fileengine::MoveFileRequest& request) {
-    fileengine::MoveFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->MoveFile(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "MoveFile failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::MoveResponse GRPCClientWrapper::move(const fileengine_rpc::MoveRequest& request) {
+    return invoke<fileengine_rpc::MoveResponse>("Move",
+        [&](grpc::ClientContext& c, fileengine_rpc::MoveResponse& r) { return stub_->Move(&c, request, &r); });
 }
 
-fileengine::CopyFileResponse GRPCClientWrapper::copyFile(const fileengine::CopyFileRequest& request) {
-    fileengine::CopyFileResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->CopyFile(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "CopyFile failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::CopyResponse GRPCClientWrapper::copy(const fileengine_rpc::CopyRequest& request) {
+    return invoke<fileengine_rpc::CopyResponse>("Copy",
+        [&](grpc::ClientContext& c, fileengine_rpc::CopyResponse& r) { return stub_->Copy(&c, request, &r); });
 }
 
 // Version operations
-fileengine::ListVersionsResponse GRPCClientWrapper::listVersions(const fileengine::ListVersionsRequest& request) {
-    fileengine::ListVersionsResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->ListVersions(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "ListVersions failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::ListVersionsResponse GRPCClientWrapper::listVersions(const fileengine_rpc::ListVersionsRequest& request) {
+    return invoke<fileengine_rpc::ListVersionsResponse>("ListVersions",
+        [&](grpc::ClientContext& c, fileengine_rpc::ListVersionsResponse& r) { return stub_->ListVersions(&c, request, &r); });
 }
 
-fileengine::ReadVersionResponse GRPCClientWrapper::readVersion(const fileengine::ReadVersionRequest& request) {
-    fileengine::ReadVersionResponse response;
-    grpc::ClientContext context;
+fileengine_rpc::GetVersionResponse GRPCClientWrapper::getVersion(const fileengine_rpc::GetVersionRequest& request) {
+    return invoke<fileengine_rpc::GetVersionResponse>("GetVersion",
+        [&](grpc::ClientContext& c, fileengine_rpc::GetVersionResponse& r) { return stub_->GetVersion(&c, request, &r); });
+}
 
-    grpc::Status status = stub_->ReadVersion(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "ReadVersion failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::RestoreToVersionResponse GRPCClientWrapper::restoreToVersion(const fileengine_rpc::RestoreToVersionRequest& request) {
+    return invoke<fileengine_rpc::RestoreToVersionResponse>("RestoreToVersion",
+        [&](grpc::ClientContext& c, fileengine_rpc::RestoreToVersionResponse& r) { return stub_->RestoreToVersion(&c, request, &r); });
 }
 
 // Metadata operations
-fileengine::SetMetadataResponse GRPCClientWrapper::setMetadata(const fileengine::SetMetadataRequest& request) {
-    fileengine::SetMetadataResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->SetMetadata(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "SetMetadata failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::SetMetadataResponse GRPCClientWrapper::setMetadata(const fileengine_rpc::SetMetadataRequest& request) {
+    return invoke<fileengine_rpc::SetMetadataResponse>("SetMetadata",
+        [&](grpc::ClientContext& c, fileengine_rpc::SetMetadataResponse& r) { return stub_->SetMetadata(&c, request, &r); });
 }
 
-fileengine::GetMetadataResponse GRPCClientWrapper::getMetadata(const fileengine::GetMetadataRequest& request) {
-    fileengine::GetMetadataResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->GetMetadata(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "GetMetadata failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::GetMetadataResponse GRPCClientWrapper::getMetadata(const fileengine_rpc::GetMetadataRequest& request) {
+    return invoke<fileengine_rpc::GetMetadataResponse>("GetMetadata",
+        [&](grpc::ClientContext& c, fileengine_rpc::GetMetadataResponse& r) { return stub_->GetMetadata(&c, request, &r); });
 }
 
-fileengine::GetAllMetadataResponse GRPCClientWrapper::getAllMetadata(const fileengine::GetAllMetadataRequest& request) {
-    fileengine::GetAllMetadataResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->GetAllMetadata(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "GetAllMetadata failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::GetAllMetadataResponse GRPCClientWrapper::getAllMetadata(const fileengine_rpc::GetAllMetadataRequest& request) {
+    return invoke<fileengine_rpc::GetAllMetadataResponse>("GetAllMetadata",
+        [&](grpc::ClientContext& c, fileengine_rpc::GetAllMetadataResponse& r) { return stub_->GetAllMetadata(&c, request, &r); });
 }
 
-fileengine::DeleteMetadataResponse GRPCClientWrapper::deleteMetadata(const fileengine::DeleteMetadataRequest& request) {
-    fileengine::DeleteMetadataResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->DeleteMetadata(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "DeleteMetadata failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
-}
-
-fileengine::GetMetadataForVersionResponse GRPCClientWrapper::getMetadataForVersion(const fileengine::GetMetadataForVersionRequest& request) {
-    fileengine::GetMetadataForVersionResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->GetMetadataForVersion(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "GetMetadataForVersion failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
-}
-
-fileengine::GetAllMetadataForVersionResponse GRPCClientWrapper::getAllMetadataForVersion(const fileengine::GetAllMetadataForVersionRequest& request) {
-    fileengine::GetAllMetadataForVersionResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->GetAllMetadataForVersion(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "GetAllMetadataForVersion failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
-}
-
-// Path resolution
-fileengine::ResolvePathResponse GRPCClientWrapper::resolvePath(const fileengine::ResolvePathRequest& request) {
-    fileengine::ResolvePathResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->ResolvePath(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "ResolvePath failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::DeleteMetadataResponse GRPCClientWrapper::deleteMetadata(const fileengine_rpc::DeleteMetadataRequest& request) {
+    return invoke<fileengine_rpc::DeleteMetadataResponse>("DeleteMetadata",
+        [&](grpc::ClientContext& c, fileengine_rpc::DeleteMetadataResponse& r) { return stub_->DeleteMetadata(&c, request, &r); });
 }
 
 // ACL operations
-fileengine::EvaluateACLResponse GRPCClientWrapper::evaluateACL(const fileengine::EvaluateACLRequest& request) {
-    fileengine::EvaluateACLResponse response;
-    grpc::ClientContext context;
-
-    grpc::Status status = stub_->EvaluateACL(&context, request, &response);
-    if (!status.ok()) {
-        std::cerr << "EvaluateACL failed: " << status.error_message() << std::endl;
-    }
-
-    return response;
+fileengine_rpc::CheckPermissionResponse GRPCClientWrapper::checkPermission(const fileengine_rpc::CheckPermissionRequest& request) {
+    return invoke<fileengine_rpc::CheckPermissionResponse>("CheckPermission",
+        [&](grpc::ClientContext& c, fileengine_rpc::CheckPermissionResponse& r) { return stub_->CheckPermission(&c, request, &r); });
 }
 
 } // namespace webdav

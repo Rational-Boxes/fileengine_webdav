@@ -11,7 +11,9 @@ find_package(Threads REQUIRED)
 
 # Find gRPC
 find_package(gRPC CONFIG REQUIRED)
-find_package(Protobuf CONFIG REQUIRED)
+# Module mode (FindProtobuf.cmake) — Fedora's protobuf-devel ships no
+# ProtobufConfig.cmake; the module still provides the protobuf::libprotobuf target.
+find_package(Protobuf REQUIRED)
 
 # Find Poco
 find_package(Poco COMPONENTS Foundation Util Net JSON Crypto )
@@ -19,12 +21,16 @@ if(NOT Poco_FOUND)
     message(FATAL_ERROR "Poco library not found")
 endif()
 
-# Find OpenLDAP
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LDAP REQUIRED ldap)
-if(NOT LDAP_FOUND)
-    message(FATAL_ERROR "OpenLDAP library not found")
+# Find OpenLDAP. Fedora's openldap-devel ships no pkg-config (.pc) file, so
+# locate the headers and the ldap/lber libraries directly.
+find_path(LDAP_INCLUDE_DIR ldap.h)
+find_library(LDAP_LIBRARY NAMES ldap)
+find_library(LBER_LIBRARY NAMES lber)
+if(NOT LDAP_INCLUDE_DIR OR NOT LDAP_LIBRARY)
+    message(FATAL_ERROR "OpenLDAP development files not found (install openldap-devel)")
 endif()
+set(LDAP_LIBRARIES ${LDAP_LIBRARY} ${LBER_LIBRARY})
+include_directories(${LDAP_INCLUDE_DIR})
 
 # Find PostgreSQL
 pkg_check_modules(PostgreSQL REQUIRED libpq)
