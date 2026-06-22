@@ -577,6 +577,48 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     std::string dir_uuid = *resolved;
     webdav::debugLog("handlePropfind: Path resolution result - UUID: " + dir_uuid);
 
+    // If the target is a file (not the root, and Stat says it is not a
+    // directory), respond with a single file resource and stop. Otherwise the
+    // code below would advertise it as a <D:collection/> and list its (non-
+    // existent) children, so WebDAV clients render the file as an empty folder.
+    if (path != "/" && !dir_uuid.empty()) {
+        fileengine_rpc::StatRequest stat_req;
+        stat_req.set_uid(dir_uuid);
+        *stat_req.mutable_auth() = auth_ctx;
+        fileengine_rpc::StatResponse stat_resp;
+        try {
+            stat_resp = grpc_client_->stat(stat_req);
+        } catch (const std::exception& e) {
+            webdav::errorLog("handlePropfind: Stat threw: " + std::string(e.what()));
+        }
+        if (stat_resp.success() && stat_resp.info().type() != fileengine_rpc::DIRECTORY) {
+            const auto& info = stat_resp.info();
+            webdav::debugLog("handlePropfind: target is a file, returning single file response");
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_MULTI_STATUS);
+            response.setReason("Multi-Status");
+            response.setContentType("application/xml; charset=utf-8");
+            std::ostream& ostr = response.send();
+            ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            ostr << "<D:multistatus xmlns:D=\"DAV:\">\n";
+            ostr << "  <D:response>\n";
+            ostr << "    <D:href>" << path << "</D:href>\n";
+            ostr << "    <D:propstat>\n";
+            ostr << "      <D:prop>\n";
+            ostr << "        <D:displayname>" << info.name() << "</D:displayname>\n";
+            ostr << "        <D:resourcetype/>\n";
+            ostr << "        <D:getcontenttype>application/octet-stream</D:getcontenttype>\n";
+            ostr << "        <D:getcontentlength>" << std::to_string(info.size()) << "</D:getcontentlength>\n";
+            ostr << "        <D:creationdate>" << isoDate(info.created_at()) << "</D:creationdate>\n";
+            ostr << "        <D:getlastmodified>" << httpDate(info.modified_at()) << "</D:getlastmodified>\n";
+            ostr << "      </D:prop>\n";
+            ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
+            ostr << "    </D:propstat>\n";
+            ostr << "  </D:response>\n";
+            ostr << "</D:multistatus>\n";
+            return;
+        }
+    }
+
     // Create gRPC request to list directory
     fileengine_rpc::ListDirectoryRequest list_req;
     list_req.set_uid(dir_uuid);
