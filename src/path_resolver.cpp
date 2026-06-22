@@ -4,8 +4,34 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <mutex>
+#include <sstream>
 
 namespace webdav {
+
+namespace {
+// Canonicalize a WebDAV path so equivalent forms resolve to the same cache key.
+// WebDAV clients request a collection with a trailing slash when navigating
+// into it (e.g. "/Test1/"), but mappings are cached without one ("/Test1"). It
+// also collapses accidental repeated slashes (e.g. "/Test1//test2"). The root
+// ("/" or empty) always normalizes to "/".
+std::string normalizePath(const std::string& path) {
+    std::string out;
+    out.reserve(path.size() + 1);
+    out.push_back('/');
+    bool prev_slash = true;  // leading slash already emitted
+    for (char c : path) {
+        if (c == '/') {
+            if (prev_slash) continue;  // collapse repeats / drop leading dup
+            prev_slash = true;
+        } else {
+            prev_slash = false;
+        }
+        out.push_back(c);
+    }
+    if (out.size() > 1 && out.back() == '/') out.pop_back();  // strip trailing
+    return out;
+}
+}  // namespace
 
 PathResolver::PathResolver(std::shared_ptr<GRPCClientWrapper> grpc_client)
     : grpc_client_(grpc_client) {
@@ -15,7 +41,72 @@ PathResolver::PathResolver(std::shared_ptr<GRPCClientWrapper> grpc_client)
     createPathMapping("/", "", ""); // Also map to empty string tenant for compatibility
 }
 
-std::string PathResolver::resolvePathToUUID(const std::string& path, const std::string& tenant) {
+std::optional<std::string> PathResolver::resolvePath(
+        const std::string& raw_path, const fileengine_rpc::AuthenticationContext& auth) {
+    const std::string path = normalizePath(raw_path);
+    const std::string& tenant = auth.tenant();
+
+    if (path == "/") return std::string();  // root is the empty UID
+
+    // Cache fast-path. Check membership explicitly (not emptiness): a non-root
+    // entry can legitimately map to "" in some tenants, and we must not confuse
+    // "cached" with "missing".
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        auto it = path_to_uuid_map_.find(getCacheKey(path, tenant));
+        if (it == path_to_uuid_map_.end() && !tenant.empty())
+            it = path_to_uuid_map_.find(getCacheKey(path, ""));
+        if (it != path_to_uuid_map_.end()) return it->second;
+    }
+
+    // Cache miss: walk from the root, listing each level and matching the next
+    // segment by name, caching every prefix we resolve along the way.
+    std::string current_uuid;  // root
+    std::string current_path;  // builds up to `path`
+    std::string segment;
+    std::istringstream segs(path);
+    while (std::getline(segs, segment, '/')) {
+        if (segment.empty()) continue;  // leading slash / repeats
+
+        fileengine_rpc::ListDirectoryRequest req;
+        req.set_uid(current_uuid);
+        *req.mutable_auth() = auth;
+
+        fileengine_rpc::ListDirectoryResponse resp;
+        try {
+            resp = grpc_client_->listDirectory(req);
+        } catch (const std::exception& e) {
+            webdav::errorLog("PathResolver::resolvePath: ListDirectory threw: " + std::string(e.what()));
+            return std::nullopt;
+        }
+        if (!resp.success()) {
+            webdav::debugLog("PathResolver::resolvePath: ListDirectory failed at '" + current_path +
+                             "': " + resp.error());
+            return std::nullopt;
+        }
+
+        bool found = false;
+        for (const auto& entry : resp.entries()) {
+            if (entry.name() == segment) {
+                current_uuid = entry.uid();
+                current_path += "/" + segment;
+                createPathMapping(current_path, current_uuid, tenant);  // locks internally
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            webdav::debugLog("PathResolver::resolvePath: segment '" + segment +
+                             "' not found under '" + current_path + "'");
+            return std::nullopt;
+        }
+    }
+
+    return current_uuid;
+}
+
+std::string PathResolver::resolvePathToUUID(const std::string& raw_path, const std::string& tenant) {
+    std::string path = normalizePath(raw_path);
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = path_to_uuid_map_.find(getCacheKey(path, tenant));
     if (it != path_to_uuid_map_.end()) {
@@ -67,18 +158,20 @@ std::string PathResolver::resolveUUIDToPath(const std::string& uuid, const std::
     return "";
 }
 
-bool PathResolver::createPathMapping(const std::string& path, const std::string& uuid, const std::string& tenant) {
+bool PathResolver::createPathMapping(const std::string& raw_path, const std::string& uuid, const std::string& tenant) {
+    std::string path = normalizePath(raw_path);
     std::lock_guard<std::mutex> lock(mutex_);
     std::string path_key = getCacheKey(path, tenant);
     std::string uuid_key = getCacheKey(uuid, tenant);
-    
+
     path_to_uuid_map_[path_key] = uuid;
     uuid_to_path_map_[uuid_key] = path;
-    
+
     return true;
 }
 
-bool PathResolver::removePathMapping(const std::string& path, const std::string& tenant) {
+bool PathResolver::removePathMapping(const std::string& raw_path, const std::string& tenant) {
+    std::string path = normalizePath(raw_path);
     std::lock_guard<std::mutex> lock(mutex_);
     std::string path_key = getCacheKey(path, tenant);
     
@@ -98,7 +191,8 @@ bool PathResolver::pathExists(const std::string& path, const std::string& tenant
     return !resolvePathToUUID(path, tenant).empty();
 }
 
-std::string PathResolver::getParentUUID(const std::string& path, const std::string& tenant) {
+std::string PathResolver::getParentUUID(const std::string& raw_path, const std::string& tenant) {
+    std::string path = normalizePath(raw_path);
     if (path == "/" || path.empty()) {
         return ""; // Root has no parent
     }

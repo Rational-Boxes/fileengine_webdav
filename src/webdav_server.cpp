@@ -130,11 +130,9 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
         auth_ctx.add_roles(role);
     }
 
-    // Resolve path to UUID using path resolver
-    std::string file_uuid = path_resolver_->resolvePathToUUID(path, tenant);
-
-    if (file_uuid.empty()) {
-        // If path not found in cache, return 404
+    // Resolve path to UUID (walks the tree on a cache miss).
+    std::optional<std::string> resolved = path_resolver_->resolvePath(path, auth_ctx);
+    if (!resolved) {
         response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
         response.setReason("Not Found");
         response.setContentType("text/plain");
@@ -142,6 +140,7 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
         ostr << "File not found: " << path;
         return;
     }
+    std::string file_uuid = *resolved;
 
     // Create gRPC request to get file
     fileengine_rpc::GetFileRequest get_req;
@@ -238,12 +237,10 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
         parent_path = "/";  // Default to root if no slash found
     }
 
-    // Root ("/") is the empty UID — a valid parent, distinct from "not found".
-    // Only a non-root parent that fails to resolve is a 409.
-    bool parent_is_root = (parent_path == "/" || parent_path.empty());
-    std::string parent_uuid = parent_is_root ? "" : path_resolver_->resolvePathToUUID(parent_path, tenant);
-
-    if (!parent_is_root && parent_uuid.empty()) {
+    // Resolve the parent (walks the tree on a cache miss). Root resolves to the
+    // empty UID; only a non-existent parent is a 409.
+    std::optional<std::string> parent_resolved = path_resolver_->resolvePath(parent_path, auth_ctx);
+    if (!parent_resolved) {
         response.setStatus(Poco::Net::HTTPResponse::HTTP_CONFLICT); // 409 Conflict - parent doesn't exist
         response.setReason("Conflict");
         response.setContentType("text/plain");
@@ -251,6 +248,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
         ostr << "Parent directory does not exist: " << parent_path;
         return;
     }
+    std::string parent_uuid = *parent_resolved;
 
     // Extract filename from path
     std::string filename = clean_path.substr(clean_path.find_last_of('/') + 1);
@@ -261,10 +259,10 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     put_req.set_uid(""); // Will be assigned by the server
     *put_req.mutable_auth() = auth_ctx;
 
-    // For now, we'll call touch to create the file first if it doesn't exist
-    // Then update its content
-    std::string file_uuid = path_resolver_->resolvePathToUUID(path, tenant);
-    if (file_uuid.empty()) {
+    // Create the file via touch if it does not already exist, then write content.
+    std::optional<std::string> file_resolved = path_resolver_->resolvePath(path, auth_ctx);
+    std::string file_uuid = file_resolved.value_or("");
+    if (!file_resolved) {
         // File doesn't exist, create it first
         fileengine_rpc::TouchRequest touch_req;
         touch_req.set_parent_uid(parent_uuid);
@@ -360,12 +358,10 @@ void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Po
         parent_path = "/";  // Default to root if no slash found
     }
 
-    // Root ("/") is the empty UID — a valid parent, distinct from "not found".
-    // Only a non-root parent that fails to resolve is a 409.
-    bool parent_is_root = (parent_path == "/" || parent_path.empty());
-    std::string parent_uuid = parent_is_root ? "" : path_resolver_->resolvePathToUUID(parent_path, tenant);
-
-    if (!parent_is_root && parent_uuid.empty()) {
+    // Resolve the parent (walks the tree on a cache miss). Root resolves to the
+    // empty UID; only a non-existent parent is a 409.
+    std::optional<std::string> parent_resolved = path_resolver_->resolvePath(parent_path, auth_ctx);
+    if (!parent_resolved) {
         response.setStatus(Poco::Net::HTTPResponse::HTTP_CONFLICT); // 409 Conflict - parent doesn't exist
         response.setReason("Conflict");
         response.setContentType("text/plain");
@@ -373,6 +369,7 @@ void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Po
         ostr << "Parent directory does not exist: " << parent_path;
         return;
     }
+    std::string parent_uuid = *parent_resolved;
 
     // Extract directory name from path
     std::string dirname = clean_path.substr(clean_path.find_last_of('/') + 1);
@@ -437,11 +434,10 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
         auth_ctx.add_roles(role);
     }
 
-    // Resolve path to UUID using path resolver
-    std::string resource_uuid = path_resolver_->resolvePathToUUID(path, tenant);
-
-    if (resource_uuid.empty()) {
-        // If path not found in cache, return 404
+    // Resolve path to UUID (walks the tree on a cache miss).
+    std::optional<std::string> resolved = path_resolver_->resolvePath(path, auth_ctx);
+    if (!resolved || resolved->empty()) {
+        // Not found, or the root itself (which cannot be deleted) => 404.
         response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
         response.setReason("Not Found");
         response.setContentType("text/plain");
@@ -449,6 +445,7 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
         ostr << "Resource not found: " << path;
         return;
     }
+    std::string resource_uuid = *resolved;
 
     // Determine if it's a file or directory by getting its info
     fileengine_rpc::StatRequest stat_req;
@@ -518,6 +515,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     std::string uri = request.getURI();
     Poco::URI poco_uri(uri);
     std::string path = poco_uri.getPath();
+    // WebDAV clients enter a collection by requesting it with a trailing slash
+    // ("/Test1/"); drop it so the path matches the cached mapping ("/Test1") and
+    // child hrefs/cache keys below are built without a doubled slash. Root stays "/".
+    if (path.size() > 1 && path.back() == '/') path.pop_back();
     // RFC 4918 §9.1 Depth: "0" = the resource only, "1" = resource + children.
     // Clients (e.g. cadaver) issue a Depth:0 PROPFIND on connect and expect a
     // single <D:response>; returning children there overflows their parser.
@@ -559,17 +560,63 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     }
     webdav::debugLog("handlePropfind: Auth context built with " + std::to_string(auth_ctx.roles_size()) + " roles");
 
-    // Resolve path to UUID using path resolver
+    // Resolve path to UUID (walks the tree on a cache miss). A genuinely missing
+    // path now returns 404 instead of silently falling back to the root listing.
     webdav::debugLog("handlePropfind: Resolving path to UUID: " + path);
-    std::string dir_uuid = path_resolver_->resolvePathToUUID(path, tenant);
+    std::optional<std::string> resolved = path_resolver_->resolvePath(path, auth_ctx);
+    if (!resolved) {
+        webdav::debugLog("handlePropfind: path not found: " + path);
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+        response.setReason("Not Found");
+        response.setContentType("application/xml");
+        std::ostream& ostr = response.send();
+        ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+        ostr << "<D:error xmlns:D=\"DAV:\"/>";
+        return;
+    }
+    std::string dir_uuid = *resolved;
     webdav::debugLog("handlePropfind: Path resolution result - UUID: " + dir_uuid);
 
-    // If path doesn't exist in cache, try to resolve it from the root or create a default root
-    if (dir_uuid.empty() && path == "/") {
-        // For root path, we might need to use a special root UUID or create one
-        // For now, let's try to list the root directory with an empty UUID (which might represent the root)
-        dir_uuid = ""; // Empty UUID might represent root in the FileEngine
-        webdav::debugLog("handlePropfind: Using empty UUID for root directory");
+    // If the target is a file (not the root, and Stat says it is not a
+    // directory), respond with a single file resource and stop. Otherwise the
+    // code below would advertise it as a <D:collection/> and list its (non-
+    // existent) children, so WebDAV clients render the file as an empty folder.
+    if (path != "/" && !dir_uuid.empty()) {
+        fileengine_rpc::StatRequest stat_req;
+        stat_req.set_uid(dir_uuid);
+        *stat_req.mutable_auth() = auth_ctx;
+        fileengine_rpc::StatResponse stat_resp;
+        try {
+            stat_resp = grpc_client_->stat(stat_req);
+        } catch (const std::exception& e) {
+            webdav::errorLog("handlePropfind: Stat threw: " + std::string(e.what()));
+        }
+        if (stat_resp.success() && stat_resp.info().type() != fileengine_rpc::DIRECTORY) {
+            const auto& info = stat_resp.info();
+            webdav::debugLog("handlePropfind: target is a file, returning single file response");
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_MULTI_STATUS);
+            response.setReason("Multi-Status");
+            response.setContentType("application/xml; charset=utf-8");
+            std::ostream& ostr = response.send();
+            ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+            ostr << "<D:multistatus xmlns:D=\"DAV:\">\n";
+            ostr << "  <D:response>\n";
+            ostr << "    <D:href>" << path << "</D:href>\n";
+            ostr << "    <D:propstat>\n";
+            ostr << "      <D:prop>\n";
+            ostr << "        <D:displayname>" << info.name() << "</D:displayname>\n";
+            ostr << "        <D:resourcetype/>\n";
+            ostr << "        <D:getcontenttype>application/octet-stream</D:getcontenttype>\n";
+            ostr << "        <D:getcontentlength>" << std::to_string(info.size()) << "</D:getcontentlength>\n";
+            ostr << "        <D:creationdate>" << isoDate(info.created_at()) << "</D:creationdate>\n";
+            ostr << "        <D:getlastmodified>" << httpDate(info.modified_at()) << "</D:getlastmodified>\n";
+            ostr << "      </D:prop>\n";
+            ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
+            ostr << "    </D:propstat>\n";
+            ostr << "  </D:response>\n";
+            ostr << "</D:multistatus>\n";
+            return;
+        }
     }
 
     // Create gRPC request to list directory

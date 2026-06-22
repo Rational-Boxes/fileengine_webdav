@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <mutex>
+#include <optional>
 
 #include "grpc_client_wrapper.h"
 
@@ -14,7 +15,20 @@ class PathResolver {
 public:
     PathResolver(std::shared_ptr<GRPCClientWrapper> grpc_client);
 
-    // Resolve a path to a UUID
+    // Resolve a path to a node UID, walking the tree from the root via gRPC
+    // ListDirectory when the in-memory cache misses (using the request's auth
+    // context for ACL evaluation). Successfully resolved prefixes are cached.
+    // Returns:
+    //   std::nullopt   - a path segment does not exist (caller should 404/409)
+    //   ""             - the root collection
+    //   <uuid>         - the resolved node
+    // Prefer this over the cache-only resolvePathToUUID: a cache miss there
+    // returns "" which is indistinguishable from the root, silently listing the
+    // root for any not-yet-cached or non-existent path.
+    std::optional<std::string> resolvePath(const std::string& path,
+                                           const fileengine_rpc::AuthenticationContext& auth);
+
+    // Resolve a path to a UUID from the in-memory cache only ("" if absent/root).
     std::string resolvePathToUUID(const std::string& path, const std::string& tenant);
 
     // Resolve a UUID to a path
