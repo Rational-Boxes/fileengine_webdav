@@ -96,13 +96,12 @@ req COPY "${BASE}/copy.txt" 201 -H "Destination: ${WEBDAV_URL}${BASE}/copy-dup.t
 assert_listing "${BASE}" "copy.txt"     present            # source preserved
 assert_listing "${BASE}" "copy-dup.txt" present
 
-echo "-- cleanup (bottom-up: the bridge's DELETE is not recursive) --"
-req DELETE "${BASE}/copy.txt"               204
-req DELETE "${BASE}/copy-dup.txt"           204
-req DELETE "${BASE}/dest/dirB/renamed.txt"  204
-req DELETE "${BASE}/dest/dirB"              204
-req DELETE "${BASE}/dest"                   204
-req DELETE "${BASE}"                        204
+echo "-- DELETE: recursive removal of a non-empty collection --"
+req DELETE "${BASE}" 204
+# Verify the whole tree is gone (PROPFIND on the base now 404s).
+base_code=$(curl -s -o /dev/null -w '%{http_code}' -X PROPFIND -H "Depth: 0" "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}${BASE}")
+if [ "$base_code" = "404" ]; then echo "  PASS  ${BASE} fully removed (404)"; pass=$((pass+1));
+else echo "  FAIL  ${BASE} still present (PROPFIND $base_code)"; fail=$((fail+1)); fi
 
 echo "== results: ${pass} passed, ${fail} failed =="
 [ "$fail" -eq 0 ]

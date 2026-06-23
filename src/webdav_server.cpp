@@ -35,6 +35,41 @@ std::string isoDate(std::int64_t epoch_seconds) {
     Poco::Timestamp ts = Poco::Timestamp::fromEpochTime(static_cast<std::time_t>(epoch_seconds));
     return Poco::DateTimeFormatter::format(ts, Poco::DateTimeFormat::ISO8601_FORMAT);
 }
+
+// Recursively delete a directory tree: depth-first remove all children (files
+// directly, sub-directories via recursion), then the directory itself. The core
+// RemoveDirectory refuses a non-empty directory, so WebDAV DELETE on a
+// collection must clear it first. Returns false and sets `err` on the first
+// failure.
+bool removeTreeRecursive(GRPCClientWrapper* grpc,
+                         const std::string& dir_uid,
+                         const fileengine_rpc::AuthenticationContext& auth,
+                         std::string& err) {
+    fileengine_rpc::ListDirectoryRequest lr;
+    lr.set_uid(dir_uid);
+    *lr.mutable_auth() = auth;
+    auto listing = grpc->listDirectory(lr);
+    if (!listing.success()) { err = listing.error(); return false; }
+
+    for (const auto& entry : listing.entries()) {
+        if (entry.type() == fileengine_rpc::DIRECTORY) {
+            if (!removeTreeRecursive(grpc, entry.uid(), auth, err)) return false;
+        } else {
+            fileengine_rpc::RemoveFileRequest rf;
+            rf.set_uid(entry.uid());
+            *rf.mutable_auth() = auth;
+            auto rr = grpc->removeFile(rf);
+            if (!rr.success()) { err = rr.error(); return false; }
+        }
+    }
+
+    fileengine_rpc::RemoveDirectoryRequest rd;
+    rd.set_uid(dir_uid);
+    *rd.mutable_auth() = auth;
+    auto rdr = grpc->removeDirectory(rd);
+    if (!rdr.success()) { err = rdr.error(); return false; }
+    return true;
+}
 }  // namespace
 
 void WebDAVRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
@@ -465,22 +500,19 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
         return;
     }
 
-    // Create gRPC request to delete resource based on its type
+    // Delete based on type. Collections are removed recursively (the core's
+    // RemoveDirectory refuses a non-empty directory), per RFC 4918 §9.6.
     if (stat_resp.info().type() == fileengine_rpc::DIRECTORY) {
-        // It's a directory, use RemoveDirectory
-        fileengine_rpc::RemoveDirectoryRequest rm_req;
-        rm_req.set_uid(resource_uuid);
-        *rm_req.mutable_auth() = auth_ctx;
-
-        fileengine_rpc::RemoveDirectoryResponse rm_resp = grpc_client_->removeDirectory(rm_req);
-
-        if (!rm_resp.success()) {
-            webdav::errorLog("Failed to delete directory: " + rm_resp.error());
-            response.setStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
-            response.setReason("Internal Server Error");
+        std::string err;
+        if (!removeTreeRecursive(grpc_client_.get(), resource_uuid, auth_ctx, err)) {
+            webdav::errorLog("Failed to delete directory tree: " + err);
+            Poco::Net::HTTPResponse::HTTPStatus status = Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR;
+            if (err.find("permission") != std::string::npos) status = Poco::Net::HTTPResponse::HTTP_FORBIDDEN;
+            response.setStatus(status);
+            response.setReason("Delete Failed");
             response.setContentType("text/plain");
             std::ostream& ostr = response.send();
-            ostr << "Failed to delete directory: " << rm_resp.error();
+            ostr << "Failed to delete directory: " << err;
             return;
         }
     } else {
