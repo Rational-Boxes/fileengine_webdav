@@ -96,6 +96,23 @@ req COPY "${BASE}/copy.txt" 201 -H "Destination: ${WEBDAV_URL}${BASE}/copy-dup.t
 assert_listing "${BASE}" "copy.txt"     present            # source preserved
 assert_listing "${BASE}" "copy-dup.txt" present
 
+echo "-- RENDITIONS: hidden children of a file --"
+req PUT "${BASE}/doc.txt"          201 --data-binary "primary content"
+# A rendition is a child of the file (parent = the file's path).
+req PUT "${BASE}/doc.txt/alt.pdf"  201 --data-binary "alternate-format rendition"
+# The rendition must NOT appear in the parent directory listing...
+assert_listing "${BASE}" "doc.txt" present
+assert_listing "${BASE}" "alt.pdf" absent
+# ...nor when listing the file itself (PROPFIND Depth:1 on the file).
+assert_listing "${BASE}/doc.txt" "alt.pdf" absent
+# ...and the file must still present as a file, never a collection.
+fxml=$(curl -s -X PROPFIND -H "Depth: 1" "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}${BASE}/doc.txt")
+if echo "$fxml" | grep -q '<D:collection/>'; then
+  echo "  FAIL  file with renditions advertised as a collection"; fail=$((fail+1))
+else
+  echo "  PASS  file with renditions is not a collection"; pass=$((pass+1))
+fi
+
 echo "-- DELETE: recursive removal of a non-empty collection --"
 req DELETE "${BASE}" 204
 # Verify the whole tree is gone (PROPFIND on the base now 404s).
