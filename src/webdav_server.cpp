@@ -19,6 +19,7 @@
 #include <sstream>
 #include <fstream>
 #include <ctime>
+#include <set>
 
 namespace webdav {
 
@@ -821,13 +822,132 @@ void WebDAVRequestHandler::handleCopy(Poco::Net::HTTPServerRequest& request, Poc
         return;
     }
 
-    // In a real implementation, we would copy the resource via gRPC
-    // For now, we'll simulate the functionality
+    // Build the gRPC auth context.
+    fileengine_rpc::AuthenticationContext auth_ctx;
+    auth_ctx.set_user(user);
+    auth_ctx.set_tenant(tenant);
+    for (const auto& role : roles) auth_ctx.add_roles(role);
+
+    auto strip_slash = [](std::string p) {
+        if (p.size() > 1 && p.back() == '/') p.pop_back();
+        return p;
+    };
+    source_path = strip_slash(source_path);
+    dest_path = strip_slash(dest_path);
+
+    auto split_path = [](const std::string& p, std::string& parent, std::string& name) {
+        size_t pos = p.find_last_of('/');
+        parent = (pos == std::string::npos || pos == 0) ? "/" : p.substr(0, pos);
+        name = (pos == std::string::npos) ? p : p.substr(pos + 1);
+    };
+    std::string src_parent, src_name, dst_parent, dst_name;
+    split_path(source_path, src_parent, src_name);
+    split_path(dest_path, dst_parent, dst_name);
+    if (dst_name.empty()) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+        response.setReason("Bad Request");
+        std::ostream& ostr = response.send();
+        ostr << "Invalid Destination";
+        return;
+    }
+
+    // Resolve source and destination parent.
+    std::optional<std::string> src = path_resolver_->resolvePath(source_path, auth_ctx);
+    if (!src || src->empty()) {
+        webdav::debugLog("handleCopy: source not found: " + source_path);
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+        response.setReason("Not Found");
+        std::ostream& ostr = response.send();
+        ostr << "Source not found";
+        return;
+    }
+    std::optional<std::string> dparent = path_resolver_->resolvePath(dst_parent, auth_ctx);
+    if (!dparent) {
+        webdav::debugLog("handleCopy: destination parent not found: " + dst_parent);
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_CONFLICT);
+        response.setReason("Conflict");
+        std::ostream& ostr = response.send();
+        ostr << "Destination parent does not exist";
+        return;
+    }
+
+    // The core copies a node into a parent keeping the source name, and
+    // CopyResponse carries no uid. To support a renamed copy (and stay correct
+    // when names collide), snapshot the destination parent's child uids, copy,
+    // then diff to find the new node and rename it.
+    auto list_uids = [&](const std::string& dir_uid, std::set<std::string>& out) -> bool {
+        fileengine_rpc::ListDirectoryRequest lr;
+        lr.set_uid(dir_uid);
+        *lr.mutable_auth() = auth_ctx;
+        auto resp = grpc_client_->listDirectory(lr);
+        if (!resp.success()) return false;
+        for (const auto& e : resp.entries()) out.insert(e.uid());
+        return true;
+    };
+    std::set<std::string> before;
+    bool need_rename = (dst_name != src_name);
+    if (need_rename) list_uids(*dparent, before);
+
+    auto map_error = [](const std::string& err) {
+        if (err.find("permission") != std::string::npos) return Poco::Net::HTTPResponse::HTTP_FORBIDDEN;
+        if (err.find("not exist") != std::string::npos || err.find("not found") != std::string::npos)
+            return Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        if (err.find("already") != std::string::npos) return Poco::Net::HTTPResponse::HTTP_CONFLICT;
+        return Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR;
+    };
+
+    webdav::debugLog("handleCopy: copy '" + source_path + "' -> parent '" + dst_parent + "'");
+    fileengine_rpc::CopyRequest cq;
+    cq.set_source_uid(*src);
+    cq.set_destination_parent_uid(*dparent);
+    *cq.mutable_auth() = auth_ctx;
+    auto cr = grpc_client_->copy(cq);
+    if (!cr.success()) {
+        webdav::errorLog("handleCopy: copy failed: " + cr.error());
+        response.setStatus(map_error(cr.error()));
+        response.setReason("Copy Failed");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "Copy failed: " << cr.error();
+        return;
+    }
+
+    if (need_rename) {
+        std::set<std::string> after;
+        list_uids(*dparent, after);
+        std::string new_uid;
+        for (const auto& u : after) {
+            if (!before.count(u)) { new_uid = u; break; }
+        }
+        if (new_uid.empty()) {
+            webdav::errorLog("handleCopy: could not identify the copied node to rename");
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+            response.setReason("Copy Incomplete");
+            std::ostream& ostr = response.send();
+            ostr << "Copy succeeded but the new node could not be renamed";
+            return;
+        }
+        fileengine_rpc::RenameRequest rq;
+        rq.set_uid(new_uid);
+        rq.set_new_name(dst_name);
+        *rq.mutable_auth() = auth_ctx;
+        auto rr = grpc_client_->rename(rq);
+        if (!rr.success()) {
+            webdav::errorLog("handleCopy: rename of copy failed: " + rr.error());
+            response.setStatus(map_error(rr.error()));
+            response.setReason("Copy Failed");
+            std::ostream& ostr = response.send();
+            ostr << "Copy rename failed: " << rr.error();
+            return;
+        }
+        path_resolver_->createPathMapping(dest_path, new_uid, tenant);
+    }
+
+    webdav::debugLog("handleCopy: completed '" + source_path + "' -> '" + dest_path + "'");
     response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
     response.setReason("Created");
-    response.setContentType("text/plain");
-    std::ostream& ostr = response.send();
-    ostr << "COPY request from: " << source_path << " to: " << dest_path << " (tenant: " << tenant << ")";
+    response.setContentLength(0);
+    response.send();
 }
 
 void WebDAVRequestHandler::handleMove(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
@@ -866,13 +986,117 @@ void WebDAVRequestHandler::handleMove(Poco::Net::HTTPServerRequest& request, Poc
         return;
     }
 
-    // In a real implementation, we would move the resource via gRPC
-    // For now, we'll simulate the functionality
+    // Build the gRPC auth context.
+    fileengine_rpc::AuthenticationContext auth_ctx;
+    auth_ctx.set_user(user);
+    auth_ctx.set_tenant(tenant);
+    for (const auto& role : roles) auth_ctx.add_roles(role);
+
+    // Normalize: drop a trailing slash (clients address collections as "/x/").
+    auto strip_slash = [](std::string p) {
+        if (p.size() > 1 && p.back() == '/') p.pop_back();
+        return p;
+    };
+    source_path = strip_slash(source_path);
+    dest_path = strip_slash(dest_path);
+
+    // Split a path into (parent, name).
+    auto split_path = [](const std::string& p, std::string& parent, std::string& name) {
+        size_t pos = p.find_last_of('/');
+        parent = (pos == std::string::npos || pos == 0) ? "/" : p.substr(0, pos);
+        name = (pos == std::string::npos) ? p : p.substr(pos + 1);
+    };
+
+    std::string src_parent, src_name, dst_parent, dst_name;
+    split_path(source_path, src_parent, src_name);
+    split_path(dest_path, dst_parent, dst_name);
+    if (dst_name.empty()) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+        response.setReason("Bad Request");
+        std::ostream& ostr = response.send();
+        ostr << "Invalid Destination";
+        return;
+    }
+
+    // Resolve the source node.
+    std::optional<std::string> src = path_resolver_->resolvePath(source_path, auth_ctx);
+    if (!src || src->empty()) {
+        webdav::debugLog("handleMove: source not found: " + source_path);
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_NOT_FOUND);
+        response.setReason("Not Found");
+        std::ostream& ostr = response.send();
+        ostr << "Source not found";
+        return;
+    }
+    const std::string source_uid = *src;
+
+    bool ok = false;
+    std::string err;
+    if (src_parent == dst_parent) {
+        // Same parent → a pure rename.
+        webdav::debugLog("handleMove: rename '" + source_path + "' -> '" + dst_name + "'");
+        fileengine_rpc::RenameRequest rq;
+        rq.set_uid(source_uid);
+        rq.set_new_name(dst_name);
+        *rq.mutable_auth() = auth_ctx;
+        auto r = grpc_client_->rename(rq);
+        ok = r.success();
+        err = r.error();
+    } else {
+        // Different parent → move, then rename if the name also changed.
+        std::optional<std::string> dparent = path_resolver_->resolvePath(dst_parent, auth_ctx);
+        if (!dparent) {
+            webdav::debugLog("handleMove: destination parent not found: " + dst_parent);
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_CONFLICT);
+            response.setReason("Conflict");
+            std::ostream& ostr = response.send();
+            ostr << "Destination parent does not exist";
+            return;
+        }
+        webdav::debugLog("handleMove: move '" + source_path + "' -> parent '" + dst_parent + "'");
+        fileengine_rpc::MoveRequest mq;
+        mq.set_source_uid(source_uid);
+        mq.set_destination_parent_uid(*dparent);
+        *mq.mutable_auth() = auth_ctx;
+        auto mr = grpc_client_->move(mq);
+        ok = mr.success();
+        err = mr.error();
+        if (ok && dst_name != src_name) {
+            fileengine_rpc::RenameRequest rq;
+            rq.set_uid(source_uid);
+            rq.set_new_name(dst_name);
+            *rq.mutable_auth() = auth_ctx;
+            auto r = grpc_client_->rename(rq);
+            ok = r.success();
+            err = r.error();
+        }
+    }
+
+    if (!ok) {
+        webdav::errorLog("handleMove: failed: " + err);
+        // Map the core error to an HTTP status.
+        Poco::Net::HTTPResponse::HTTPStatus status = Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR;
+        if (err.find("permission") != std::string::npos) status = Poco::Net::HTTPResponse::HTTP_FORBIDDEN;
+        else if (err.find("not exist") != std::string::npos || err.find("not found") != std::string::npos)
+            status = Poco::Net::HTTPResponse::HTTP_NOT_FOUND;
+        else if (err.find("already") != std::string::npos) status = Poco::Net::HTTPResponse::HTTP_CONFLICT;
+        response.setStatus(status);
+        response.setReason("Move Failed");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "Move failed: " << err;
+        return;
+    }
+
+    // Keep the path cache consistent (uid is unchanged by rename/move).
+    path_resolver_->removePathMapping(source_path, tenant);
+    path_resolver_->createPathMapping(dest_path, source_uid, tenant);
+
+    webdav::debugLog("handleMove: completed '" + source_path + "' -> '" + dest_path + "'");
     response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
     response.setReason("Created");
-    response.setContentType("text/plain");
-    std::ostream& ostr = response.send();
-    ostr << "MOVE request from: " << source_path << " to: " << dest_path << " (tenant: " << tenant << ")";
+    response.setContentLength(0);
+    response.send();
 }
 
 void WebDAVRequestHandler::handleLock(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
