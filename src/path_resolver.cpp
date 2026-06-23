@@ -48,15 +48,39 @@ std::optional<std::string> PathResolver::resolvePath(
 
     if (path == "/") return std::string();  // root is the empty UID
 
-    // Cache fast-path. Check membership explicitly (not emptiness): a non-root
-    // entry can legitimately map to "" in some tenants, and we must not confuse
-    // "cached" with "missing".
+    // Cache fast-path with verify-on-hit. Check membership explicitly (not
+    // emptiness): a non-root entry can legitimately map to "" in some tenants.
+    std::string cached;
+    bool have_cached = false;
     {
         std::lock_guard<std::mutex> lock(mutex_);
         auto it = path_to_uuid_map_.find(getCacheKey(path, tenant));
         if (it == path_to_uuid_map_.end() && !tenant.empty())
             it = path_to_uuid_map_.find(getCacheKey(path, ""));
-        if (it != path_to_uuid_map_.end()) return it->second;
+        if (it != path_to_uuid_map_.end()) { cached = it->second; have_cached = true; }
+    }
+    if (have_cached) {
+        // A cached uid can be stale: the node may have been deleted, renamed, or
+        // deleted-and-recreated at the same path (possibly by another client, the
+        // REST bridge, or the rendition service — mutations this process never
+        // saw). Verify it still exists and its name still matches before trusting
+        // it; otherwise evict and fall through to a fresh walk. (A node moved to a
+        // different parent under the same name is not caught here; same-process
+        // MOVE updates the cache directly.)
+        const std::string base = path.substr(path.find_last_of('/') + 1);
+        fileengine_rpc::StatRequest sreq;
+        sreq.set_uid(cached);
+        *sreq.mutable_auth() = auth;
+        try {
+            auto sresp = grpc_client_->stat(sreq);
+            if (sresp.success() && sresp.info().name() == base) {
+                return cached;  // verified cache hit
+            }
+        } catch (const std::exception& e) {
+            webdav::debugLog("PathResolver::resolvePath: verify Stat threw: " + std::string(e.what()));
+        }
+        webdav::debugLog("PathResolver::resolvePath: stale cache entry for '" + path + "', re-resolving");
+        removePathMapping(path, tenant);  // locks internally
     }
 
     // Cache miss: walk from the root, listing each level and matching the next
