@@ -8,6 +8,7 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/ServerSocket.h>
+#include <Poco/ThreadPool.h>
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/URI.h>
 #include <Poco/Path.h>
@@ -92,9 +93,18 @@ public:
 private:
     std::string host_;
     int port_;
+    int thread_pool_ = 16;       // WEBDAV_THREAD_POOL — max concurrent connections
+    int monitoring_port_ = 8089; // WEBDAV_MONITORING_PORT — dedicated reporter listener
     std::unique_ptr<Poco::Net::ServerSocket> socket_;
     Poco::Net::HTTPServerParams::Ptr server_params_;
+    // Dedicated worker pool sized to thread_pool_; declared before server_ so it
+    // outlives the server (each long-lived transfer pins one of these threads).
+    std::unique_ptr<Poco::ThreadPool> pool_;
     std::unique_ptr<Poco::Net::HTTPServer> server_;
+    // Dedicated reporter: a single held-back thread + listener, so pool usage /
+    // health stay answerable even when every worker thread is mid-transfer.
+    std::unique_ptr<Poco::ThreadPool> monitor_pool_;
+    std::unique_ptr<Poco::Net::HTTPServer> monitor_server_;
     std::shared_ptr<GRPCClientWrapper> grpc_client_;
     std::shared_ptr<PathResolver> path_resolver_;
     std::shared_ptr<LDAPAuthenticator> ldap_auth_;
