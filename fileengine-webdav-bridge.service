@@ -1,0 +1,44 @@
+[Unit]
+Description=FileEngine WebDAV Bridge
+Documentation=https://github.com/fileengine/fileengine-webdav-bridge
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Read configuration (gRPC core, LDAP, Postgres path-mapping DB, ports, secrets)
+# from the packaged environment file. Lines are KEY=VALUE.
+EnvironmentFile=/etc/fileengine-webdav-bridge/bridge.env
+ExecStart=/usr/bin/fileengine-webdav-bridge
+Restart=always
+RestartSec=3
+WorkingDirectory=/
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fileengine-webdav-bridge
+
+# Run as a transient, unprivileged system user allocated by systemd. The bridge
+# keeps no local file storage (it proxies to the gRPC core and stores path
+# mappings in PostgreSQL); LogsDirectory= gives it a writable log location owned
+# by that transient user. All listen ports are > 1024.
+DynamicUser=yes
+LogsDirectory=fileengine-webdav-bridge
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+RemoveIPC=true
+
+[Install]
+WantedBy=multi-user.target

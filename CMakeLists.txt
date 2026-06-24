@@ -3,7 +3,10 @@ project(webdav_bridge)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE Debug)
+# Default to Debug for local dev, but let packaging pass -DCMAKE_BUILD_TYPE=Release.
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 # Find required packages
 find_package(PkgConfig REQUIRED)

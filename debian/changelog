@@ -1,0 +1,7 @@
+fileengine-webdav-bridge (1.0.0-1) unstable; urgency=low
+
+  * Initial Debian packaging: fileengine-webdav-bridge daemon, systemd unit
+    (DynamicUser), and default environment file at
+    /etc/fileengine-webdav-bridge/bridge.env.
+
+ -- FileEngine Team <maintainer@fileengine.example.com>  Wed, 24 Jun 2026 12:00:00 +0000

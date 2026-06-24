@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --buildsystem=cmake
+
+override_dh_auto_configure:
+	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release
+
+override_dh_auto_install:
+	dh_auto_install --destdir=debian/tmp
+	# Rename the generic binary to a fileengine-prefixed name.
+	mv debian/tmp/usr/bin/webdav_bridge debian/tmp/usr/bin/fileengine-webdav-bridge
+	# systemd unit (canonical vendor location) + default config.
+	install -D -m 0644 fileengine-webdav-bridge.service \
+		debian/tmp/lib/systemd/system/fileengine-webdav-bridge.service
+	install -D -m 0640 webdav-bridge.env \
+		debian/tmp/etc/fileengine-webdav-bridge/bridge.env
+
+override_dh_installsystemd:
+	dh_installsystemd --name=fileengine-webdav-bridge
