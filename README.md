@@ -10,6 +10,10 @@ This project implements a WebDAV server that exposes the FileEngine gRPC filesys
 - Path-to-UUID resolution for the UUID-based FileEngine filesystem
 - Persistent storage of path mappings in PostgreSQL
 - Support for both Basic and Digest authentication
+- Concurrent connections over a dedicated, correctly-sized worker pool
+  (`WEBDAV_THREAD_POOL`), so long-lived file transfers don't block one another
+- High-availability monitoring endpoints (`/healthz`, `/readyz`, `/poolz`) on a
+  separate reporter listener for load-balancer / reverse-proxy health checks
 
 ## Architecture
 
@@ -27,6 +31,16 @@ The service can be configured using environment variables or a configuration fil
 
 ### Environment Variables
 
+- `WEBDAV_HOST` - Listen address for the WebDAV server (default: 0.0.0.0)
+- `WEBDAV_PORT` - Listen port for the WebDAV server (default: 8080)
+- `WEBDAV_THREAD_POOL` - Max concurrent connections; sizes a dedicated worker
+  pool rather than Poco's shared `defaultPool` (capacity 16), so the value
+  actually scales (default: 16)
+- `WEBDAV_MONITORING_PORT` - Dedicated reporter listener exposing `/healthz`
+  (liveness), `/readyz` (503 when no worker is free, so a load balancer drains
+  this instance), and `/poolz` (live pool usage + `saturated` flag). One worker
+  is held back for this listener so reporting stays responsive under load
+  (default: 8089)
 - `FILEENGINE_GRPC_HOST` - Host address of the FileEngine gRPC service (default: localhost)
 - `FILEENGINE_GRPC_PORT` - Port of the FileEngine gRPC service (default: 50051)
 - `FILEENGINE_LDAP_ENDPOINT` - LDAP server endpoint (default: ldap://localhost:1389)
