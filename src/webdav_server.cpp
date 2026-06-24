@@ -1296,8 +1296,13 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
     webdav::debugLog("WebDAVServer: Path resolver created");
     webdav::debugLog("WebDAVServer: LDAP authenticator created");
     webdav::debugLog("WebDAVServer: Server socket created on port " + std::to_string(port));
+    thread_pool_ = std::stoi(webdav::getEnvOrDefault("WEBDAV_THREAD_POOL", "16"));
+    if (thread_pool_ < 1) thread_pool_ = 16;
+    monitoring_port_ = std::stoi(webdav::getEnvOrDefault("WEBDAV_MONITORING_PORT", "8089"));
     server_params_->setKeepAlive(true);
-    webdav::debugLog("WebDAVServer: Initialization completed");
+    server_params_->setMaxThreads(thread_pool_);
+    server_params_->setMaxQueued(thread_pool_ * 8);
+    webdav::debugLog("WebDAVServer: Initialization completed (threads=" + std::to_string(thread_pool_) + ")");
 }
 
 
@@ -1307,18 +1312,101 @@ WebDAVServer::~WebDAVServer() {
     server_.reset();
 }
 
+// ---- Monitoring / reporting API (consistent across the HTTP services) --------
+namespace {
+std::string monitorPoolFields(Poco::ThreadPool& pool, int maxQueued) {
+    return std::string("\"pool\":{\"capacity\":") + std::to_string(pool.capacity()) +
+           ",\"used\":" + std::to_string(pool.used()) +
+           ",\"available\":" + std::to_string(pool.available()) +
+           ",\"max_queued\":" + std::to_string(maxQueued) + "}";
+}
+void monitorSendJson(Poco::Net::HTTPServerResponse& resp,
+                     Poco::Net::HTTPResponse::HTTPStatus status, const std::string& body) {
+    resp.setStatus(status);
+    resp.setContentType("application/json");
+    resp.setContentLength(static_cast<std::streamsize>(body.size()));
+    resp.send() << body;
+}
+
+// Served on the reporter's own held-back thread, so these answer even when every
+// worker thread is mid-transfer. /healthz = liveness; /readyz = has free worker
+// capacity (503 when saturated → LB drains this instance); /poolz = live usage.
+class MonitorHandler : public Poco::Net::HTTPRequestHandler {
+public:
+    MonitorHandler(Poco::ThreadPool* pool, int maxQueued, std::string service)
+        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)) {}
+    void handleRequest(Poco::Net::HTTPServerRequest& req,
+                       Poco::Net::HTTPServerResponse& resp) override {
+        using R = Poco::Net::HTTPResponse;
+        const std::string path = req.getURI();
+        const bool hasCapacity = pool_->available() > 0;
+        if (path == "/healthz") {
+            monitorSendJson(resp, R::HTTP_OK,
+                            std::string("{\"status\":\"ok\",\"service\":\"") + service_ + "\"}");
+        } else if (path == "/readyz") {
+            monitorSendJson(resp, hasCapacity ? R::HTTP_OK : R::HTTP_SERVICE_UNAVAILABLE,
+                            std::string("{\"ready\":") + (hasCapacity ? "true" : "false") +
+                            "," + monitorPoolFields(*pool_, maxQueued_) + "}");
+        } else if (path == "/poolz") {
+            monitorSendJson(resp, R::HTTP_OK,
+                            std::string("{") + monitorPoolFields(*pool_, maxQueued_) +
+                            ",\"saturated\":" + (hasCapacity ? "false" : "true") + "}");
+        } else {
+            monitorSendJson(resp, R::HTTP_NOT_FOUND, "{\"error\":\"not found\"}");
+        }
+    }
+private:
+    Poco::ThreadPool* pool_;
+    int maxQueued_;
+    std::string service_;
+};
+
+class MonitorHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
+public:
+    MonitorHandlerFactory(Poco::ThreadPool* pool, int maxQueued, std::string service)
+        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)) {}
+    Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest&) override {
+        return new MonitorHandler(pool_, maxQueued_, service_);
+    }
+private:
+    Poco::ThreadPool* pool_;
+    int maxQueued_;
+    std::string service_;
+};
+}  // namespace
+
 void WebDAVServer::start() {
     webdav::debugLog("WebDAVServer: Starting server on " + host_ + ":" + std::to_string(port_));
     try {
         auto* factory = new WebDAVRequestHandlerFactory(grpc_client_, path_resolver_, ldap_auth_);
         webdav::debugLog("WebDAVServer: Created request handler factory");
-        server_ = std::make_unique<Poco::Net::HTTPServer>(factory, *socket_, server_params_);
+        // Dedicated pool sized to thread_pool_ rather than Poco's shared
+        // defaultPool() (capacity 16), so WEBDAV_THREAD_POOL actually scales
+        // concurrent connections above 16.
+        pool_ = std::make_unique<Poco::ThreadPool>(
+            std::min(2, thread_pool_), thread_pool_, 60 /* idle seconds */);
+        server_ = std::make_unique<Poco::Net::HTTPServer>(factory, *pool_, *socket_, server_params_);
         webdav::debugLog("WebDAVServer: Created HTTP server instance with socket on port " + std::to_string(port_));
         webdav::debugLog("WebDAVServer: About to call server_->start()");
         server_->start();
         webdav::debugLog("WebDAVServer: Started HTTP server successfully");
 
         std::cout << "WebDAV server listening on " << host_ << ":" << port_ << std::endl;
+
+        // Dedicated reporter: a single held-back thread + listener so pool usage /
+        // health stay answerable for the load balancer even at full saturation.
+        monitor_pool_ = std::make_unique<Poco::ThreadPool>(1, 1, 60);
+        auto* mparams = new Poco::Net::HTTPServerParams;
+        mparams->setMaxThreads(1);
+        mparams->setMaxQueued(64);
+        mparams->setKeepAlive(false);
+        Poco::Net::ServerSocket msocket(static_cast<Poco::UInt16>(monitoring_port_));
+        monitor_server_ = std::make_unique<Poco::Net::HTTPServer>(
+            new MonitorHandlerFactory(pool_.get(), thread_pool_ * 8, "webdav_bridge"),
+            *monitor_pool_, msocket, mparams);
+        monitor_server_->start();
+        std::cout << "WebDAV monitoring (/healthz /readyz /poolz) listening on " << host_
+                  << ":" << monitoring_port_ << std::endl;
     } catch (const std::exception& e) {
         webdav::errorLog("WebDAVServer: Exception in start(): " + std::string(e.what()));
         throw; // Re-throw to be caught by main application
@@ -1329,6 +1417,9 @@ void WebDAVServer::start() {
 }
 
 void WebDAVServer::stop() {
+    if (monitor_server_) {
+        monitor_server_->stop();
+    }
     if (server_) {
         server_->stop();
     }
