@@ -2,6 +2,7 @@
 #define GRPC_CLIENT_WRAPPER_H
 
 #include <grpcpp/grpcpp.h>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -38,7 +39,20 @@ public:
     fileengine_rpc::RemoveFileResponse removeFile(const fileengine_rpc::RemoveFileRequest& request);
     fileengine_rpc::UndeleteFileResponse undeleteFile(const fileengine_rpc::UndeleteFileRequest& request);
     fileengine_rpc::PutFileResponse putFile(const fileengine_rpc::PutFileRequest& request);
+    // Client-streaming upload: `nextChunk` is pulled repeatedly to fill `out`
+    // with the next slice of body bytes; returning false ends the stream. The
+    // whole file is never held in memory — chunks flow straight to the core.
+    fileengine_rpc::PutFileResponse streamFileUpload(
+        const std::string& uid,
+        const fileengine_rpc::AuthenticationContext& auth,
+        const std::function<bool(std::string&)>& nextChunk);
     fileengine_rpc::GetFileResponse getFile(const fileengine_rpc::GetFileRequest& request);
+    // Server-streaming download: `onChunk` is invoked for each chunk; return
+    // false to abort early. The whole file is never buffered in the bridge.
+    struct DownloadResult { bool success; std::string error; };
+    DownloadResult streamFileDownload(
+        const fileengine_rpc::GetFileRequest& request,
+        const std::function<bool(const std::string&)>& onChunk);
 
     // File information
     fileengine_rpc::StatResponse stat(const fileengine_rpc::StatRequest& request);

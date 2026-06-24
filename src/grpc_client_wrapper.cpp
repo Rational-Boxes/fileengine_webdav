@@ -78,6 +78,70 @@ fileengine_rpc::GetFileResponse GRPCClientWrapper::getFile(const fileengine_rpc:
         [&](grpc::ClientContext& c, fileengine_rpc::GetFileResponse& r) { return stub_->GetFile(&c, request, &r); });
 }
 
+fileengine_rpc::PutFileResponse GRPCClientWrapper::streamFileUpload(
+    const std::string& uid,
+    const fileengine_rpc::AuthenticationContext& auth,
+    const std::function<bool(std::string&)>& nextChunk) {
+    grpc::ClientContext ctx;
+    fileengine_rpc::PutFileResponse response;
+    auto writer = stub_->StreamFileUpload(&ctx, &response);
+    bool first = true;
+    std::string chunk;
+    while (true) {
+        chunk.clear();
+        if (!nextChunk(chunk)) break;
+        fileengine_rpc::PutFileRequest req;
+        if (first) {  // only the first message carries the target uid + auth
+            req.set_uid(uid);
+            *req.mutable_auth() = auth;
+            first = false;
+        }
+        req.set_data(chunk);
+        if (!writer->Write(req)) break;
+    }
+    if (first) {  // empty body: still send uid+auth so the server has the target
+        fileengine_rpc::PutFileRequest req;
+        req.set_uid(uid);
+        *req.mutable_auth() = auth;
+        writer->Write(req);
+    }
+    writer->WritesDone();
+    grpc::Status status = writer->Finish();
+    if (!status.ok()) {
+        webdav::errorLog(std::string("StreamFileUpload failed: ") + status.error_message());
+        response.set_success(false);
+        response.set_error(status.error_message());
+    }
+    return response;
+}
+
+GRPCClientWrapper::DownloadResult GRPCClientWrapper::streamFileDownload(
+    const fileengine_rpc::GetFileRequest& request,
+    const std::function<bool(const std::string&)>& onChunk) {
+    grpc::ClientContext ctx;
+    auto reader = stub_->StreamFileDownload(&ctx, request);
+    fileengine_rpc::GetFileResponse resp;
+    std::string err;
+    bool failed = false;
+    while (reader->Read(&resp)) {
+        if (!resp.success()) {  // an error chunk (success=false carries the error)
+            failed = true;
+            err = resp.error();
+            break;
+        }
+        if (!resp.data().empty() && !onChunk(resp.data())) {
+            ctx.TryCancel();  // caller asked to stop (client disconnect)
+            break;
+        }
+    }
+    grpc::Status status = reader->Finish();
+    if (failed) return {false, err};
+    if (!status.ok() && status.error_code() != grpc::StatusCode::CANCELLED) {
+        return {false, status.error_message()};
+    }
+    return {true, ""};
+}
+
 // File information
 fileengine_rpc::StatResponse GRPCClientWrapper::stat(const fileengine_rpc::StatRequest& request) {
     return invoke<fileengine_rpc::StatResponse>("Stat",

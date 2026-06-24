@@ -183,37 +183,56 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     get_req.set_uid(file_uuid);
     *get_req.mutable_auth() = auth_ctx;
 
-    // Call gRPC service to get file content
-    fileengine_rpc::GetFileResponse get_resp;
+    // Stream the content from the core straight to the client in chunks (chunked
+    // transfer-encoding) — the whole file is never buffered in the bridge. The
+    // 200 header is sent lazily on the first chunk so that a failure before any
+    // data still yields a proper error status.
+    bool headerSent = false;
+    std::ostream* ostr = nullptr;
+    auto sendHeader = [&]() {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+        response.setReason("OK");
+        response.setContentType("application/octet-stream");
+        response.setChunkedTransferEncoding(true);
+        ostr = &response.send();
+        headerSent = true;
+    };
+
+    GRPCClientWrapper::DownloadResult dl;
     try {
-        get_resp = grpc_client_->getFile(get_req);
+        dl = grpc_client_->streamFileDownload(get_req, [&](const std::string& chunk) -> bool {
+            if (!headerSent) sendHeader();
+            ostr->write(chunk.data(), static_cast<std::streamsize>(chunk.size()));
+            return ostr->good();
+        });
     } catch (const std::exception& e) {
-        webdav::errorLog("Exception during gRPC GetFile call: " + std::string(e.what()));
-        response.setStatus(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
-        response.setReason("Service Unavailable");
-        response.setContentType("text/plain");
-        std::ostream& ostr = response.send();
-        ostr << "gRPC service unavailable";
+        webdav::errorLog("Exception during gRPC StreamFileDownload call: " + std::string(e.what()));
+        if (!headerSent) {
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
+            response.setReason("Service Unavailable");
+            response.setContentType("text/plain");
+            response.send() << "gRPC service unavailable";
+        }
         return;
     }
 
-    if (!get_resp.success()) {
-        webdav::errorLog("Failed to get file: " + get_resp.error());
-        response.setStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
-        response.setReason("Internal Server Error");
-        response.setContentType("text/plain");
-        std::ostream& ostr = response.send();
-        ostr << "Failed to retrieve file: " << get_resp.error();
-        return;
+    if (!headerSent) {
+        // No bytes streamed yet: either an empty file (success) or a failure
+        // before any chunk — emit the appropriate status with full headers.
+        if (dl.success) {
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+            response.setReason("OK");
+            response.setContentType("application/octet-stream");
+            response.setContentLength(0);
+            response.send();
+        } else {
+            webdav::errorLog("Failed to get file: " + dl.error);
+            response.setStatus(Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR);
+            response.setReason("Internal Server Error");
+            response.setContentType("text/plain");
+            response.send() << "Failed to retrieve file: " << dl.error;
+        }
     }
-
-    // Return the file content
-    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-    response.setReason("OK");
-    response.setContentType("application/octet-stream"); // Default content type
-    response.setContentLength(get_resp.data().size());
-    std::ostream& ostr = response.send();
-    ostr.write(get_resp.data().c_str(), get_resp.data().size());
 }
 
 void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
@@ -247,10 +266,9 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
         auth_ctx.add_roles(role);
     }
 
-    // Get request body
-    std::istream& istr = request.stream();
-    std::string content;
-    Poco::StreamCopier::copyToString(istr, content);
+    // NOTE: the request body is NOT read here. It is streamed straight to the
+    // core in chunks below (after the target file exists), so the whole file is
+    // never buffered in the bridge.
 
     // Check if the parent directory exists by resolving the parent path
     // Remove trailing slash if present (but keep root as "/")
@@ -289,12 +307,6 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     // Extract filename from path
     std::string filename = clean_path.substr(clean_path.find_last_of('/') + 1);
 
-    // Create gRPC request to put file
-    fileengine_rpc::PutFileRequest put_req;
-    put_req.set_data(content);
-    put_req.set_uid(""); // Will be assigned by the server
-    *put_req.mutable_auth() = auth_ctx;
-
     // Create the file via touch if it does not already exist, then write content.
     std::optional<std::string> file_resolved = path_resolver_->resolvePath(path, auth_ctx);
     std::string file_uuid = file_resolved.value_or("");
@@ -318,9 +330,21 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
         file_uuid = touch_resp.uid();
     }
 
-    // Update the file content
-    put_req.set_uid(file_uuid);
-    fileengine_rpc::PutFileResponse put_resp = grpc_client_->putFile(put_req);
+    // Stream the body straight to the core in 256 KiB chunks via the
+    // client-streaming RPC: the whole file is never held in memory, and no
+    // single gRPC message approaches the per-message size cap.
+    std::istream& body = request.stream();
+    std::vector<char> buf(256 * 1024);
+    size_t total_bytes = 0;
+    fileengine_rpc::PutFileResponse put_resp = grpc_client_->streamFileUpload(
+        file_uuid, auth_ctx, [&](std::string& out) -> bool {
+            body.read(buf.data(), static_cast<std::streamsize>(buf.size()));
+            std::streamsize n = body.gcount();
+            if (n <= 0) return false;
+            out.assign(buf.data(), static_cast<size_t>(n));
+            total_bytes += static_cast<size_t>(n);
+            return true;
+        });
 
     if (!put_resp.success()) {
         webdav::errorLog("Failed to put file: " + put_resp.error());
@@ -339,7 +363,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     response.setReason("Created");
     response.setContentType("text/plain");
     std::ostream& ostr = response.send();
-    ostr << "Successfully stored file: " << path << " (size: " << content.length() << " bytes)";
+    ostr << "Successfully stored file: " << path << " (size: " << total_bytes << " bytes)";
 }
 
 void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
