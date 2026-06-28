@@ -1,5 +1,7 @@
 # WebDAV Bridge for FileEngine
 
+> ⚠️ **Active development — not production-ready.** This project is under active development and should **not** be considered safe for mission-critical use.
+
 This project implements a WebDAV server that exposes the FileEngine gRPC filesystem API. The service allows clients to access the FileEngine filesystem through standard WebDAV protocols.
 
 ## Features
