@@ -105,3 +105,10 @@ When a new tenant is created, the system automatically sets up initial ACLs on t
 ## Versioning and Immutability
 
 Since FileEngine is pervasively versioned and immutable, traditional file locking concerns do not apply. The LOCK/UNLOCK WebDAV operations are handled at the application level for client-side locking semantics but do not enforce any actual file locks on the backend.
+
+## License
+
+Copyright (C) 2026 James Hickman <james@rationalboxes.com>
+
+This project is licensed under the **GNU General Public License, version 3 (or
+later)** — see the [LICENSE](LICENSE) file for the full text.
