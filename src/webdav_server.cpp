@@ -1,4 +1,5 @@
 #include "webdav_server.h"
+#include <string>  // std::stod (failover cooldown parsing)
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTMLForm.h>
@@ -1310,7 +1311,10 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
           webdav::getEnvOrDefault("FILEENGINE_LDAP_BIND_DN", "cn=admin,dc=rationalboxes,dc=com"),
           webdav::getEnvOrDefault("FILEENGINE_LDAP_BIND_PASSWORD", "admin"),
           webdav::getEnvOrDefault("FILEENGINE_LDAP_TENANT_BASE", "ou=tenants,dc=rationalboxes,dc=com"),
-          webdav::getEnvOrDefault("FILEENGINE_LDAP_USER_BASE", "ou=users,dc=rationalboxes,dc=com")
+          webdav::getEnvOrDefault("FILEENGINE_LDAP_USER_BASE", "ou=users,dc=rationalboxes,dc=com"),
+          // Read-only replica directory for failover (empty = disabled).
+          webdav::getEnvOrDefault("FILEENGINE_LDAP_ENDPOINT_REPLICA", ""),
+          std::stod(webdav::getEnvOrDefault("FILEENGINE_FAILOVER_COOLDOWN_S", "30"))
       )),
       socket_(std::make_unique<Poco::Net::ServerSocket>(port)),
       server_params_(new Poco::Net::HTTPServerParams),

@@ -133,3 +133,9 @@ install(TARGETS webdav_bridge DESTINATION bin)
 # )
 #
 # add_test(NAME test_webdav COMMAND test_webdav)
+# --- unit tests (CTest) — header-only failover circuit-breaker ---
+enable_testing()
+add_executable(failover_tests tests/test_failover.cpp)
+target_include_directories(failover_tests PRIVATE include)
+target_compile_features(failover_tests PRIVATE cxx_std_17)
+add_test(NAME failover_tests COMMAND failover_tests)
