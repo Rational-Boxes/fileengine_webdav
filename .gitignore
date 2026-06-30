@@ -3,6 +3,9 @@ build/
 build*/
 .tmp
 .log
+# release/build artifacts — should not be committed
+*.tar.gz
+*.tgz
 /enhanced_test.log
 /final_test.log
 /fixed_test.log
