@@ -94,6 +94,9 @@ private:
     std::string host_;
     int port_;
     int thread_pool_ = 16;       // WEBDAV_THREAD_POOL — max concurrent connections
+    // Unauthenticated reporter listener — binds to loopback by default so it is
+    // protected by network isolation rather than auth (WEBDAV_MONITORING_HOST).
+    std::string monitoring_host_ = "127.0.0.1";
     int monitoring_port_ = 8089; // WEBDAV_MONITORING_PORT — dedicated reporter listener
     std::unique_ptr<Poco::Net::ServerSocket> socket_;
     Poco::Net::HTTPServerParams::Ptr server_params_;
