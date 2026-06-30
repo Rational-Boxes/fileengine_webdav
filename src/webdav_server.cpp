@@ -1326,6 +1326,7 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
     webdav::debugLog("WebDAVServer: Server socket created on port " + std::to_string(port));
     thread_pool_ = std::stoi(webdav::getEnvOrDefault("WEBDAV_THREAD_POOL", "16"));
     if (thread_pool_ < 1) thread_pool_ = 16;
+    monitoring_host_ = webdav::getEnvOrDefault("WEBDAV_MONITORING_HOST", "127.0.0.1");
     monitoring_port_ = std::stoi(webdav::getEnvOrDefault("WEBDAV_MONITORING_PORT", "8089"));
     server_params_->setKeepAlive(true);
     server_params_->setMaxThreads(thread_pool_);
@@ -1428,12 +1429,13 @@ void WebDAVServer::start() {
         mparams->setMaxThreads(1);
         mparams->setMaxQueued(64);
         mparams->setKeepAlive(false);
-        Poco::Net::ServerSocket msocket(static_cast<Poco::UInt16>(monitoring_port_));
+        Poco::Net::ServerSocket msocket(
+            Poco::Net::SocketAddress(monitoring_host_, static_cast<Poco::UInt16>(monitoring_port_)));
         monitor_server_ = std::make_unique<Poco::Net::HTTPServer>(
             new MonitorHandlerFactory(pool_.get(), thread_pool_ * 8, "webdav_bridge"),
             *monitor_pool_, msocket, mparams);
         monitor_server_->start();
-        std::cout << "WebDAV monitoring (/healthz /readyz /poolz) listening on " << host_
+        std::cout << "WebDAV monitoring (/healthz /readyz /poolz) listening on " << monitoring_host_
                   << ":" << monitoring_port_ << std::endl;
     } catch (const std::exception& e) {
         webdav::errorLog("WebDAVServer: Exception in start(): " + std::string(e.what()));
