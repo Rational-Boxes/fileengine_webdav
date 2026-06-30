@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "../include/ldap_authenticator.h"
+#include "../include/utils.h"  // extractTenantFromHostname
 
 class LDAPAuthenticatorTest : public ::testing::Test {
 protected:

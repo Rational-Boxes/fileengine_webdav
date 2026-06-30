@@ -104,37 +104,55 @@ target_link_libraries(webdav_bridge
 # Install target
 install(TARGETS webdav_bridge DESTINATION bin)
 
-# Add test executable
-# enable_testing()
-# add_executable(test_webdav
-#     tests/test_main.cpp
-#     tests/test_grpc_client.cpp
-#     tests/test_path_resolver.cpp
-#     tests/test_ldap_authenticator.cpp
-#     tests/test_webdav_server.cpp
-#     ${PROTO_SRCS}
-# )
-#
-# target_link_libraries(test_webdav
-#     gRPC::grpc++
-#     gRPC::grpc
-#     protobuf::libprotobuf
-#     Poco::Net
-#     Poco::Util
-#     Poco::JSON
-#     Poco::Crypto
-#     Poco::Foundation
-#     ${LDAP_LIBRARIES}
-#     ${PostgreSQL_LIBRARIES}
-#     pqxx
-#     Threads::Threads
-#     gtest
-#     gmock
-# )
-#
-# add_test(NAME test_webdav COMMAND test_webdav)
-# --- unit tests (CTest) — header-only failover circuit-breaker ---
+# ---------------------------------------------------------------------------
+# Unit tests (CTest)
+# ---------------------------------------------------------------------------
 enable_testing()
+find_package(GTest REQUIRED)
+
+# Production sources under test (the webdav_bridge target above, minus main.cpp).
+set(WEBDAV_TEST_SRCS
+    src/webdav_server.cpp
+    src/grpc_client_wrapper.cpp
+    src/path_resolver.cpp
+    src/ldap_authenticator.cpp
+    src/utils.cpp
+    ${PROTO_SRCS}
+)
+
+# gtest suite. test_ldap_authenticator covers the subdomain->tenant parsing
+# (extractTenantFromHostname) and the LDAP authenticator surface.
+#
+# The mock-heavy suites — tests/test_grpc_client.cpp, tests/test_path_resolver.cpp
+# and tests/test_webdav_server.cpp — are NOT wired in yet: their gmock mocks
+# target the pre-rename `fileengine::*` proto messages (CopyFileRequest,
+# WriteFileResponse, …) whereas the live API is `fileengine_rpc::*` (CopyRequest,
+# PutFileResponse, …). Re-enable them here once their MOCK_METHOD signatures are
+# updated to the current GRPCClientWrapper / PathResolver virtuals.
+add_executable(webdav_tests
+    tests/test_main.cpp
+    tests/test_ldap_authenticator.cpp
+    ${WEBDAV_TEST_SRCS}
+)
+target_link_libraries(webdav_tests
+    gRPC::grpc++
+    gRPC::grpc
+    protobuf::libprotobuf
+    Poco::Net
+    Poco::Util
+    Poco::JSON
+    Poco::Crypto
+    Poco::Foundation
+    ${LDAP_LIBRARIES}
+    ${PostgreSQL_LIBRARIES}
+    pqxx
+    Threads::Threads
+    GTest::gtest
+    GTest::gmock
+)
+add_test(NAME webdav_tests COMMAND webdav_tests)
+
+# --- header-only failover circuit-breaker ---
 add_executable(failover_tests tests/test_failover.cpp)
 target_include_directories(failover_tests PRIVATE include)
 target_compile_features(failover_tests PRIVATE cxx_std_17)
