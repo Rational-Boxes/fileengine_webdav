@@ -131,6 +131,7 @@ set(WEBDAV_TEST_SRCS
 # updated to the current GRPCClientWrapper / PathResolver virtuals.
 add_executable(webdav_tests
     tests/test_main.cpp
+    tests/test_utils.cpp
     tests/test_ldap_authenticator.cpp
     ${WEBDAV_TEST_SRCS}
 )
