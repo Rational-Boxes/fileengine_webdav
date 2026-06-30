@@ -120,19 +120,22 @@ set(WEBDAV_TEST_SRCS
     ${PROTO_SRCS}
 )
 
-# gtest suite. test_ldap_authenticator covers the subdomain->tenant parsing
-# (extractTenantFromHostname) and the LDAP authenticator surface.
-#
-# The mock-heavy suites — tests/test_grpc_client.cpp, tests/test_path_resolver.cpp
-# and tests/test_webdav_server.cpp — are NOT wired in yet: their gmock mocks
-# target the pre-rename `fileengine::*` proto messages (CopyFileRequest,
-# WriteFileResponse, …) whereas the live API is `fileengine_rpc::*` (CopyRequest,
-# PutFileResponse, …). Re-enable them here once their MOCK_METHOD signatures are
-# updated to the current GRPCClientWrapper / PathResolver virtuals.
+# gtest suites:
+#  - test_utils: pure utilities (tenant parsing, string/URL helpers, Digest).
+#  - test_ldap_authenticator: LDAP authenticator surface + tenant-from-hostname.
+#  - test_path_resolver: PathResolver::resolvePath, mocking GRPCClientWrapper's
+#    listDirectory (hermetic — no DB, no live core).
+#  - test_webdav_server: handler/factory dependency-wiring guard.
+# (The former tests/test_grpc_client.cpp was dropped: it only verified that a
+# gmock returns its canned value — no production code — and targeted the
+# pre-rename `fileengine::*` proto. Real GRPCClientWrapper coverage needs a live
+# core and lives in the e2e suite.)
 add_executable(webdav_tests
     tests/test_main.cpp
     tests/test_utils.cpp
     tests/test_ldap_authenticator.cpp
+    tests/test_path_resolver.cpp
+    tests/test_webdav_server.cpp
     ${WEBDAV_TEST_SRCS}
 )
 target_link_libraries(webdav_tests

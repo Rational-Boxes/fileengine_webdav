@@ -26,12 +26,14 @@ struct AuthenticationContext {
 class GRPCClientWrapper {
 public:
     GRPCClientWrapper(const std::string& server_address);
-    ~GRPCClientWrapper();
+    // virtual so tests can subclass with a gmock for the path-resolution RPCs
+    // (listDirectory/stat) without a live core; see tests/test_path_resolver.cpp.
+    virtual ~GRPCClientWrapper();
 
     // Directory operations
     fileengine_rpc::MakeDirectoryResponse makeDirectory(const fileengine_rpc::MakeDirectoryRequest& request);
     fileengine_rpc::RemoveDirectoryResponse removeDirectory(const fileengine_rpc::RemoveDirectoryRequest& request);
-    fileengine_rpc::ListDirectoryResponse listDirectory(const fileengine_rpc::ListDirectoryRequest& request);
+    virtual fileengine_rpc::ListDirectoryResponse listDirectory(const fileengine_rpc::ListDirectoryRequest& request);
     fileengine_rpc::ListDirectoryWithDeletedResponse listDirectoryWithDeleted(const fileengine_rpc::ListDirectoryWithDeletedRequest& request);
 
     // File operations
@@ -55,7 +57,7 @@ public:
         const std::function<bool(const std::string&)>& onChunk);
 
     // File information
-    fileengine_rpc::StatResponse stat(const fileengine_rpc::StatRequest& request);
+    virtual fileengine_rpc::StatResponse stat(const fileengine_rpc::StatRequest& request);
     fileengine_rpc::ExistsResponse exists(const fileengine_rpc::ExistsRequest& request);
 
     // File manipulation operations

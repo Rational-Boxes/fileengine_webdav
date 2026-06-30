@@ -1,94 +1,101 @@
+// Hermetic unit tests for PathResolver::resolvePath — the path->UID resolution
+// that every WebDAV verb depends on. resolvePath walks the tree via the gRPC
+// ListDirectory RPC (matching each segment by name) and caches resolved
+// prefixes; it needs no database. We mock GRPCClientWrapper's listDirectory so
+// the whole test runs offline with a scripted directory tree.
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <utility>
 #include "../include/path_resolver.h"
 #include "../include/grpc_client_wrapper.h"
 
-class MockGRPCClientWrapperForPathResolver : public webdav::GRPCClientWrapper {
+using ::testing::_;
+using ::testing::Invoke;
+using ::testing::Return;
+using namespace webdav;
+
+namespace {
+
+fileengine_rpc::ListDirectoryResponse listing(
+    std::initializer_list<std::pair<const char*, const char*>> entries) {
+    fileengine_rpc::ListDirectoryResponse resp;
+    resp.set_success(true);
+    for (const auto& entry : entries) {
+        auto* e = resp.add_entries();
+        e->set_name(entry.first);
+        e->set_uid(entry.second);
+    }
+    return resp;
+}
+
+fileengine_rpc::AuthenticationContext auth(const std::string& tenant = "default") {
+    fileengine_rpc::AuthenticationContext a;
+    a.set_user("tester");
+    a.set_tenant(tenant);
+    a.add_roles("users");
+    return a;
+}
+
+// Overrides only the RPCs resolvePath uses (listDirectory for the walk, stat for
+// the cache-hit verify path).
+class MockGrpc : public GRPCClientWrapper {
 public:
-    MockGRPCClientWrapperForPathResolver(const std::string& server_address) 
-        : GRPCClientWrapper(server_address) {}
-    
-    MOCK_METHOD(fileengine::GetFileInfoResponse, getFileInfo,
-                (const fileengine::GetFileInfoRequest&), (override));
+    MockGrpc() : GRPCClientWrapper("localhost:50051") {}
+    MOCK_METHOD(fileengine_rpc::ListDirectoryResponse, listDirectory,
+                (const fileengine_rpc::ListDirectoryRequest&), (override));
+    MOCK_METHOD(fileengine_rpc::StatResponse, stat,
+                (const fileengine_rpc::StatRequest&), (override));
 };
+
+}  // namespace
 
 class PathResolverTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Using a mock connection string for testing
-        mock_grpc = std::make_shared<MockGRPCClientWrapperForPathResolver>("localhost:50051");
-        resolver = std::make_unique<webdav::PathResolver>(mock_grpc, "host=localhost port=5432 dbname=test_db user=test password=test");
+        grpc_ = std::make_shared<MockGrpc>();
+        resolver_ = std::make_unique<PathResolver>(grpc_);
     }
-
-    void TearDown() override {
-        resolver.reset();
-        mock_grpc.reset();
-    }
-
-    std::shared_ptr<MockGRPCClientWrapperForPathResolver> mock_grpc;
-    std::unique_ptr<webdav::PathResolver> resolver;
+    std::shared_ptr<MockGrpc> grpc_;
+    std::unique_ptr<PathResolver> resolver_;
 };
 
-TEST_F(PathResolverTest, ResolvePathToUUIDTest) {
-    std::string path = "/test/path/file.txt";
-    std::string tenant = "test-tenant";
-    std::string expected_uuid = "test-uuid-12345";
-
-    // Create the path mapping first
-    bool created = resolver->createPathMapping(path, expected_uuid, tenant);
-    EXPECT_TRUE(created);
-
-    // Now resolve the path to UUID
-    std::string result_uuid = resolver->resolvePathToUUID(path, tenant);
-    EXPECT_EQ(result_uuid, expected_uuid);
+TEST_F(PathResolverTest, RootResolvesToEmptyUid) {
+    // No RPC needed for the root.
+    auto r = resolver_->resolvePath("/", auth());
+    ASSERT_TRUE(r.has_value());
+    EXPECT_EQ(*r, "");
 }
 
-TEST_F(PathResolverTest, ResolveUUIDToPathTest) {
-    std::string path = "/test/path/file.txt";
-    std::string tenant = "test-tenant";
-    std::string uuid = "test-uuid-12345";
+TEST_F(PathResolverTest, ResolvesByWalkingTheTree) {
+    // Scripted tree:  / -> {MyDocuments=uid-md, Test1=uid-t1};  uid-md -> {Report.txt=uid-rep}
+    EXPECT_CALL(*grpc_, listDirectory(_)).WillRepeatedly(Invoke(
+        [](const fileengine_rpc::ListDirectoryRequest& req) {
+            if (req.uid().empty())     return listing({{"MyDocuments", "uid-md"}, {"Test1", "uid-t1"}});
+            if (req.uid() == "uid-md") return listing({{"Report.txt", "uid-rep"}});
+            return listing({});
+        }));
 
-    // Create the path mapping first
-    bool created = resolver->createPathMapping(path, uuid, tenant);
-    EXPECT_TRUE(created);
-
-    // Now resolve the UUID to path
-    std::string result_path = resolver->resolveUUIDToPath(uuid, tenant);
-    EXPECT_EQ(result_path, path);
+    EXPECT_EQ(resolver_->resolvePath("/MyDocuments", auth()).value_or("<none>"), "uid-md");
+    EXPECT_EQ(resolver_->resolvePath("/Test1", auth()).value_or("<none>"), "uid-t1");
+    EXPECT_EQ(resolver_->resolvePath("/MyDocuments/Report.txt", auth()).value_or("<none>"), "uid-rep");
 }
 
-TEST_F(PathResolverTest, PathExistsTest) {
-    std::string path = "/test/path/existing_file.txt";
-    std::string tenant = "test-tenant";
-    std::string uuid = "existing-uuid-12345";
+TEST_F(PathResolverTest, MissingSegmentReturnsNullopt) {
+    EXPECT_CALL(*grpc_, listDirectory(_)).WillRepeatedly(Invoke(
+        [](const fileengine_rpc::ListDirectoryRequest& req) {
+            if (req.uid().empty()) return listing({{"MyDocuments", "uid-md"}});
+            return listing({});  // uid-md has no children
+        }));
 
-    // Create the path mapping first
-    bool created = resolver->createPathMapping(path, uuid, tenant);
-    EXPECT_TRUE(created);
-
-    // Check that the path exists
-    bool exists = resolver->pathExists(path, tenant);
-    EXPECT_TRUE(exists);
-
-    // Check that a non-existent path doesn't exist
-    bool not_exists = resolver->pathExists("/non/existent/path", tenant);
-    EXPECT_FALSE(not_exists);
+    EXPECT_FALSE(resolver_->resolvePath("/Nope", auth()).has_value());
+    EXPECT_FALSE(resolver_->resolvePath("/MyDocuments/missing.txt", auth()).has_value());
 }
 
-TEST_F(PathResolverTest, GetParentUUIDTest) {
-    std::string parent_path = "/test/";
-    std::string child_path = "/test/child.txt";
-    std::string tenant = "test-tenant";
-    std::string parent_uuid = "parent-uuid-12345";
-    std::string child_uuid = "child-uuid-67890";
+TEST_F(PathResolverTest, ListDirectoryFailureReturnsNullopt) {
+    fileengine_rpc::ListDirectoryResponse fail;
+    fail.set_success(false);
+    fail.set_error("permission denied");
+    EXPECT_CALL(*grpc_, listDirectory(_)).WillRepeatedly(Return(fail));
 
-    // Create parent and child path mappings
-    bool parent_created = resolver->createPathMapping(parent_path, parent_uuid, tenant);
-    bool child_created = resolver->createPathMapping(child_path, child_uuid, tenant);
-    EXPECT_TRUE(parent_created);
-    EXPECT_TRUE(child_created);
-
-    // Get the parent UUID of the child path
-    std::string result_parent_uuid = resolver->getParentUUID(child_path, tenant);
-    EXPECT_EQ(result_parent_uuid, parent_uuid);
+    EXPECT_FALSE(resolver_->resolvePath("/anything", auth()).has_value());
 }
