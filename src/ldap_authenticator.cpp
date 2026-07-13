@@ -32,6 +32,25 @@ LDAPAuthenticator::LDAPAuthenticator(
 LDAPAuthenticator::~LDAPAuthenticator() {
 }
 
+// Escape a value for safe interpolation into an RFC 4515 LDAP search filter,
+// preventing filter injection (e.g. a username of "*" or "admin)(uid=*").
+// Mirrors the http_bridge implementation. (Security review C3.)
+static std::string escapeLdapFilterValue(const std::string& in) {
+    std::string out;
+    out.reserve(in.size());
+    for (char c : in) {
+        switch (c) {
+            case '*':  out += "\\2a"; break;
+            case '(':  out += "\\28"; break;
+            case ')':  out += "\\29"; break;
+            case '\\': out += "\\5c"; break;
+            case '\0': out += "\\00"; break;
+            default:   out += c;
+        }
+    }
+    return out;
+}
+
 UserInfo LDAPAuthenticator::authenticateUser(const std::string& username, const std::string& password) {
     std::lock_guard<std::mutex> lock(ldap_mutex_);
     webdav::debugLog("LDAPAuthenticator::authenticateUser: Starting authentication for user: " + username);
@@ -47,7 +66,7 @@ UserInfo LDAPAuthenticator::authenticateUser(const std::string& username, const 
     LDAPMessage* result = nullptr;
 
     // Search for the user's DN
-    std::string search_filter = "(uid=" + username + ")";
+    std::string search_filter = "(uid=" + escapeLdapFilterValue(username) + ")";
     webdav::debugLog("LDAPAuthenticator::authenticateUser: Searching for user with base: " + user_base_ + " and filter: " + search_filter);
 
     int ldap_result = ldap_search_s(
@@ -94,6 +113,16 @@ UserInfo LDAPAuthenticator::authenticateUser(const std::string& username, const 
     user_dn = std::string(dn);
     ldap_memfree(dn);
     webdav::debugLog("LDAPAuthenticator::authenticateUser: Found user DN: " + user_dn);
+
+    // Reject empty passwords BEFORE binding: an LDAP simple bind with a valid DN
+    // and a zero-length password is an *unauthenticated bind* that most servers
+    // answer with LDAP_SUCCESS — an auth bypass. (Security review C2.)
+    if (password.empty()) {
+        webdav::errorLog("LDAPAuthenticator::authenticateUser: rejecting empty password (unauthenticated-bind guard)");
+        ldap_msgfree(result);
+        ldap_unbind_ext_s(ld, nullptr, nullptr);
+        return { "", "", {}, "", false };
+    }
 
     // Now try to bind with the user's DN and provided password
     struct berval cred;
@@ -166,7 +195,7 @@ bool LDAPAuthenticator::authenticateDigest(const std::string& username, const st
     }
 
     // Search for the user's DN
-    std::string search_filter = "(uid=" + username + ")";
+    std::string search_filter = "(uid=" + escapeLdapFilterValue(username) + ")";
     LDAPMessage* result = nullptr;
     int ldap_result = ldap_search_s(
         ld,
@@ -285,7 +314,7 @@ LDAP* LDAPAuthenticator::connectToEndpoint(const std::string& endpoint) {
 }
 
 UserInfo LDAPAuthenticator::searchUser(LDAP* ld, const std::string& username) {
-    std::string search_filter = "(uid=" + username + ")";
+    std::string search_filter = "(uid=" + escapeLdapFilterValue(username) + ")";
     LDAPMessage* result = nullptr;
 
     std::cout << "[DEBUG] Searching for user with base: " << user_base_ << " and filter: " << search_filter << std::endl;
@@ -380,7 +409,7 @@ std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld, con
 
     // Search for groupOfNames entities the user belongs to
     // Using member attribute to find groups that contain this user
-    std::string search_filter = "(&(objectClass=groupOfNames)(member=" + user_dn + "))";
+    std::string search_filter = "(&(objectClass=groupOfNames)(member=" + escapeLdapFilterValue(user_dn) + "))";
     webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: Starting group search for user: " + std::string(user_dn));
     webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: Tenant base: '" + tenant_base_ + "'");
     webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: LDAP domain: '" + ldap_domain_ + "'");
@@ -539,7 +568,7 @@ std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld, con
     // If we didn't find any roles from any base, try a broader search
     if (roles.empty()) {
         // Try searching with a more generic filter that might catch different group types
-        std::string alt_search_filter = "(member=" + user_dn + ")";
+        std::string alt_search_filter = "(member=" + escapeLdapFilterValue(user_dn) + ")";
         webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: Trying alternative search with filter: '" + alt_search_filter + "'");
 
         // Specifically try the known location again with the broader filter

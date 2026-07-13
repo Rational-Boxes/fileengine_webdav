@@ -1234,7 +1234,8 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
     if (auth_header.substr(0, 5) == "Basic") {
         webdav::debugLog("authenticateUser: Processing Basic authentication for user");
         std::string encoded_credentials = trim(auth_header.substr(6));
-        webdav::debugLog("authenticateUser: Encoded credentials: " + encoded_credentials);
+        // NOTE: never log the Authorization value or decoded credentials — they
+        // are LDAP passwords reusable beyond WebDAV. (Security review C4.)
 
         // Decode Base64 credentials
         std::istringstream istr(encoded_credentials);
@@ -1242,7 +1243,6 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
         Poco::Base64Decoder b64in(istr);
         Poco::StreamCopier::copyStream(b64in, ostr);
         std::string credentials = ostr.str();
-        webdav::debugLog("authenticateUser: Decoded credentials: " + credentials);
 
         size_t colon_pos = credentials.find(':');
         if (colon_pos == std::string::npos) {
@@ -1252,7 +1252,7 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
 
         std::string username = credentials.substr(0, colon_pos);
         std::string password = credentials.substr(colon_pos + 1);
-        webdav::debugLog("authenticateUser: Extracted username: " + username + ", password length: " + std::to_string(password.length()));
+        webdav::debugLog("authenticateUser: Extracted username: " + username);
 
         webdav::debugLog("authenticateUser: Attempting to authenticate user: " + username);
 
