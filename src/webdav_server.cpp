@@ -37,6 +37,25 @@ std::string isoDate(std::int64_t epoch_seconds) {
     return Poco::DateTimeFormatter::format(ts, Poco::DateTimeFormat::ISO8601_FORMAT);
 }
 
+// Escape a string for safe inclusion in XML text/attribute content, preventing
+// response/XML injection via paths or node names reflected into PROPFIND/
+// PROPPATCH multistatus bodies. (Security review M5.)
+std::string xmlEscape(const std::string& in) {
+    std::string out;
+    out.reserve(in.size());
+    for (char c : in) {
+        switch (c) {
+            case '&':  out += "&amp;";  break;
+            case '<':  out += "&lt;";   break;
+            case '>':  out += "&gt;";   break;
+            case '"':  out += "&quot;"; break;
+            case '\'': out += "&apos;"; break;
+            default:   out += c;
+        }
+    }
+    return out;
+}
+
 // Recursively delete a directory tree: depth-first remove all children (files
 // directly, sub-directories via recursion), then the directory itself. The core
 // RemoveDirectory refuses a non-empty directory, so WebDAV DELETE on a
@@ -659,10 +678,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
             ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
             ostr << "<D:multistatus xmlns:D=\"DAV:\">\n";
             ostr << "  <D:response>\n";
-            ostr << "    <D:href>" << path << "</D:href>\n";
+            ostr << "    <D:href>" << xmlEscape(path) << "</D:href>\n";
             ostr << "    <D:propstat>\n";
             ostr << "      <D:prop>\n";
-            ostr << "        <D:displayname>" << info.name() << "</D:displayname>\n";
+            ostr << "        <D:displayname>" << xmlEscape(info.name()) << "</D:displayname>\n";
             ostr << "        <D:resourcetype/>\n";
             ostr << "        <D:getcontenttype>application/octet-stream</D:getcontenttype>\n";
             ostr << "        <D:getcontentlength>" << std::to_string(info.size()) << "</D:getcontentlength>\n";
@@ -713,10 +732,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
         ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
         ostr << "<D:multistatus xmlns:D=\"DAV:\">\n";
         ostr << "  <D:response>\n";
-        ostr << "    <D:href>" << path << "</D:href>\n";
+        ostr << "    <D:href>" << xmlEscape(path) << "</D:href>\n";
         ostr << "    <D:propstat>\n";
         ostr << "      <D:prop>\n";
-        ostr << "        <D:displayname>" << (path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
+        ostr << "        <D:displayname>" << xmlEscape(path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
         ostr << "        <D:resourcetype><D:collection/></D:resourcetype>\n";
         ostr << "        <D:getcontenttype>httpd/unix-directory</D:getcontenttype>\n";
         ostr << "        <D:creationdate>" << isoDate(std::time(nullptr)) << "</D:creationdate>\n";
@@ -742,10 +761,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
 
     // Add the requested directory itself
     ostr << "  <D:response>\n";
-    ostr << "    <D:href>" << path << "</D:href>\n";
+    ostr << "    <D:href>" << xmlEscape(path) << "</D:href>\n";
     ostr << "    <D:propstat>\n";
     ostr << "      <D:prop>\n";
-    ostr << "        <D:displayname>" << (path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
+    ostr << "        <D:displayname>" << xmlEscape(path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
     ostr << "        <D:resourcetype><D:collection/></D:resourcetype>\n";
     ostr << "        <D:getcontenttype>httpd/unix-directory</D:getcontenttype>\n";
     ostr << "        <D:creationdate>" << isoDate(std::time(nullptr)) << "</D:creationdate>\n";
@@ -761,10 +780,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
         std::string entry_path = path.empty() || path == "/" ? "/" + entry.name() : path + "/" + entry.name();
 
         ostr << "  <D:response>\n";
-        ostr << "    <D:href>" << entry_path << "</D:href>\n";
+        ostr << "    <D:href>" << xmlEscape(entry_path) << "</D:href>\n";
         ostr << "    <D:propstat>\n";
         ostr << "      <D:prop>\n";
-        ostr << "        <D:displayname>" << entry.name() << "</D:displayname>\n";
+        ostr << "        <D:displayname>" << xmlEscape(entry.name()) << "</D:displayname>\n";
 
         // Set resource type based on entry type
         if (entry.type() == fileengine_rpc::DIRECTORY) {
@@ -832,7 +851,7 @@ void WebDAVRequestHandler::handleProppatch(Poco::Net::HTTPServerRequest& request
     ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
     ostr << "<D:multistatus xmlns:D=\"DAV:\">\n";
     ostr << "  <D:response>\n";
-    ostr << "    <D:href>" << path << "</D:href>\n";
+    ostr << "    <D:href>" << xmlEscape(path) << "</D:href>\n";
     ostr << "    <D:propstat>\n";
     ostr << "      <D:prop>\n";
     ostr << "        <D:displayname/>\n";
@@ -841,6 +860,80 @@ void WebDAVRequestHandler::handleProppatch(Poco::Net::HTTPServerRequest& request
     ostr << "    </D:propstat>\n";
     ostr << "  </D:response>\n";
     ostr << "</D:multistatus>\n";
+}
+
+bool WebDAVRequestHandler::prepareDestination(Poco::Net::HTTPServerRequest& request,
+                                              Poco::Net::HTTPServerResponse& response,
+                                              const Poco::URI& dest_uri, const std::string& dest_path,
+                                              const fileengine_rpc::AuthenticationContext& auth_ctx,
+                                              const std::string& tenant) {
+    auto sendErr = [&](Poco::Net::HTTPResponse::HTTPStatus status, const std::string& reason,
+                       const std::string& body) {
+        response.setStatus(status);
+        response.setReason(reason);
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << body;
+    };
+    auto lower = [](std::string s) {
+        for (char& c : s) c = static_cast<char>(::tolower(static_cast<unsigned char>(c)));
+        return s;
+    };
+
+    // (1) The Destination authority must match the request host. A Destination
+    // that names a different server/tenant is refused (RFC 4918: 502).
+    if (!dest_uri.getHost().empty()) {
+        std::string reqHost = request.getHost();
+        auto colon = reqHost.find(':');
+        if (colon != std::string::npos) reqHost = reqHost.substr(0, colon);
+        if (lower(reqHost) != lower(dest_uri.getHost())) {
+            webdav::errorLog("prepareDestination: Destination host '" + dest_uri.getHost() +
+                             "' != request host '" + reqHost + "'");
+            sendErr(Poco::Net::HTTPResponse::HTTP_BAD_GATEWAY, "Bad Gateway",
+                    "Destination is on a different host");
+            return false;
+        }
+    }
+
+    // (2) Overwrite semantics (RFC 4918 §10.6). If the destination already exists:
+    //   Overwrite: F  -> 412 Precondition Failed (never clobber silently)
+    //   Overwrite: T  -> remove the existing target first; the core enforces
+    //                    DELETE permission, so an unauthorized overwrite -> 403.
+    std::optional<std::string> existing = path_resolver_->resolvePath(dest_path, auth_ctx);
+    if (existing && !existing->empty()) {
+        std::string overwrite = request.get("Overwrite", "T");
+        if (!overwrite.empty() && (overwrite[0] == 'F' || overwrite[0] == 'f')) {
+            sendErr(Poco::Net::HTTPResponse::HTTP_PRECONDITION_FAILED, "Precondition Failed",
+                    "Destination exists and Overwrite is F");
+            return false;
+        }
+        fileengine_rpc::StatRequest sr;
+        sr.set_uid(*existing);
+        *sr.mutable_auth() = auth_ctx;
+        auto st = grpc_client_->stat(sr);
+        bool is_dir = st.success() && st.info().type() == fileengine_rpc::DIRECTORY;
+        bool ok;
+        std::string err;
+        if (is_dir) {
+            ok = removeTreeRecursive(grpc_client_.get(), *existing, auth_ctx, err);
+        } else {
+            fileengine_rpc::RemoveFileRequest rr;
+            rr.set_uid(*existing);
+            *rr.mutable_auth() = auth_ctx;
+            auto r = grpc_client_->removeFile(rr);
+            ok = r.success();
+            err = r.error();
+        }
+        if (!ok) {
+            auto status = (err.find("permission") != std::string::npos)
+                              ? Poco::Net::HTTPResponse::HTTP_FORBIDDEN
+                              : Poco::Net::HTTPResponse::HTTP_INTERNAL_SERVER_ERROR;
+            sendErr(status, "Overwrite Failed", "Could not overwrite destination: " + err);
+            return false;
+        }
+        path_resolver_->removePathMapping(dest_path, tenant);
+    }
+    return true;
 }
 
 void WebDAVRequestHandler::handleCopy(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
@@ -907,6 +1000,9 @@ void WebDAVRequestHandler::handleCopy(Poco::Net::HTTPServerRequest& request, Poc
         ostr << "Invalid Destination";
         return;
     }
+
+    // Validate Destination authority + enforce Overwrite before copying (M4).
+    if (!prepareDestination(request, response, dest_uri, dest_path, auth_ctx, tenant)) return;
 
     // Resolve source and destination parent.
     std::optional<std::string> src = path_resolver_->resolvePath(source_path, auth_ctx);
@@ -1074,6 +1170,9 @@ void WebDAVRequestHandler::handleMove(Poco::Net::HTTPServerRequest& request, Poc
         ostr << "Invalid Destination";
         return;
     }
+
+    // Validate Destination authority + enforce Overwrite before moving (M4).
+    if (!prepareDestination(request, response, dest_uri, dest_path, auth_ctx, tenant)) return;
 
     // Resolve the source node.
     std::optional<std::string> src = path_resolver_->resolvePath(source_path, auth_ctx);
