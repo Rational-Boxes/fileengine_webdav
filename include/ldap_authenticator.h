@@ -39,13 +39,6 @@ public:
     // Authenticate user with username and password
     UserInfo authenticateUser(const std::string& username, const std::string& password);
     
-    // Authenticate user with digest authentication
-    bool authenticateDigest(const std::string& username, const std::string& realm, 
-                           const std::string& nonce, const std::string& uri, 
-                           const std::string& response, const std::string& method);
-    
-    // Get user information without authenticating (for already authenticated users)
-    UserInfo getUserInfo(const std::string& username);
     
 private:
     std::string ldap_endpoint_;
