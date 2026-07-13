@@ -1427,6 +1427,15 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
     if (thread_pool_ < 1) thread_pool_ = 16;
     monitoring_host_ = webdav::getEnvOrDefault("WEBDAV_MONITORING_HOST", "127.0.0.1");
     monitoring_port_ = std::stoi(webdav::getEnvOrDefault("WEBDAV_MONITORING_PORT", "8089"));
+    {
+        // Optional comma-separated client-IP allowlist for the unauthenticated
+        // monitoring listener (L2). Empty = allow any host reaching the bound addr.
+        std::string ips = webdav::getEnvOrDefault("WEBDAV_MONITORING_ALLOW_IPS", "");
+        for (auto& ip : webdav::splitString(ips, ',')) {
+            std::string t = webdav::trim(ip);
+            if (!t.empty()) monitoring_allow_ips_.push_back(t);
+        }
+    }
     server_params_->setKeepAlive(true);
     server_params_->setMaxThreads(thread_pool_);
     server_params_->setMaxQueued(thread_pool_ * 8);
@@ -1461,11 +1470,21 @@ void monitorSendJson(Poco::Net::HTTPServerResponse& resp,
 // capacity (503 when saturated → LB drains this instance); /poolz = live usage.
 class MonitorHandler : public Poco::Net::HTTPRequestHandler {
 public:
-    MonitorHandler(Poco::ThreadPool* pool, int maxQueued, std::string service)
-        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)) {}
+    MonitorHandler(Poco::ThreadPool* pool, int maxQueued, std::string service,
+                   std::vector<std::string> allowIps)
+        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)),
+          allowIps_(std::move(allowIps)) {}
     void handleRequest(Poco::Net::HTTPServerRequest& req,
                        Poco::Net::HTTPServerResponse& resp) override {
         using R = Poco::Net::HTTPResponse;
+        // Optional IP allowlist (L2), enforced before serving any probe.
+        if (!allowIps_.empty()) {
+            std::string ip;
+            try { ip = req.clientAddress().host().toString(); } catch (...) {}
+            bool ok = false;
+            for (const auto& a : allowIps_) if (a == ip) { ok = true; break; }
+            if (!ok) return monitorSendJson(resp, R::HTTP_FORBIDDEN, "{\"error\":\"forbidden\"}");
+        }
         const std::string path = req.getURI();
         const bool hasCapacity = pool_->available() > 0;
         if (path == "/healthz") {
@@ -1487,19 +1506,23 @@ private:
     Poco::ThreadPool* pool_;
     int maxQueued_;
     std::string service_;
+    std::vector<std::string> allowIps_;
 };
 
 class MonitorHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
 public:
-    MonitorHandlerFactory(Poco::ThreadPool* pool, int maxQueued, std::string service)
-        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)) {}
+    MonitorHandlerFactory(Poco::ThreadPool* pool, int maxQueued, std::string service,
+                          std::vector<std::string> allowIps)
+        : pool_(pool), maxQueued_(maxQueued), service_(std::move(service)),
+          allowIps_(std::move(allowIps)) {}
     Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest&) override {
-        return new MonitorHandler(pool_, maxQueued_, service_);
+        return new MonitorHandler(pool_, maxQueued_, service_, allowIps_);
     }
 private:
     Poco::ThreadPool* pool_;
     int maxQueued_;
     std::string service_;
+    std::vector<std::string> allowIps_;
 };
 }  // namespace
 
@@ -1531,7 +1554,7 @@ void WebDAVServer::start() {
         Poco::Net::ServerSocket msocket(
             Poco::Net::SocketAddress(monitoring_host_, static_cast<Poco::UInt16>(monitoring_port_)));
         monitor_server_ = std::make_unique<Poco::Net::HTTPServer>(
-            new MonitorHandlerFactory(pool_.get(), thread_pool_ * 8, "webdav_bridge"),
+            new MonitorHandlerFactory(pool_.get(), thread_pool_ * 8, "webdav_bridge", monitoring_allow_ips_),
             *monitor_pool_, msocket, mparams);
         monitor_server_->start();
         std::cout << "WebDAV monitoring (/healthz /readyz /poolz) listening on " << monitoring_host_

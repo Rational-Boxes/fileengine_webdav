@@ -109,6 +109,7 @@ private:
     // protected by network isolation rather than auth (WEBDAV_MONITORING_HOST).
     std::string monitoring_host_ = "127.0.0.1";
     int monitoring_port_ = 8089; // WEBDAV_MONITORING_PORT — dedicated reporter listener
+    std::vector<std::string> monitoring_allow_ips_; // optional client-IP allowlist for the monitor (security review L2)
     std::unique_ptr<Poco::Net::ServerSocket> socket_;
     Poco::Net::HTTPServerParams::Ptr server_params_;
     // Dedicated worker pool sized to thread_pool_; declared before server_ so it
