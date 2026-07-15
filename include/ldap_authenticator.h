@@ -38,7 +38,13 @@ public:
     
     // Authenticate user with username and password
     UserInfo authenticateUser(const std::string& username, const std::string& password);
-    
+
+    // Resolve a user's roles WITHOUT a password bind (for key:secret auth, §15):
+    // a service-bind search by uid + group-membership role extraction. `authenticated`
+    // is true iff the uid exists in the directory. Tenant is host-driven by the
+    // caller, so it is left empty here.
+    UserInfo lookupUser(const std::string& username);
+
     
 private:
     std::string ldap_endpoint_;

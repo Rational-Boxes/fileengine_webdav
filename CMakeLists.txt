@@ -81,6 +81,7 @@ add_executable(webdav_bridge
     src/grpc_client_wrapper.cpp
     src/path_resolver.cpp
     src/ldap_authenticator.cpp
+    src/webdav_hardening.cpp
     src/utils.cpp
     ${PROTO_SRCS}
 )
@@ -101,6 +102,20 @@ target_link_libraries(webdav_bridge
     Threads::Threads
 )
 
+# Optional hiredis for the WebDAV session gate (reads the presence set http_bridge
+# writes, PROPOSAL §14). Without it the gate can't verify a session and falls back
+# to fail-open/closed per WEBDAV_IP_BINDING_FAIL_OPEN.
+find_library(HIREDIS_LIB hiredis)
+find_path(HIREDIS_INC hiredis/hiredis.h)
+if(HIREDIS_LIB AND HIREDIS_INC)
+    target_compile_definitions(webdav_bridge PRIVATE WEBDAV_HAS_HIREDIS=1)
+    target_include_directories(webdav_bridge PRIVATE ${HIREDIS_INC})
+    target_link_libraries(webdav_bridge ${HIREDIS_LIB})
+    message(STATUS "webdav_bridge session gate ENABLED (hiredis: ${HIREDIS_LIB})")
+else()
+    message(WARNING "hiredis not found; webdav_bridge session gate compiled out")
+endif()
+
 # Install target
 install(TARGETS webdav_bridge DESTINATION bin)
 
@@ -116,6 +131,7 @@ set(WEBDAV_TEST_SRCS
     src/grpc_client_wrapper.cpp
     src/path_resolver.cpp
     src/ldap_authenticator.cpp
+    src/webdav_hardening.cpp
     src/utils.cpp
     ${PROTO_SRCS}
 )

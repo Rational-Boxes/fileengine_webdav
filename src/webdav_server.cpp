@@ -1,4 +1,5 @@
 #include "webdav_server.h"
+#include "client_ip.h"
 #include <string>  // std::stod (failover cooldown parsing)
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPServerRequest.h>
@@ -1349,47 +1350,56 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
             return false;
         }
 
-        std::string username = credentials.substr(0, colon_pos);
-        std::string password = credentials.substr(colon_pos + 1);
-        webdav::debugLog("authenticateUser: Extracted username: " + username);
+        // §15/§16: the Basic credential is a backend-generated key:secret, NOT a
+        // directory password. Verify it against ldap_manager's internal endpoint
+        // (scope "webdav") and resolve roles via a service-search (no user bind).
+        // Any non-key credential — including a real directory password — is
+        // rejected: there is no legacy password path (no live deployments).
+        const std::string key_id = credentials.substr(0, colon_pos);
+        const std::string secret = credentials.substr(colon_pos + 1);
 
-        webdav::debugLog("authenticateUser: Attempting to authenticate user: " + username);
-
-        // Authenticate with LDAP
-        webdav::debugLog("authenticateUser: Calling LDAP authenticator for user: " + username);
-        UserInfo user_info = ldap_auth_->authenticateUser(username, password);
-        webdav::debugLog("authenticateUser: LDAP authentication returned - authenticated: " + std::to_string(user_info.authenticated) +
-                         ", user_id: " + user_info.user_id + ", tenant: " + user_info.tenant +
-                         ", roles count: " + std::to_string(user_info.roles.size()));
-
-        if (!user_info.authenticated) {
-            webdav::debugLog("authenticateUser: LDAP authentication failed for user: " + username);
+        if (!hardening_) {
+            webdav::errorLog("authenticateUser: hardening not configured — refusing");
             return false;
         }
 
-        // Log the roles loaded from LDAP
-        std::string roles_str = [&user_info]() {
-            std::string roles_list;
-            for (size_t i = 0; i < user_info.roles.size(); ++i) {
-                if (i > 0) roles_list += ", ";
-                roles_list += user_info.roles[i];
+        // Trusted client IP (§3): the authoritative address the LAN exemption and
+        // the session gate evaluate against.
+        std::string peer;
+        try { peer = request.clientAddress().host().toString(); } catch (...) {}
+        const std::string ip = webdav::resolveClientIp(
+            peer, request.get("X-Forwarded-For", ""), hardening_->config().trusted_proxies);
+
+        std::string uid;
+        if (!hardening_->verifyCredential(key_id, secret, tenant, ip, uid)) {
+            webdav::debugLog("authenticateUser: key:secret verification failed");
+            return false;
+        }
+        // Roles from LDAP (the authorization authority) via service-search — no
+        // password. Tenant stays host-driven (never the LDAP user-DN OU).
+        UserInfo info = ldap_auth_->lookupUser(uid);
+        if (!info.authenticated) {
+            webdav::errorLog("authenticateUser: verified key but uid not in directory: " + uid);
+            return false;
+        }
+        user = uid;
+        roles = info.roles;
+
+        // Origin/session gate (§14): allow on the trusted LAN OR with a live Web-UI
+        // session. Only when enabled; otherwise the strong credential alone
+        // authorizes (§15.6 — the credential and gate are orthogonal layers).
+        if (hardening_->config().gate_enabled) {
+            std::string via;
+            if (hardening_->gate(tenant, uid, ip, via) == webdav::GateDecision::Deny) {
+                webdav::warnLog("authenticateUser: WebDAV gate denied uid=" + uid +
+                                " tenant=" + tenant + " ip=" + ip + " (" + via + ")");
+                return false;
             }
-            return roles_list.empty() ? "none" : roles_list;
-        }();
+            webdav::debugLog("authenticateUser: gate allowed via " + via);
+        }
 
-        webdav::debugLog("authenticateUser: LDAP authentication successful for user: " + username +
-                         " (tenant: " + user_info.tenant + ")" +
-                         " with roles: [" + roles_str + "]");
-
-        user = user_info.user_id;
-        // Tenant is host-driven (subdomain -> tenant; "default" in non-subdomain
-        // mode). Do NOT override it with the LDAP user-DN OU — the directory
-        // layout puts users under ou=users, which is not a tenant. The LDAP
-        // authenticator supplies only the user identity and roles.
-        roles = user_info.roles;
-
-        webdav::debugLog("authenticateUser: Setting user: " + user + ", tenant: " + tenant + ", roles count: " + std::to_string(roles.size()));
-
+        webdav::debugLog("authenticateUser: authorized uid=" + user + " tenant=" + tenant +
+                         " roles=" + std::to_string(roles.size()));
         return true;
     }
 
@@ -1415,6 +1425,7 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
           webdav::getEnvOrDefault("FILEENGINE_LDAP_ENDPOINT_REPLICA", ""),
           std::stod(webdav::getEnvOrDefault("FILEENGINE_FAILOVER_COOLDOWN_S", "30"))
       )),
+      hardening_(std::make_shared<WebdavHardening>(webdav::HardeningConfig::fromEnv())),
       socket_(std::make_unique<Poco::Net::ServerSocket>(port)),
       server_params_(new Poco::Net::HTTPServerParams),
       server_(nullptr) {
@@ -1529,7 +1540,7 @@ private:
 void WebDAVServer::start() {
     webdav::debugLog("WebDAVServer: Starting server on " + host_ + ":" + std::to_string(port_));
     try {
-        auto* factory = new WebDAVRequestHandlerFactory(grpc_client_, path_resolver_, ldap_auth_);
+        auto* factory = new WebDAVRequestHandlerFactory(grpc_client_, path_resolver_, ldap_auth_, hardening_);
         webdav::debugLog("WebDAVServer: Created request handler factory");
         // Dedicated pool sized to thread_pool_ rather than Poco's shared
         // defaultPool() (capacity 16), so WEBDAV_THREAD_POOL actually scales

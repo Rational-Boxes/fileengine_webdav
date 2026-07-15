@@ -25,6 +25,7 @@
 #include "grpc_client_wrapper.h"
 #include "path_resolver.h"
 #include "ldap_authenticator.h"
+#include "webdav_hardening.h"
 #include "utils.h"
 
 namespace webdav {
@@ -34,10 +35,12 @@ public:
     WebDAVRequestHandler(
         std::shared_ptr<GRPCClientWrapper> grpc_client,
         std::shared_ptr<PathResolver> path_resolver,
-        std::shared_ptr<LDAPAuthenticator> ldap_auth)
+        std::shared_ptr<LDAPAuthenticator> ldap_auth,
+        std::shared_ptr<WebdavHardening> hardening)
         : grpc_client_(grpc_client)
         , path_resolver_(path_resolver)
-        , ldap_auth_(ldap_auth) {}
+        , ldap_auth_(ldap_auth)
+        , hardening_(hardening) {}
 
     void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) override;
 
@@ -71,6 +74,7 @@ private:
     std::shared_ptr<GRPCClientWrapper> grpc_client_;
     std::shared_ptr<PathResolver> path_resolver_;
     std::shared_ptr<LDAPAuthenticator> ldap_auth_;
+    std::shared_ptr<WebdavHardening> hardening_;
 };
 
 class WebDAVRequestHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
@@ -78,19 +82,22 @@ public:
     WebDAVRequestHandlerFactory(
         std::shared_ptr<GRPCClientWrapper> grpc_client,
         std::shared_ptr<PathResolver> path_resolver,
-        std::shared_ptr<LDAPAuthenticator> ldap_auth)
+        std::shared_ptr<LDAPAuthenticator> ldap_auth,
+        std::shared_ptr<WebdavHardening> hardening)
         : grpc_client_(grpc_client)
         , path_resolver_(path_resolver)
-        , ldap_auth_(ldap_auth) {}
+        , ldap_auth_(ldap_auth)
+        , hardening_(hardening) {}
 
     Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request) override {
-        return new WebDAVRequestHandler(grpc_client_, path_resolver_, ldap_auth_);
+        return new WebDAVRequestHandler(grpc_client_, path_resolver_, ldap_auth_, hardening_);
     }
 
 private:
     std::shared_ptr<GRPCClientWrapper> grpc_client_;
     std::shared_ptr<PathResolver> path_resolver_;
     std::shared_ptr<LDAPAuthenticator> ldap_auth_;
+    std::shared_ptr<WebdavHardening> hardening_;
 };
 
 class WebDAVServer {
@@ -123,6 +130,7 @@ private:
     std::shared_ptr<GRPCClientWrapper> grpc_client_;
     std::shared_ptr<PathResolver> path_resolver_;
     std::shared_ptr<LDAPAuthenticator> ldap_auth_;
+    std::shared_ptr<WebdavHardening> hardening_;
 };
 
 } // namespace webdav

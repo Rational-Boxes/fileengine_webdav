@@ -1,0 +1,77 @@
+#ifndef WEBDAV_HARDENING_H
+#define WEBDAV_HARDENING_H
+
+#include <map>
+#include <mutex>
+#include <string>
+#include <vector>
+
+struct redisContext;  // forward-declared; hiredis is pulled in only by the .cpp
+
+namespace webdav {
+
+// Config for the WebDAV hardening (PROPOSAL §14/§15), read from the environment.
+struct HardeningConfig {
+    // --- credential verify (§15) ---
+    std::string ldap_manager_url;    // LDAP_MANAGER_URL (e.g. http://127.0.0.1:8093)
+    std::string internal_secret;     // SERVICE_CRED_INTERNAL_SECRET (falls back to MFA_INTERNAL_SECRET)
+    int verify_cache_ttl = 60;       // WEBDAV_CRED_VERIFY_CACHE_TTL_SECONDS
+
+    // --- origin/session gate (§14) ---
+    bool gate_enabled = false;       // WEBDAV_IP_BINDING_ENABLED
+    bool fail_open = false;          // WEBDAV_IP_BINDING_FAIL_OPEN (external, Redis down)
+    bool session_ip = true;          // WEBDAV_EXTERNAL_GATE: session_ip (default) vs session
+    std::vector<std::string> trusted_cidrs;    // WEBDAV_IP_BIND_TRUSTED_CIDRS (LAN exemption)
+    std::vector<std::string> trusted_proxies;  // FILEENGINE_TRUSTED_PROXIES
+
+    // --- redis (shared broker) ---
+    std::string redis_host = "localhost";
+    int redis_port = 6379;
+    std::string redis_password;
+    int redis_db = 0;
+
+    static HardeningConfig fromEnv();
+};
+
+enum class GateDecision { Allow, Deny };
+
+// Credential verification (calls ldap_manager's internal verify, cached) + the
+// origin-aware session gate (reads the Redis presence set http_bridge writes).
+class WebdavHardening {
+public:
+    explicit WebdavHardening(HardeningConfig cfg);
+    ~WebdavHardening();
+
+    const HardeningConfig& config() const { return cfg_; }
+
+    // Verify a Basic key:secret (§15). True + fills out_uid on success; cached for
+    // verify_cache_ttl seconds so a PROPFIND storm is one round-trip. `tenant` is
+    // the host-derived tenant; scope is always "webdav".
+    bool verifyCredential(const std::string& key_id, const std::string& secret,
+                          const std::string& tenant, const std::string& source_ip,
+                          std::string& out_uid);
+
+    // Origin gate (§14): Allow if the request is inside the trusted LAN CIDRs
+    // (static, no Redis — evaluated first) OR the user has a live Web-UI session;
+    // Deny otherwise. `via` is set to trusted_cidr / session / denied /
+    // redis_unavailable for the audit trail. Only call when gate_enabled.
+    GateDecision gate(const std::string& tenant, const std::string& uid,
+                      const std::string& ip, std::string& via);
+
+private:
+    struct CacheEntry { std::string uid; long expiry; };
+    std::mutex cache_mtx_;
+    std::map<std::string, CacheEntry> verify_cache_;  // key = key_id + '\0' + secret
+
+    std::mutex redis_mtx_;
+    redisContext* ctx_ = nullptr;
+    bool ensureConnectedLocked();
+    bool hasLiveSessionLocked(const std::string& tenant, const std::string& uid,
+                              const std::string& ip, bool& redis_ok);
+
+    HardeningConfig cfg_;
+};
+
+}  // namespace webdav
+
+#endif  // WEBDAV_HARDENING_H

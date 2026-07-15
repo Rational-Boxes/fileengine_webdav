@@ -179,6 +179,48 @@ UserInfo LDAPAuthenticator::authenticateUser(const std::string& username, const 
     return user_info;
 }
 
+UserInfo LDAPAuthenticator::lookupUser(const std::string& username) {
+    // Roles WITHOUT a password bind: the credential (a key:secret, §15) is verified
+    // elsewhere; here we only resolve the uid's DN + group-membership roles via the
+    // service connection. Mirrors authenticateUser's search + role extraction, minus
+    // the user-bind.
+    std::lock_guard<std::mutex> lock(ldap_mutex_);
+    LDAP* ld = connectToLDAP();
+    if (!ld) {
+        webdav::errorLog("LDAPAuthenticator::lookupUser: failed to connect to LDAP");
+        return { "", "", {}, "", false };
+    }
+    std::string search_filter = "(uid=" + escapeLdapFilterValue(username) + ")";
+    LDAPMessage* result = nullptr;
+    int rc = ldap_search_s(ld, user_base_.c_str(), LDAP_SCOPE_SUBTREE,
+                           search_filter.c_str(), nullptr, false, &result);
+    if (rc != LDAP_SUCCESS || ldap_count_entries(ld, result) != 1) {
+        webdav::errorLog("LDAPAuthenticator::lookupUser: user not found: " + username);
+        if (result) ldap_msgfree(result);
+        ldap_unbind_ext_s(ld, nullptr, nullptr);
+        return { "", "", {}, "", false };
+    }
+    LDAPMessage* entry = ldap_first_entry(ld, result);
+    char* dn = entry ? ldap_get_dn(ld, entry) : nullptr;
+    if (!dn) {
+        if (result) ldap_msgfree(result);
+        ldap_unbind_ext_s(ld, nullptr, nullptr);
+        return { "", "", {}, "", false };
+    }
+    std::string user_dn(dn);
+    ldap_memfree(dn);
+
+    UserInfo info;
+    info.dn = user_dn;
+    info.user_id = username;
+    info.roles = extractRolesFromGroups(ld, user_dn);
+    info.tenant = "";              // host-driven by the caller
+    info.authenticated = true;     // the uid exists; the secret was verified upstream
+    ldap_msgfree(result);
+    ldap_unbind_ext_s(ld, nullptr, nullptr);
+    return info;
+}
+
 LDAP* LDAPAuthenticator::connectToLDAP() {
     // No replica configured -> master only (unchanged behavior).
     if (replica_endpoint_.empty()) {
