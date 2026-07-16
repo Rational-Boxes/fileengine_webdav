@@ -1,5 +1,16 @@
 #include "webdav_server.h"
 #include "client_ip.h"
+
+namespace {
+// Trusted client IP for a request (same derivation as authenticateUser), stamped on
+// the AuthenticationContext forwarded to the core so audit rows carry source_addr.
+std::string resolveRequestIp(Poco::Net::HTTPServerRequest& request,
+                             const std::vector<std::string>& trusted) {
+    std::string peer;
+    try { peer = request.clientAddress().host().toString(); } catch (...) {}
+    return webdav::resolveClientIp(peer, request.get("X-Forwarded-For", ""), trusted);
+}
+}  // namespace
 #include <string>  // std::stod (failover cooldown parsing)
 #include <Poco/Net/HTTPServerResponse.h>
 #include <Poco/Net/HTTPServerRequest.h>
@@ -183,6 +194,7 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) {
         auth_ctx.add_roles(role);
     }
@@ -283,6 +295,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) {
         auth_ctx.add_roles(role);
     }
@@ -414,6 +427,7 @@ void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Po
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) {
         auth_ctx.add_roles(role);
     }
@@ -511,6 +525,7 @@ void WebDAVRequestHandler::handleDelete(Poco::Net::HTTPServerRequest& request, P
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) {
         auth_ctx.add_roles(role);
     }
@@ -630,6 +645,7 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     webdav::debugLog("handlePropfind: Building authentication context with user: " + user + ", tenant: " + tenant);
 
     for (const auto& role : roles) {
@@ -977,6 +993,7 @@ void WebDAVRequestHandler::handleCopy(Poco::Net::HTTPServerRequest& request, Poc
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) auth_ctx.add_roles(role);
 
     auto strip_slash = [](std::string p) {
@@ -1144,6 +1161,7 @@ void WebDAVRequestHandler::handleMove(Poco::Net::HTTPServerRequest& request, Poc
     fileengine_rpc::AuthenticationContext auth_ctx;
     auth_ctx.set_user(user);
     auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
     for (const auto& role : roles) auth_ctx.add_roles(role);
 
     // Normalize: drop a trailing slash (clients address collections as "/x/").
@@ -1388,18 +1406,21 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
         // Origin/session gate (§14): allow on the trusted LAN OR with a live Web-UI
         // session. Only when enabled; otherwise the strong credential alone
         // authorizes (§15.6 — the credential and gate are orthogonal layers).
+        std::string via = "gate-disabled";
         if (hardening_->config().gate_enabled) {
-            std::string via;
             if (hardening_->gate(tenant, uid, ip, via) == webdav::GateDecision::Deny) {
                 webdav::warnLog("authenticateUser: WebDAV gate denied uid=" + uid +
                                 " tenant=" + tenant + " ip=" + ip + " (" + via + ")");
                 return false;
             }
-            webdav::debugLog("authenticateUser: gate allowed via " + via);
         }
 
-        webdav::debugLog("authenticateUser: authorized uid=" + user + " tenant=" + tenant +
-                         " roles=" + std::to_string(roles.size()));
+        // Log the resolved client IP + gate outcome on every successful WebDAV auth
+        // (INFO), so the client's address family (IPv4/IPv6) is observable alongside
+        // the browser-session IP recorded by http_bridge.
+        webdav::infoLog("authenticateUser: WebDAV access granted uid=" + user +
+                        " tenant=" + tenant + " ip=" + ip + " via=" + via +
+                        " roles=" + std::to_string(roles.size()));
         return true;
     }
 
