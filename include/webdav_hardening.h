@@ -20,7 +20,12 @@ struct HardeningConfig {
     // --- origin/session gate (§14) ---
     bool gate_enabled = false;       // WEBDAV_IP_BINDING_ENABLED
     bool fail_open = false;          // WEBDAV_IP_BINDING_FAIL_OPEN (external, Redis down)
-    bool session_ip = true;          // WEBDAV_EXTERNAL_GATE: session_ip (default) vs session
+    bool session_ip = true;          // WEBDAV_EXTERNAL_GATE: session_ip vs session
+    // In session_ip mode, IPv6 addresses are matched on their leading /N bits
+    // (default 128 = exact). Set to 64 so a client whose IPv6 rotates within its
+    // /64 (privacy extensions) still matches its session. IPv4 is always exact,
+    // and v4-vs-v6 never matches (no cross-family correlation).
+    int session_ip6_prefix = 128;    // WEBDAV_SESSION_IP6_PREFIX (0..128)
     std::vector<std::string> trusted_cidrs;    // WEBDAV_IP_BIND_TRUSTED_CIDRS (LAN exemption)
     std::vector<std::string> trusted_proxies;  // FILEENGINE_TRUSTED_PROXIES
 
@@ -32,6 +37,11 @@ struct HardeningConfig {
 
     static HardeningConfig fromEnv();
 };
+
+// Compare a session member's IP to the request IP (session_ip mode): IPv4 exact,
+// IPv6 on the leading `v6prefix` bits (128 = exact), cross-family never matches.
+bool ipMatchesForSession(const std::string& member_ip, const std::string& request_ip,
+                         int v6prefix);
 
 enum class GateDecision { Allow, Deny };
 

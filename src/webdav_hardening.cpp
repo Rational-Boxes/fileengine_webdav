@@ -30,6 +30,24 @@ static std::vector<std::string> splitCidrs(const std::string& csv) {
     return out;
 }
 
+// Compare a session member's IP to the request IP for session_ip mode. IPv4 is
+// exact; IPv6 matches on the leading `v6prefix` bits (128 = exact). Cross-family
+// (v4 vs v6) never matches — there is no correlation between them. Unparseable
+// input falls back to exact string equality.
+bool ipMatchesForSession(const std::string& a, const std::string& b, int v6prefix) {
+    try {
+        Poco::Net::IPAddress ia(a), ib(b);
+        if (ia.family() != ib.family()) return false;
+        if (ia.family() == Poco::Net::IPAddress::IPv6 && v6prefix < 128) {
+            Poco::Net::IPAddress mask(static_cast<unsigned>(v6prefix), Poco::Net::IPAddress::IPv6);
+            return (ia & mask) == (ib & mask);
+        }
+        return ia == ib;
+    } catch (...) {
+        return a == b;
+    }
+}
+
 HardeningConfig HardeningConfig::fromEnv() {
     HardeningConfig c;
     c.ldap_manager_url = webdav::getEnvOrDefault("LDAP_MANAGER_URL", "");
@@ -42,8 +60,11 @@ HardeningConfig HardeningConfig::fromEnv() {
     std::string fo = webdav::getEnvOrDefault("WEBDAV_IP_BINDING_FAIL_OPEN", "");
     c.fail_open = (fo == "1" || fo == "true" || fo == "yes" || fo == "on");
     // session_ip (default) vs session (any-IP). The legacy ip_ttl mode is dropped.
-    std::string mode = webdav::getEnvOrDefault("WEBDAV_EXTERNAL_GATE", "session_ip");
-    c.session_ip = (mode != "session");
+    std::string mode = webdav::getEnvOrDefault("WEBDAV_EXTERNAL_GATE", "session");
+    c.session_ip = (mode == "session_ip");
+    c.session_ip6_prefix = std::stoi(webdav::getEnvOrDefault("WEBDAV_SESSION_IP6_PREFIX", "128"));
+    if (c.session_ip6_prefix < 0) c.session_ip6_prefix = 0;
+    if (c.session_ip6_prefix > 128) c.session_ip6_prefix = 128;
     c.trusted_cidrs = splitCidrs(webdav::getEnvOrDefault("WEBDAV_IP_BIND_TRUSTED_CIDRS", ""));
     c.trusted_proxies = splitCidrs(webdav::getEnvOrDefault("FILEENGINE_TRUSTED_PROXIES", ""));
 
@@ -201,7 +222,8 @@ bool WebdavHardening::hasLiveSessionLocked(const std::string& tenant, const std:
                 const auto* e = r->element[i];
                 std::string m(e->str, e->len);       // "{jti}|{ip}"
                 const auto bar = m.rfind('|');
-                if (bar != std::string::npos && m.substr(bar + 1) == ip) found = true;
+                if (bar != std::string::npos &&
+                    ipMatchesForSession(m.substr(bar + 1), ip, cfg_.session_ip6_prefix)) found = true;
             }
         }
     }

@@ -11,6 +11,7 @@
 #include "../include/path_resolver.h"
 #include "../include/ldap_authenticator.h"
 #include "../include/client_ip.h"
+#include "../include/webdav_hardening.h"
 
 using namespace webdav;
 
@@ -63,4 +64,21 @@ TEST(WebdavHardeningTest, TrustedProxyResolution) {
     EXPECT_EQ(resolveClientIp("10.0.0.1", "6.6.6.6, 203.0.113.9", proxies), "203.0.113.9");
     // No trusted proxies configured (dev): peer is used.
     EXPECT_EQ(resolveClientIp("10.0.0.1", "1.2.3.4", {}), "10.0.0.1");
+}
+
+// session_ip matching: IPv4 exact; IPv6 exact at /128; IPv6 /64 tolerates
+// privacy-address rotation within the prefix; cross-family never matches.
+TEST(WebdavHardeningTest, SessionIpMatch) {
+    // IPv4 — exact regardless of prefix (v6prefix doesn't apply).
+    EXPECT_TRUE(ipMatchesForSession("192.0.2.10", "192.0.2.10", 128));
+    EXPECT_FALSE(ipMatchesForSession("192.0.2.10", "192.0.2.11", 64));
+    // IPv6 exact at /128.
+    EXPECT_TRUE(ipMatchesForSession("2001:db8::1", "2001:db8::1", 128));
+    EXPECT_FALSE(ipMatchesForSession("2001:db8::1", "2001:db8::2", 128));
+    // IPv6 /64 — different interface IDs in the same /64 match (rotation), a
+    // different /64 does not.
+    EXPECT_TRUE(ipMatchesForSession("2001:db8:0:1::abcd", "2001:db8:0:1::ef01", 64));
+    EXPECT_FALSE(ipMatchesForSession("2001:db8:0:1::1", "2001:db8:0:2::1", 64));
+    // Cross-family never matches — no v4<->v6 correlation.
+    EXPECT_FALSE(ipMatchesForSession("2001:db8::1", "192.0.2.10", 64));
 }
