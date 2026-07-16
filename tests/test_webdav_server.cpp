@@ -62,8 +62,10 @@ TEST(WebdavHardeningTest, TrustedProxyResolution) {
     EXPECT_EQ(resolveClientIp("203.0.113.9", "1.2.3.4", proxies), "203.0.113.9");
     // Via a trusted proxy: take the right-most non-proxy hop, not the spoofed left.
     EXPECT_EQ(resolveClientIp("10.0.0.1", "6.6.6.6, 203.0.113.9", proxies), "203.0.113.9");
-    // No trusted proxies configured (dev): peer is used.
-    EXPECT_EQ(resolveClientIp("10.0.0.1", "1.2.3.4", {}), "10.0.0.1");
+    // No trusted proxies configured (dev): first XFF hop is trusted (matches
+    // http_bridge so both bridges derive the same IP); peer only when no XFF.
+    EXPECT_EQ(resolveClientIp("10.0.0.1", "1.2.3.4", {}), "1.2.3.4");
+    EXPECT_EQ(resolveClientIp("10.0.0.1", "", {}), "10.0.0.1");
 }
 
 // session_ip matching: IPv4 exact; IPv6 exact at /128; IPv6 /64 tolerates

@@ -7,8 +7,10 @@
 // gate. Configure FILEENGINE_TRUSTED_PROXIES (comma-separated IPs/CIDRs of the
 // reverse proxy). When set, XFF is credible only if the immediate peer is a trusted
 // proxy, and the resolved client is the right-most XFF hop that is NOT itself a
-// trusted proxy. When unset (development), the socket peer is used. Mirrors
-// http_bridge/include/client_ip.h.
+// trusted proxy. When unset (development), the first XFF hop is trusted for
+// convenience — do NOT run that way in production. Kept identical to
+// http_bridge/include/client_ip.h so both bridges resolve the SAME client IP (the
+// session gate compares against the IP http_bridge recorded).
 
 #include <string>
 #include <vector>
@@ -52,7 +54,16 @@ inline std::string resolveClientIp(const std::string& peer, const std::string& x
         const size_t b = s.find_last_not_of(" \t");
         return s.substr(a, b - a + 1);
     };
-    if (trusted.empty()) return peer;                 // dev: no XFF trust
+    // Development / no trusted proxies configured: trust the first XFF hop (matches
+    // http_bridge so both bridges derive the same client IP). Set
+    // FILEENGINE_TRUSTED_PROXIES in production so this convenience can't be spoofed.
+    if (trusted.empty()) {
+        if (!xff.empty()) {
+            const auto c = xff.find(',');
+            return trim(c == std::string::npos ? xff : xff.substr(0, c));
+        }
+        return peer;
+    }
     if (!isTrustedProxy(peer, trusted)) return peer;  // direct peer can't spoof via XFF
     if (xff.empty()) return peer;
 
