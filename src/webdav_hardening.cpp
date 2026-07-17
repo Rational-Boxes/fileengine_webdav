@@ -54,6 +54,7 @@ HardeningConfig HardeningConfig::fromEnv() {
     c.internal_secret = webdav::getEnvOrDefault("SERVICE_CRED_INTERNAL_SECRET",
                             webdav::getEnvOrDefault("MFA_INTERNAL_SECRET", ""));
     c.verify_cache_ttl = std::stoi(webdav::getEnvOrDefault("WEBDAV_CRED_VERIFY_CACHE_TTL_SECONDS", "60"));
+    c.role_cache_ttl = std::stoi(webdav::getEnvOrDefault("WEBDAV_ROLE_CACHE_TTL_SECONDS", "300"));
 
     std::string en = webdav::getEnvOrDefault("WEBDAV_IP_BINDING_ENABLED", "");
     c.gate_enabled = (en == "1" || en == "true" || en == "yes" || en == "on");
@@ -230,6 +231,52 @@ bool WebdavHardening::hasLiveSessionLocked(const std::string& tenant, const std:
     freeReplyObject(r);
     return found;
 }
+
+bool WebdavHardening::getCachedRoles(const std::string& uid, std::vector<std::string>& out_roles) {
+    if (uid.empty()) return false;
+    std::lock_guard<std::mutex> g(redis_mtx_);
+    if (!ensureConnectedLocked()) return false;
+    const std::string key = "webdav:roles:" + uid;
+    auto* r = static_cast<redisReply*>(redisCommand(ctx_, "GET %s", key.c_str()));
+    if (!r || ctx_->err) {
+        if (r) freeReplyObject(r);
+        if (ctx_) { redisFree(ctx_); ctx_ = nullptr; }
+        return false;                 // Redis error -> treat as a miss (caller hits LDAP)
+    }
+    bool hit = false;
+    if (r->type == REDIS_REPLY_STRING) {   // present (even empty) = hit; NIL = miss
+        out_roles.clear();
+        const std::string v(r->str, r->len);   // roles are newline-joined; empty = role-less user
+        size_t start = 0;
+        while (start < v.size()) {
+            size_t nl = v.find('\n', start);
+            const size_t end = (nl == std::string::npos) ? v.size() : nl;
+            if (end > start) out_roles.emplace_back(v.substr(start, end - start));
+            if (nl == std::string::npos) break;
+            start = nl + 1;
+        }
+        hit = true;
+    }
+    freeReplyObject(r);
+    return hit;
+}
+
+void WebdavHardening::putCachedRoles(const std::string& uid, const std::vector<std::string>& roles) {
+    if (uid.empty() || cfg_.role_cache_ttl <= 0) return;
+    std::lock_guard<std::mutex> g(redis_mtx_);
+    if (!ensureConnectedLocked()) return;
+    std::string val;
+    for (size_t i = 0; i < roles.size(); ++i) { if (i) val += '\n'; val += roles[i]; }
+    const std::string key = "webdav:roles:" + uid;
+    auto* r = static_cast<redisReply*>(redisCommand(ctx_, "SETEX %s %d %b",
+        key.c_str(), cfg_.role_cache_ttl, val.data(), val.size()));
+    if (!r || ctx_->err) {
+        if (r) freeReplyObject(r);
+        if (ctx_) { redisFree(ctx_); ctx_ = nullptr; }
+        return;                       // best-effort; a failed cache write just means a future miss
+    }
+    freeReplyObject(r);
+}
 #else
 bool WebdavHardening::ensureConnectedLocked() { return false; }
 bool WebdavHardening::hasLiveSessionLocked(const std::string&, const std::string&,
@@ -237,6 +284,9 @@ bool WebdavHardening::hasLiveSessionLocked(const std::string&, const std::string
     redis_ok = false;  // built without hiredis: cannot check → gate() fails closed/open per config
     return false;
 }
+// No hiredis: no cache -> every request resolves roles via LDAP (correct, just chattier).
+bool WebdavHardening::getCachedRoles(const std::string&, std::vector<std::string>&) { return false; }
+void WebdavHardening::putCachedRoles(const std::string&, const std::vector<std::string>&) {}
 #endif
 
 }  // namespace webdav

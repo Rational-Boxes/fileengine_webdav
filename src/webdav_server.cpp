@@ -1622,13 +1622,20 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
         }
         // Roles from LDAP (the authorization authority) via service-search — no
         // password. Tenant stays host-driven (never the LDAP user-DN OU).
-        UserInfo info = ldap_auth_->lookupUser(uid);
-        if (!info.authenticated) {
-            webdav::errorLog("authenticateUser: verified key but uid not in directory: " + uid);
-            return false;
-        }
+        // Redis-cached (TTL, §perf): the LDAP role lookup otherwise runs on EVERY
+        // request, so a PROPFIND/save burst hammers the directory. On a cache miss
+        // we do the live lookup and populate the cache; the credential itself was
+        // already verified above, so a hit safely skips the directory round-trip.
         user = uid;
-        roles = info.roles;
+        if (!hardening_->getCachedRoles(uid, roles)) {
+            UserInfo info = ldap_auth_->lookupUser(uid);
+            if (!info.authenticated) {
+                webdav::errorLog("authenticateUser: verified key but uid not in directory: " + uid);
+                return false;
+            }
+            roles = info.roles;
+            hardening_->putCachedRoles(uid, roles);
+        }
 
         // Origin/session gate (§14): allow on the trusted LAN OR with a live Web-UI
         // session. Only when enabled; otherwise the strong credential alone

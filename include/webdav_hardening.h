@@ -16,6 +16,7 @@ struct HardeningConfig {
     std::string ldap_manager_url;    // LDAP_MANAGER_URL (e.g. http://127.0.0.1:8093)
     std::string internal_secret;     // SERVICE_CRED_INTERNAL_SECRET (falls back to MFA_INTERNAL_SECRET)
     int verify_cache_ttl = 60;       // WEBDAV_CRED_VERIFY_CACHE_TTL_SECONDS
+    int role_cache_ttl = 300;        // WEBDAV_ROLE_CACHE_TTL_SECONDS (LDAP role-lookup cache)
 
     // --- origin/session gate (§14) ---
     bool gate_enabled = false;       // WEBDAV_IP_BINDING_ENABLED
@@ -67,6 +68,16 @@ public:
     // redis_unavailable for the audit trail. Only call when gate_enabled.
     GateDecision gate(const std::string& tenant, const std::string& uid,
                       const std::string& ip, std::string& via);
+
+    // Redis-backed cache of a uid's directory role membership (§ perf). The LDAP
+    // role lookup runs on EVERY WebDAV request; caching it in the shared broker
+    // (TTL = role_cache_ttl, default 5 min) collapses a PROPFIND/save storm to a
+    // single LDAP round-trip. Roles are directory-global (LDAP group CNs), so the
+    // key is the uid alone. getCachedRoles returns true on a hit (out_roles filled,
+    // possibly empty for a role-less user); false on a miss or if Redis is down —
+    // the caller then does the live LDAP lookup and calls putCachedRoles.
+    bool getCachedRoles(const std::string& uid, std::vector<std::string>& out_roles);
+    void putCachedRoles(const std::string& uid, const std::vector<std::string>& roles);
 
 private:
     struct CacheEntry { std::string uid; long expiry; };
