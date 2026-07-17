@@ -28,6 +28,9 @@ std::string resolveRequestIp(Poco::Net::HTTPServerRequest& request,
 #include <Poco/DateTimeFormatter.h>
 #include <Poco/DateTimeFormat.h>
 #include <Poco/Timestamp.h>
+#include <Poco/UUIDGenerator.h>
+#include <Poco/UUID.h>
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -47,6 +50,20 @@ std::string httpDate(std::int64_t epoch_seconds) {
 std::string isoDate(std::int64_t epoch_seconds) {
     Poco::Timestamp ts = Poco::Timestamp::fromEpochTime(static_cast<std::time_t>(epoch_seconds));
     return Poco::DateTimeFormatter::format(ts, Poco::DateTimeFormat::ISO8601_FORMAT);
+}
+
+// A resource's entity-tag: an Apache-style "<mtime>-<size>" strong validator.
+// Stable across reads of an unchanged file and changes whenever the content does
+// (mtime and/or size move), so GVfs-backed editors (Bluefish, gedit, ...) can
+// track the file across a save. It is deliberately derived from mtime+size —
+// fields present on BOTH FileInfo (Stat) and DirectoryEntry (listing) — so the
+// SAME file yields the SAME ETag on every surface (single-file PROPFIND, parent
+// listing, GET/HEAD, PUT); an inconsistent validator is itself a "changed on
+// disk" trigger. Quoted per RFC 7232 §2.3.
+std::string makeEtag(std::int64_t modified_at, std::int64_t size) {
+    std::ostringstream os;
+    os << '"' << std::hex << modified_at << '-' << size << '"';
+    return os.str();
 }
 
 // Escape a string for safe inclusion in XML text/attribute content, preventing
@@ -211,6 +228,42 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     }
     std::string file_uuid = *resolved;
 
+    // Stat the target so GET/HEAD carry the same validators the file's PROPFIND
+    // reports (ETag = mtime+size, Last-Modified). Editors read these on load and
+    // must see the identical value after their own save — without them a save
+    // spuriously reports "changed on disk". Best-effort: a Stat miss just omits
+    // the headers (the body still streams).
+    {
+        fileengine_rpc::StatRequest sreq;
+        sreq.set_uid(file_uuid);
+        *sreq.mutable_auth() = auth_ctx;
+        try {
+            fileengine_rpc::StatResponse sresp = grpc_client_->stat(sreq);
+            if (sresp.success()) {
+                response.set("ETag", makeEtag(sresp.info().modified_at(), sresp.info().size()));
+                response.set("Last-Modified", httpDate(sresp.info().modified_at()));
+                // HEAD: headers only, no body (Poco does not suppress it for us).
+                if (request.getMethod() == "HEAD") {
+                    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                    response.setReason("OK");
+                    response.setContentType("application/octet-stream");
+                    response.setContentLength(sresp.info().size());
+                    response.send();
+                    return;
+                }
+            } else if (request.getMethod() == "HEAD") {
+                response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
+                response.setReason("OK");
+                response.setContentType("application/octet-stream");
+                response.setContentLength(0);
+                response.send();
+                return;
+            }
+        } catch (const std::exception& e) {
+            webdav::debugLog(std::string("handleGet: Stat threw: ") + e.what());
+        }
+    }
+
     // Create gRPC request to get file
     fileengine_rpc::GetFileRequest get_req;
     get_req.set_uid(file_uuid);
@@ -219,7 +272,8 @@ void WebDAVRequestHandler::handleGet(Poco::Net::HTTPServerRequest& request, Poco
     // Stream the content from the core straight to the client in chunks (chunked
     // transfer-encoding) — the whole file is never buffered in the bridge. The
     // 200 header is sent lazily on the first chunk so that a failure before any
-    // data still yields a proper error status.
+    // data still yields a proper error status. The ETag/Last-Modified set above
+    // ride along on whichever send() fires first.
     bool headerSent = false;
     std::ostream* ostr = nullptr;
     auto sendHeader = [&]() {
@@ -343,6 +397,7 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
 
     // Create the file via touch if it does not already exist, then write content.
     std::optional<std::string> file_resolved = path_resolver_->resolvePath(path, auth_ctx);
+    const bool existed = file_resolved.has_value();  // 201 Created vs 204 (new revision)
     std::string file_uuid = file_resolved.value_or("");
     if (!file_resolved) {
         // File doesn't exist, create it first
@@ -393,11 +448,39 @@ void WebDAVRequestHandler::handlePut(Poco::Net::HTTPServerRequest& request, Poco
     // Create path mapping for the new file
     path_resolver_->createPathMapping(path, file_uuid, tenant);
 
-    response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
-    response.setReason("Created");
-    response.setContentType("text/plain");
-    std::ostream& ostr = response.send();
-    ostr << "Successfully stored file: " << path << " (size: " << total_bytes << " bytes)";
+    // Return the NEW version's validators on the PUT response so the client adopts
+    // them as its baseline instead of re-reading and seeing an "unexpected" change
+    // (the "changed on disk after my own save" symptom). Stat reflects the version
+    // just written; best-effort (a miss simply omits the headers).
+    try {
+        fileengine_rpc::StatRequest sreq;
+        sreq.set_uid(file_uuid);
+        *sreq.mutable_auth() = auth_ctx;
+        fileengine_rpc::StatResponse sresp = grpc_client_->stat(sreq);
+        if (sresp.success()) {
+            response.set("ETag", makeEtag(sresp.info().modified_at(), sresp.info().size()));
+            response.set("Last-Modified", httpDate(sresp.info().modified_at()));
+        }
+    } catch (const std::exception& e) {
+        webdav::debugLog(std::string("handlePut: post-write Stat threw: ") + e.what());
+    }
+
+    // RFC 4918 §9.7.1: 201 when the PUT creates the resource, 204 when it writes a
+    // new body to an existing one (a new version here). This mirrors the REST
+    // bridge (PUT /v1/files/{uid}/content -> 204) so the same save scenario yields
+    // the same status on both doors.
+    if (existed) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_NO_CONTENT);
+        response.setReason("No Content");
+        response.setContentType("text/plain");
+        response.send();
+    } else {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
+        response.setReason("Created");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "Successfully stored file: " << path << " (size: " << total_bytes << " bytes)";
+    }
 }
 
 void WebDAVRequestHandler::handleMkcol(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
@@ -704,6 +787,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
             ostr << "        <D:getcontentlength>" << std::to_string(info.size()) << "</D:getcontentlength>\n";
             ostr << "        <D:creationdate>" << isoDate(info.created_at()) << "</D:creationdate>\n";
             ostr << "        <D:getlastmodified>" << httpDate(info.modified_at()) << "</D:getlastmodified>\n";
+            // Emitted raw (not xml-escaped): the value is fully server-controlled
+            // (quotes + hex + '-') and standard servers emit literal quotes here;
+            // escaping them to &quot; trips clients with lax XML parsing.
+            ostr << "        <D:getetag>" << makeEtag(info.modified_at(), info.size()) << "</D:getetag>\n";
             ostr << "      </D:prop>\n";
             ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
             ostr << "    </D:propstat>\n";
@@ -755,8 +842,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
         ostr << "        <D:displayname>" << xmlEscape(path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
         ostr << "        <D:resourcetype><D:collection/></D:resourcetype>\n";
         ostr << "        <D:getcontenttype>httpd/unix-directory</D:getcontenttype>\n";
-        ostr << "        <D:creationdate>" << isoDate(std::time(nullptr)) << "</D:creationdate>\n";
-        ostr << "        <D:getlastmodified>" << httpDate(std::time(nullptr)) << "</D:getlastmodified>\n";
+        // Degraded listing (core unavailable): emit a STABLE epoch, never now() —
+        // a fluctuating mtime here would still trip the "changed on disk" clients.
+        ostr << "        <D:creationdate>" << isoDate(0) << "</D:creationdate>\n";
+        ostr << "        <D:getlastmodified>" << httpDate(0) << "</D:getlastmodified>\n";
         ostr << "      </D:prop>\n";
         ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
         ostr << "    </D:propstat>\n";
@@ -766,6 +855,30 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     }
 
     webdav::debugLog("handlePropfind: gRPC ListDirectory succeeded, got " + std::to_string(list_resp.entries_size()) + " entries");
+
+    // The collection's OWN timestamps must be stable too (emitting now() here made
+    // every directory PROPFIND look freshly modified). Prefer the directory's
+    // DB/version-derived Stat; for the root (empty uid) or a Stat miss, fall back
+    // to the newest child mtime — never now().
+    std::int64_t dir_created = 0, dir_modified = 0;
+    if (!dir_uuid.empty()) {
+        fileengine_rpc::StatRequest dstat_req;
+        dstat_req.set_uid(dir_uuid);
+        *dstat_req.mutable_auth() = auth_ctx;
+        try {
+            fileengine_rpc::StatResponse dstat = grpc_client_->stat(dstat_req);
+            if (dstat.success()) { dir_created = dstat.info().created_at(); dir_modified = dstat.info().modified_at(); }
+        } catch (const std::exception& e) {
+            webdav::debugLog(std::string("handlePropfind: dir Stat threw: ") + e.what());
+        }
+    }
+    if (dir_modified == 0) {  // root, or Stat unavailable: newest child mtime
+        for (const auto& e : list_resp.entries()) {
+            if (e.modified_at() > dir_modified) dir_modified = e.modified_at();
+            if (dir_created == 0 || (e.created_at() > 0 && e.created_at() < dir_created)) dir_created = e.created_at();
+        }
+    }
+    if (dir_created == 0) dir_created = dir_modified;
 
     // Build XML response with actual directory contents from gRPC
     response.setStatus(Poco::Net::HTTPResponse::HTTP_MULTI_STATUS);
@@ -784,8 +897,8 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
     ostr << "        <D:displayname>" << xmlEscape(path.empty() || path == "/" ? "Root Directory" : path.substr(path.find_last_of('/') + 1)) << "</D:displayname>\n";
     ostr << "        <D:resourcetype><D:collection/></D:resourcetype>\n";
     ostr << "        <D:getcontenttype>httpd/unix-directory</D:getcontenttype>\n";
-    ostr << "        <D:creationdate>" << isoDate(std::time(nullptr)) << "</D:creationdate>\n";
-    ostr << "        <D:getlastmodified>" << httpDate(std::time(nullptr)) << "</D:getlastmodified>\n";
+    ostr << "        <D:creationdate>" << isoDate(dir_created) << "</D:creationdate>\n";
+    ostr << "        <D:getlastmodified>" << httpDate(dir_modified) << "</D:getlastmodified>\n";
     ostr << "      </D:prop>\n";
     ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
     ostr << "    </D:propstat>\n";
@@ -820,6 +933,10 @@ void WebDAVRequestHandler::handlePropfind(Poco::Net::HTTPServerRequest& request,
         ostr << "        <D:getlastmodified>" << httpDate(entry.modified_at()) << "</D:getlastmodified>\n";
         if (entry.type() != fileengine_rpc::DIRECTORY) {
             ostr << "        <D:getcontentlength>" << std::to_string(entry.size()) << "</D:getcontentlength>\n";
+            // Same mtime+size ETag as the file's own PROPFIND/GET (emitted raw, as
+            // above), so a client that cached the listing entry's validator matches
+            // on a later direct query.
+            ostr << "        <D:getetag>" << makeEtag(entry.modified_at(), entry.size()) << "</D:getetag>\n";
         }
         ostr << "      </D:prop>\n";
         ostr << "      <D:status>HTTP/1.1 200 OK</D:status>\n";
@@ -1274,12 +1391,89 @@ void WebDAVRequestHandler::handleMove(Poco::Net::HTTPServerRequest& request, Poc
     response.send();
 }
 
+// Parse a WebDAV Timeout request header ("Second-600", "Infinite", or a
+// comma-separated preference list) into a bounded seconds value we echo back.
+// Real lock lifetime is irrelevant here (locks are advisory no-ops, below), but
+// clients expect a concrete Second-N they can renew against.
+namespace {
+constexpr long kLockTimeoutCapSeconds = 3600;   // upper bound we advertise
+constexpr long kLockTimeoutDefaultSeconds = 600;
+long parseLockTimeout(const std::string& header) {
+    for (const auto& tok : webdav::splitString(header, ',')) {
+        std::string t = webdav::trim(tok);
+        if (t.rfind("Second-", 0) == 0) {
+            try {
+                long secs = std::stol(t.substr(7));
+                if (secs <= 0) continue;
+                return std::min(secs, kLockTimeoutCapSeconds);
+            } catch (...) { continue; }
+        }
+        if (t == "Infinite") return kLockTimeoutCapSeconds;
+    }
+    return kLockTimeoutDefaultSeconds;
+}
+}  // namespace
+
+// LOCK/UNLOCK are a compatibility shim, NOT real mutual exclusion. FileEngine is
+// pervasively versioned: concurrent saves each append a new version, so there is
+// no lost-update to guard against and locks convey no exclusivity (true locking
+// only matters on primitive, non-versioning filesystems). We still advertise DAV
+// class 2 in OPTIONS because many clients — macOS Finder, the Windows
+// mini-redirector, GNOME/KDE, several editors — refuse a read-write mount, or
+// abort the *first save of a new file*, unless a LOCK handshake succeeds. So we
+// always grant, but the response must be RFC 4918 §9.10-shaped or those clients
+// still fail: crucially it MUST carry a Lock-Token header (§9.10.1) — its
+// absence was the "IO error on first save" regression, since the client could
+// not extract a token for the follow-up PUT's If: header.
 void WebDAVRequestHandler::handleLock(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
-    // Since FileEngine is pervasively versioned and immutable, traditional file locking doesn't apply
-    // We'll implement a minimal lock response for client compatibility
-    response.setStatus(Poco::Net::HTTPResponse::HTTP_OK);
-    response.setReason("OK");
-    response.setContentType("application/xml");
+    std::string uri = request.getURI();
+    Poco::URI poco_uri(uri);
+    std::string path = poco_uri.getPath();
+
+    std::string host = request.getHost();
+    std::string tenant = extractTenantFromHost(host);
+    if (tenant.empty()) tenant = "default";
+
+    // LOCK is a write-class verb: authenticate and pass the session gate exactly
+    // like PUT/MKCOL/etc. Before this, LOCK skipped auth entirely (returning 200
+    // to anonymous callers and bypassing the §14 gate) — an inconsistency with
+    // the rest of the hardened write path.
+    std::string user;
+    std::vector<std::string> roles;
+    if (!authenticateUser(request, user, tenant, roles)) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED);
+        response.setReason("Unauthorized");
+        response.set("WWW-Authenticate", "Basic realm=\"WebDAV Server\"");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "Authentication required";
+        return;
+    }
+
+    // Resolve the target so we return the right status: 200 for an existing
+    // resource, 201 for locking an as-yet-unmapped URL (a "lock-null" resource,
+    // RFC 4918 §7.3 / §9.10.4 — the common new-file-save path). The subsequent
+    // PUT is what actually creates the file.
+    fileengine_rpc::AuthenticationContext auth_ctx;
+    auth_ctx.set_user(user);
+    auth_ctx.set_tenant(tenant);
+    auth_ctx.set_source_addr(resolveRequestIp(request, hardening_->config().trusted_proxies));
+    for (const auto& role : roles) auth_ctx.add_roles(role);
+    const bool exists = path_resolver_->resolvePath(path, auth_ctx).has_value();
+
+    // A unique opaque lock token per grant (never a shared constant — clients key
+    // their If: preconditions on it). A LOCK with no body is a refresh (§9.10.2);
+    // since our locks are stateless we just mint a fresh token either way.
+    const std::string token = "urn:uuid:" + Poco::UUIDGenerator::defaultGenerator().createRandom().toString();
+    const long timeout = parseLockTimeout(request.get("Timeout", ""));
+
+    response.setStatus(exists ? Poco::Net::HTTPResponse::HTTP_OK
+                              : Poco::Net::HTTPResponse::HTTP_CREATED);
+    response.setReason(exists ? "OK" : "Created");
+    response.setContentType("application/xml; charset=\"utf-8\"");
+    // Mandatory per §9.10.1 — the header (not just the body) is where clients read
+    // the token they must quote in the follow-up PUT's If: header.
+    response.set("Lock-Token", "<" + token + ">");
     std::ostream& ostr = response.send();
 
     ostr << "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
@@ -1289,12 +1483,15 @@ void WebDAVRequestHandler::handleLock(Poco::Net::HTTPServerRequest& request, Poc
     ostr << "      <D:locktype><D:write/></D:locktype>\n";
     ostr << "      <D:lockscope><D:exclusive/></D:lockscope>\n";
     ostr << "      <D:depth>infinity</D:depth>\n";
-    ostr << "      <D:timeout>Second-600</D:timeout>\n";
+    ostr << "      <D:timeout>Second-" << timeout << "</D:timeout>\n";
     ostr << "      <D:locktoken>\n";
-    ostr << "        <D:href>opaquelocktoken:" << "dummy-lock-token" << "</D:href>\n";
+    ostr << "        <D:href>" << xmlEscape(token) << "</D:href>\n";
     ostr << "      </D:locktoken>\n";
+    ostr << "      <D:lockroot>\n";
+    ostr << "        <D:href>" << xmlEscape(path) << "</D:href>\n";
+    ostr << "      </D:lockroot>\n";
     ostr << "      <D:owner>\n";
-    ostr << "        <D:href>User</D:href>\n";
+    ostr << "        <D:href>" << xmlEscape(user) << "</D:href>\n";
     ostr << "      </D:owner>\n";
     ostr << "    </D:activelock>\n";
     ostr << "  </D:lockdiscovery>\n";
@@ -1302,12 +1499,42 @@ void WebDAVRequestHandler::handleLock(Poco::Net::HTTPServerRequest& request, Poc
 }
 
 void WebDAVRequestHandler::handleUnlock(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {
-    // Since FileEngine is pervasively versioned and immutable, traditional file unlocking doesn't apply
-    // We'll return a success response for client compatibility
+    // The mirror of handleLock: locks are stateless no-ops, so UNLOCK always
+    // succeeds. It is still a write-class verb, so it authenticates and passes the
+    // session gate for consistency with LOCK and the rest of the write path.
+    std::string host = request.getHost();
+    std::string tenant = extractTenantFromHost(host);
+    if (tenant.empty()) tenant = "default";
+
+    std::string user;
+    std::vector<std::string> roles;
+    if (!authenticateUser(request, user, tenant, roles)) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_UNAUTHORIZED);
+        response.setReason("Unauthorized");
+        response.set("WWW-Authenticate", "Basic realm=\"WebDAV Server\"");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "Authentication required";
+        return;
+    }
+
+    // RFC 4918 §9.11: UNLOCK requires a Lock-Token header. We do not validate the
+    // token value (no lock state to match), but a missing header is a malformed
+    // request — reject it so clients surface their own bug rather than silently
+    // "succeeding".
+    if (request.get("Lock-Token", "").empty()) {
+        response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
+        response.setReason("Bad Request");
+        response.setContentType("text/plain");
+        std::ostream& ostr = response.send();
+        ostr << "UNLOCK requires a Lock-Token header";
+        return;
+    }
+
     response.setStatus(Poco::Net::HTTPResponse::HTTP_NO_CONTENT);
     response.setReason("No Content");
     response.setContentType("text/plain");
-    std::ostream& ostr = response.send();
+    response.send();
 }
 
 void WebDAVRequestHandler::handleOptions(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) {

@@ -26,6 +26,19 @@ AUTH=(-u "${WEBDAV_USER}:${WEBDAV_PASS}")
 HOSTH=()
 [ -n "$WEBDAV_HOST" ] && HOSTH=(-H "Host: ${WEBDAV_HOST}")
 
+# Base URL to use inside Destination: headers for COPY/MOVE. The bridge's
+# cross-host guard (security fix M4) requires the Destination host to match the
+# request Host header, so when WEBDAV_HOST selects a tenant we must build the
+# Destination with that same host (preserving scheme + port), not the raw
+# WEBDAV_URL host.
+DEST_URL="$WEBDAV_URL"
+if [ -n "$WEBDAV_HOST" ]; then
+  _proto="${WEBDAV_URL%%://*}"
+  _rest="${WEBDAV_URL#*://}"; _hostport="${_rest%%/*}"
+  _port=""; case "$_hostport" in *:*) _port=":${_hostport##*:}";; esac
+  DEST_URL="${_proto}://${WEBDAV_HOST}${_port}"
+fi
+
 BASE="/e2e_webdav_test"          # working dir created/removed by this test
 pass=0; fail=0
 
@@ -58,7 +71,29 @@ assert_listing() {  # PATH  NAME  present|absent
   fi
 }
 
-dest() { echo "-HDestination: ${WEBDAV_URL}$1"; }   # build Destination header arg
+dest() { echo "-HDestination: ${DEST_URL}$1"; }   # build Destination header arg
+
+# assert_body PATH EXPECTED  — GET the path and compare the exact body.
+assert_body() {
+  local got; got="$(curl -s "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}$1")"
+  if [ "$got" = "$2" ]; then echo "  PASS  GET $1 body == '$2'"; pass=$((pass+1));
+  else echo "  FAIL  GET $1 body '$got' != '$2'"; fail=$((fail+1)); fi
+}
+
+# lock_token PATH  — LOCK the path, echo the opaque token from the Lock-Token
+# response header (RFC 4918 §9.10.1). Empty output means the header was missing.
+lock_token() {
+  local body='<?xml version="1.0" encoding="utf-8"?><D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype><D:owner><D:href>e2e</D:href></D:owner></D:lockinfo>'
+  curl -s -D - -o /dev/null -X LOCK "${AUTH[@]}" "${HOSTH[@]}" \
+    -H "Timeout: Second-300" -H "Content-Type: application/xml" --data "$body" "${WEBDAV_URL}$1" \
+    | awk 'tolower($1)=="lock-token:"{print $2}' | tr -d '\r'
+}
+
+# prop_value PATH PROP  — PROPFIND Depth:0 and echo the text of <D:PROP>.
+prop_value() {
+  curl -s -X PROPFIND -H "Depth: 0" "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}$1" \
+    | grep -oiE "<D:$2>[^<]*</D:$2>" | sed -E "s,</?D:$2>,,g" | head -1
+}
 
 echo "== WebDAV E2E ($WEBDAV_URL as $WEBDAV_USER) =="
 
@@ -71,28 +106,28 @@ req GET   "${BASE}/dirA/file.txt" 200
 assert_listing "${BASE}/dirA" "file.txt" present
 
 echo "-- MOVE: rename a file (same parent) --"
-req MOVE "${BASE}/dirA/file.txt" 201 -H "Destination: ${WEBDAV_URL}${BASE}/dirA/renamed.txt"
+req MOVE "${BASE}/dirA/file.txt" 201 -H "Destination: ${DEST_URL}${BASE}/dirA/renamed.txt"
 assert_listing "${BASE}/dirA" "renamed.txt" present
 assert_listing "${BASE}/dirA" "file.txt"    absent
 
 echo "-- MOVE: rename a folder (same parent) --"
-req MOVE "${BASE}/dirA" 201 -H "Destination: ${WEBDAV_URL}${BASE}/dirB"
+req MOVE "${BASE}/dirA" 201 -H "Destination: ${DEST_URL}${BASE}/dirB"
 assert_listing "${BASE}" "dirB"  present
 assert_listing "${BASE}" "dirA"  absent
 
 echo "-- MOVE: relocate a folder (different parent) --"
 req MKCOL "${BASE}/dest" 201
-req MOVE  "${BASE}/dirB" 201 -H "Destination: ${WEBDAV_URL}${BASE}/dest/dirB"
+req MOVE  "${BASE}/dirB" 201 -H "Destination: ${DEST_URL}${BASE}/dest/dirB"
 assert_listing "${BASE}/dest" "dirB" present
 assert_listing "${BASE}"      "dirB" absent
 
 echo "-- COPY: file to a different parent (same name) --"
-req COPY "${BASE}/dest/dirB/renamed.txt" 201 -H "Destination: ${WEBDAV_URL}${BASE}/copy.txt"
+req COPY "${BASE}/dest/dirB/renamed.txt" 201 -H "Destination: ${DEST_URL}${BASE}/copy.txt"
 assert_listing "${BASE}" "copy.txt" present
 assert_listing "${BASE}/dest/dirB" "renamed.txt" present   # source still there
 
 echo "-- COPY: same-parent duplicate (different name) --"
-req COPY "${BASE}/copy.txt" 201 -H "Destination: ${WEBDAV_URL}${BASE}/copy-dup.txt"
+req COPY "${BASE}/copy.txt" 201 -H "Destination: ${DEST_URL}${BASE}/copy-dup.txt"
 assert_listing "${BASE}" "copy.txt"     present            # source preserved
 assert_listing "${BASE}" "copy-dup.txt" present
 
@@ -112,6 +147,112 @@ if echo "$fxml" | grep -q '<D:collection/>'; then
 else
   echo "  PASS  file with renditions is not a collection"; pass=$((pass+1))
 fi
+
+# Mirrors the REST bridge's "create -> PUT v1/v2/v3 -> versions" scenario
+# (http_bridge tests/test_e2e.sh) so the same lifecycle is exercised on both
+# doors. Over WebDAV a "new revision" is simply another PUT to the same path; the
+# core appends a version each time. First PUT creates (201); each later PUT
+# overwrites an existing resource (204 No Content, RFC 4918 §9.7.1) — matching the
+# REST PUT /v1/files/{uid}/content status.
+echo "-- REVISIONS: create then write new revisions to the same path --"
+req PUT "${BASE}/revs.txt" 201 --data-binary "revision one"
+assert_body "${BASE}/revs.txt" "revision one"
+req PUT "${BASE}/revs.txt" 204 --data-binary "revision two"
+req PUT "${BASE}/revs.txt" 204 --data-binary "revision three"
+assert_body "${BASE}/revs.txt" "revision three"   # GET returns the latest revision
+
+# Regression guard for the "file changed on disk" editor loop: an unchanged file
+# MUST report a STABLE getlastmodified/creationdate across reads. The core once
+# stamped now() on every Stat, so each PROPFIND showed a newer mtime and editors
+# (Bluefish, gedit, ...) believed the file kept changing on disk. Timestamps are
+# now derived from the version-name / DB columns, so they only move on a real
+# write.
+echo "-- TIMESTAMP STABILITY: unchanged file reports a constant mtime --"
+lm1="$(prop_value "${BASE}/revs.txt" getlastmodified)"
+cd1="$(prop_value "${BASE}/revs.txt" creationdate)"
+sleep 2
+lm2="$(prop_value "${BASE}/revs.txt" getlastmodified)"
+cd2="$(prop_value "${BASE}/revs.txt" creationdate)"
+[ -n "$lm1" ] && [ "$lm1" = "$lm2" ] && { echo "  PASS  getlastmodified stable across reads ($lm1)"; pass=$((pass+1)); } \
+                                     || { echo "  FAIL  getlastmodified changed: '$lm1' -> '$lm2'"; fail=$((fail+1)); }
+[ -n "$cd1" ] && [ "$cd1" = "$cd2" ] && { echo "  PASS  creationdate stable across reads ($cd1)"; pass=$((pass+1)); } \
+                                     || { echo "  FAIL  creationdate changed: '$cd1' -> '$cd2'"; fail=$((fail+1)); }
+# ...but a real revision MUST advance getlastmodified (genuine changes still show).
+sleep 1; curl -s -o /dev/null "${AUTH[@]}" "${HOSTH[@]}" -X PUT --data-binary "revision four" "${WEBDAV_URL}${BASE}/revs.txt"
+lm3="$(prop_value "${BASE}/revs.txt" getlastmodified)"
+[ -n "$lm3" ] && [ "$lm3" != "$lm2" ] && { echo "  PASS  getlastmodified advances on a real write ($lm2 -> $lm3)"; pass=$((pass+1)); } \
+                                      || { echo "  FAIL  getlastmodified did not change after a write ($lm2 -> $lm3)"; fail=$((fail+1)); }
+
+# Regression guard for the "changed on disk when saving a new version" bug:
+# GVfs-backed editors (Bluefish, gedit) track a file by its ETag. The validator
+# MUST be (a) identical across PUT/GET/HEAD/PROPFIND for the same content so a
+# cached etag matches a later query, (b) stable across reads, and (c) returned by
+# the PUT of a new version so the client adopts it instead of seeing an
+# unexplained change. Missing/inconsistent ETags were the "changed on disk" cause.
+echo "-- ETAG: consistent validator across surfaces + across a save --"
+hdr_etag() { curl -s -D - -o /dev/null "${AUTH[@]}" "${HOSTH[@]}" "$@" | awk 'tolower($1)=="etag:"{print $2}' | tr -d '\r'; }
+pf_etag()  { curl -s -X PROPFIND -H "Depth: 0" "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}$1" \
+             | grep -oiE '<D:getetag>[^<]*</D:getetag>' | sed -E 's,</?D:getetag>,,g' | head -1; }
+EF="${BASE}/etagged.txt"
+eput=$(hdr_etag -X PUT --data-binary "etag v1" "${WEBDAV_URL}${EF}")
+eget=$(hdr_etag -X GET "${WEBDAV_URL}${EF}")
+ehead=$(hdr_etag -I "${WEBDAV_URL}${EF}")
+epf=$(pf_etag "${EF}")
+[ -n "$eput" ] && { echo "  PASS  PUT returns an ETag ($eput)"; pass=$((pass+1)); } || { echo "  FAIL  PUT returned no ETag"; fail=$((fail+1)); }
+{ [ "$eput" = "$eget" ] && [ "$eget" = "$ehead" ] && [ "$ehead" = "$epf" ]; } \
+  && { echo "  PASS  ETag identical across PUT/GET/HEAD/PROPFIND"; pass=$((pass+1)); } \
+  || { echo "  FAIL  ETag differs (PUT=$eput GET=$eget HEAD=$ehead PROPFIND=$epf)"; fail=$((fail+1)); }
+er1=$(hdr_etag -X GET "${WEBDAV_URL}${EF}"); sleep 2; er2=$(hdr_etag -X GET "${WEBDAV_URL}${EF}")
+[ -n "$er1" ] && [ "$er1" = "$er2" ] && { echo "  PASS  ETag stable across reads"; pass=$((pass+1)); } \
+                                      || { echo "  FAIL  ETag changed across reads ($er1 -> $er2)"; fail=$((fail+1)); }
+sleep 1; eput2=$(hdr_etag -X PUT --data-binary "etag v2 is longer" "${WEBDAV_URL}${EF}")
+{ [ -n "$eput2" ] && [ "$eput2" != "$eput" ]; } \
+  && { echo "  PASS  saving a new version returns a NEW ETag ($eput -> $eput2)"; pass=$((pass+1)); } \
+  || { echo "  FAIL  new version did not change the ETag ($eput -> $eput2)"; fail=$((fail+1)); }
+eget2=$(hdr_etag -X GET "${WEBDAV_URL}${EF}")
+[ "$eput2" = "$eget2" ] && { echo "  PASS  post-save GET ETag matches the PUT response"; pass=$((pass+1)); } \
+                        || { echo "  FAIL  post-save GET ETag ($eget2) != PUT ETag ($eput2)"; fail=$((fail+1)); }
+
+# Regression guard for the "IO error on first save of a new file" bug: editors
+# (macOS Finder, Windows, GNOME/KDE, ...) LOCK the target before the first PUT,
+# and abort with an IO error if the LOCK response omits the Lock-Token header
+# (RFC 4918 §9.10.1). Exercise the full LOCK -> PUT(If) -> UNLOCK save handshake,
+# for both a brand-new file and a subsequent revision.
+echo "-- LOCK/PUT/UNLOCK: editor save handshake (new file + revision) --"
+for round in 1 2; do
+  tok="$(lock_token "${BASE}/locked.txt")"
+  if [ -n "$tok" ]; then echo "  PASS  LOCK round $round returned a Lock-Token"; pass=$((pass+1));
+  else echo "  FAIL  LOCK round $round returned no Lock-Token header"; fail=$((fail+1)); fi
+  # First save creates (201); the second is a new revision over the now-existing
+  # resource (204). Either is a success for the save handshake.
+  exp=201; [ "$round" = 2 ] && exp=204
+  req PUT "${BASE}/locked.txt" "$exp" -H "If: (${tok})" --data-binary "locked save $round"
+  req UNLOCK "${BASE}/locked.txt" 204 -H "Lock-Token: ${tok}"
+done
+assert_body "${BASE}/locked.txt" "locked save 2"
+# LOCK is a write-class verb: it must authenticate (no anonymous locks) and an
+# UNLOCK with no Lock-Token header is malformed (RFC 4918 §9.11 -> 400).
+lock_noauth=$(curl -s -o /dev/null -w '%{http_code}' -X LOCK "${HOSTH[@]}" \
+  -H "Content-Type: application/xml" --data '<D:lockinfo xmlns:D="DAV:"><D:lockscope><D:exclusive/></D:lockscope><D:locktype><D:write/></D:locktype></D:lockinfo>' \
+  "${WEBDAV_URL}${BASE}/locked.txt")
+[ "$lock_noauth" = 401 ] && { echo "  PASS  anonymous LOCK -> 401"; pass=$((pass+1)); } \
+                         || { echo "  FAIL  anonymous LOCK -> $lock_noauth (expected 401)"; fail=$((fail+1)); }
+req UNLOCK "${BASE}/locked.txt" 400   # missing Lock-Token header
+
+# Streaming/chunking: a body larger than the per-request/gRPC-message transaction
+# size must upload via chunked streaming (never buffered whole) and round-trip
+# byte-for-byte. Mirrors the REST bridge's large streaming-upload assertion.
+echo "-- STREAMING: large file (8 MiB) chunked upload + download round-trip --"
+big_src="$(mktemp)"; big_dl="$(mktemp)"
+head -c $((8*1024*1024)) /dev/urandom > "$big_src"
+req PUT "${BASE}/big.bin" 201 --data-binary @"$big_src"
+curl -s "${AUTH[@]}" "${HOSTH[@]}" "${WEBDAV_URL}${BASE}/big.bin" -o "$big_dl"
+if cmp -s "$big_src" "$big_dl"; then
+  echo "  PASS  8 MiB round-trip is byte-identical ($(wc -c <"$big_dl") bytes)"; pass=$((pass+1))
+else
+  echo "  FAIL  8 MiB round-trip mismatch (src $(wc -c <"$big_src") vs dl $(wc -c <"$big_dl"))"; fail=$((fail+1))
+fi
+rm -f "$big_src" "$big_dl"
 
 echo "-- DELETE: recursive removal of a non-empty collection --"
 req DELETE "${BASE}" 204
