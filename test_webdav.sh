@@ -3,26 +3,95 @@
 # End-to-end test for the WebDAV bridge: exercises the full lifecycle including
 # MOVE (rename + relocate) and COPY (cross-parent + same-parent duplicate).
 #
-# Credentials are taken from the environment (nothing secret is committed):
-#   WEBDAV_URL   base URL              (default http://localhost:8088)
-#   WEBDAV_USER  login (uid or email)  (default testuser@rationalboxes.com)
-#   WEBDAV_PASS  password              (required)
-#   WEBDAV_HOST  optional Host header  (selects the tenant; default: none)
+# The WebDAV door no longer accepts the LDAP directory password (PROPOSAL §14/§15
+# hardening): the ONLY credential is a backend-issued `key:secret` service
+# credential, AND an active login session must exist (the bridge's session gate,
+# checked against Redis presence written at login). So this test first performs a
+# real login — email-2FA when the tenant requires it, with the code captured from
+# MailHog, or a direct token when MFA is off — mints a `webdav`-scoped service
+# credential, and drives every WebDAV verb with that key:secret. The credential is
+# revoked on exit. (The `key:secret` model is separately covered end-to-end by
+# scripts/test_e2e_service_cred.sh.)
+#
+# Environment (nothing secret is committed):
+#   WEBDAV_URL   WebDAV base URL        (default http://localhost:8088)
+#   API_URL      http_bridge base URL   (default http://localhost:8090)  [login]
+#   IDM_URL      ldap_manager base URL  (default http://localhost:8093)  [service-credentials]
+#   MAILHOG_URL  MailHog base URL       (default http://localhost:8025)  [email-2FA code]
+#   WEBDAV_USER  login (uid or email)   (default testuser@rationalboxes.com)
+#   WEBDAV_PASS  login password         (required — used to LOG IN; never sent to WebDAV)
+#   WEBDAV_HOST  optional Host header   (selects the tenant; default: none)
 #
 # Usage:  WEBDAV_PASS='...' ./test_webdav.sh
 set -u
 
 WEBDAV_URL="${WEBDAV_URL:-http://localhost:8088}"
+API_URL="${API_URL:-http://localhost:8090}"
+IDM_URL="${IDM_URL:-http://localhost:8093}"
+MAILHOG_URL="${MAILHOG_URL:-http://localhost:8025}"
 WEBDAV_USER="${WEBDAV_USER:-testuser@rationalboxes.com}"
 WEBDAV_PASS="${WEBDAV_PASS:-}"
 WEBDAV_HOST="${WEBDAV_HOST:-}"
 
 if [ -z "$WEBDAV_PASS" ]; then
-  echo "ERROR: set WEBDAV_PASS (and optionally WEBDAV_USER/WEBDAV_URL/WEBDAV_HOST)." >&2
+  echo "ERROR: set WEBDAV_PASS (the login password; used to obtain a session + service credential)." >&2
   exit 2
 fi
 
-AUTH=(-u "${WEBDAV_USER}:${WEBDAV_PASS}")
+# Minimal JSON field extractor (stdlib only).
+jget() { python3 -c "import sys,json;print(json.load(sys.stdin).get('$1',''))" 2>/dev/null; }
+
+# When a tenant is selected via Host, apply it to the login too so the session +
+# credential land in the same tenant the WebDAV requests target.
+LOGIN_HOSTH=()
+[ -n "$WEBDAV_HOST" ] && LOGIN_HOSTH=(-H "Host: ${WEBDAV_HOST}")
+
+# Log in and echo a session bearer. Handles both MFA-required tenants (password ->
+# emailed code via MailHog -> completion) and MFA-off tenants (token returned by
+# the first call). The completed login writes the WebDAV session presence the
+# bridge's session gate requires.
+login() {
+  local resp tok mfatok code
+  resp=$(curl -s -u "${WEBDAV_USER}:${WEBDAV_PASS}" "${LOGIN_HOSTH[@]}" -X POST "$API_URL/v1/auth/token")
+  tok=$(echo "$resp" | jget token)
+  if [ -n "$tok" ]; then echo "$tok"; return 0; fi
+  mfatok=$(echo "$resp" | jget mfa_token)
+  [ -n "$mfatok" ] || { echo "login: no token and no MFA challenge ($resp)" >&2; return 1; }
+  curl -s -X DELETE "$MAILHOG_URL/api/v1/messages" >/dev/null
+  curl -s -X POST "$API_URL/v1/auth/2fa" -H 'Content-Type: application/json' \
+    -d "{\"mfa_token\":\"$mfatok\",\"action\":\"send\",\"method\":\"email\"}" >/dev/null
+  sleep 1
+  code=$(curl -s "$MAILHOG_URL/api/v2/messages" | python3 -c "
+import sys,json,re,quopri
+items=json.load(sys.stdin).get('items',[])
+b=quopri.decodestring(items[0]['Content']['Body']).decode('utf-8','ignore') if items else ''
+print((re.findall(r'\b(\d{6})\b', b) or [''])[0])")
+  [ -n "$code" ] || { echo "login: no email 2FA code found in MailHog" >&2; return 1; }
+  tok=$(curl -s -X POST "$API_URL/v1/auth/2fa" -H 'Content-Type: application/json' \
+    -d "{\"mfa_token\":\"$mfatok\",\"method\":\"email\",\"code\":\"$code\"}" | jget token)
+  [ -n "$tok" ] || { echo "login: 2FA completion returned no token" >&2; return 1; }
+  echo "$tok"
+}
+
+echo "== WebDAV E2E: authenticating as ${WEBDAV_USER} =="
+TOKEN="$(login)" || { echo "ERROR: login failed for ${WEBDAV_USER}." >&2; exit 1; }
+
+# Mint a webdav-scoped service credential (the only credential the door accepts).
+CRED=$(curl -s -H "Authorization: Bearer $TOKEN" "${LOGIN_HOSTH[@]}" -H 'Content-Type: application/json' \
+       -d '{"label":"webdav-e2e","scopes":["webdav"]}' "$IDM_URL/v1/me/service-credentials")
+KEY=$(echo "$CRED" | jget key_id); SEC=$(echo "$CRED" | jget secret)
+[ -n "$KEY" ] && [ -n "$SEC" ] || { echo "ERROR: could not mint a webdav service credential ($CRED)." >&2; exit 1; }
+echo "   minted service credential ${KEY} (session-gated as ${WEBDAV_USER})"
+
+# Revoke the credential on any exit so repeated runs don't accumulate creds.
+cleanup() {
+  [ -n "${KEY:-}" ] && curl -s -o /dev/null -H "Authorization: Bearer $TOKEN" \
+    -X DELETE "$IDM_URL/v1/me/service-credentials/$KEY" 2>/dev/null
+}
+trap cleanup EXIT
+
+# All WebDAV requests authenticate with the key:secret, never the password.
+AUTH=(-u "${KEY}:${SEC}")
 HOSTH=()
 [ -n "$WEBDAV_HOST" ] && HOSTH=(-H "Host: ${WEBDAV_HOST}")
 
