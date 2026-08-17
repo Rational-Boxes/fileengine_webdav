@@ -1,7 +1,7 @@
 # Implement a full integration for WebDAV access to FileEngine
 
 Write a service for WebDAV that exposes the gRPC filesystem API
-(the `fileengine` protocol defined in @file_engine_cpp). Implement
+(the `fileengine` protocol defined in @file_engine_core). Implement
 this service in C++.
 
 ## User information

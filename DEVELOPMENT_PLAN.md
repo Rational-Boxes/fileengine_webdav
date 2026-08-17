@@ -4,7 +4,7 @@ Status: draft · Last updated: 2026-06-19
 
 This plan addresses correctness and completeness gaps found in the WebDAV
 bridge after its migration to the canonical `fileengine` gRPC protocol
-(`file_engine_cpp/proto/fileservice.proto`). It is ordered by impact: the
+(`file_engine_core/proto/fileservice.proto`). It is ordered by impact: the
 early phases remove data-loss risk and the largest classes of spurious
 failures; later phases fill in protocol completeness and hardening.
 
@@ -213,7 +213,7 @@ growth.
       wrapper or adjust the mocks.
 - [ ] Add a WebDAV conformance pass using the existing scripts
       (`webdav_validation_suite.sh`, `test_webdav.sh`) plus `litmus` if
-      available, run against a live `file_engine_cpp` server.
+      available, run against a live `file_engine_core` server.
 - [ ] Cover the regression cases: file vs. collection PROPFIND, `Depth` values,
       special-character names, MOVE/COPY with `Overwrite`, deep-path access
       without prior walk.
