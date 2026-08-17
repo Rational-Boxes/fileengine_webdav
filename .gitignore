@@ -19,3 +19,15 @@ build*/
 /webdav_test.log
 /enhanced_debug.log
 /diagnostic_test.log
+
+# Environment / secrets
+#
+# `.env-default` holds DEFAULTS AND PLACEHOLDERS ONLY and is tracked; the actual
+# configuration belongs in `.env`, which is never committed (IMPLEMENTATION.md
+# §"Configuration"). `.env` used to be a tracked symlink to `.env-default`, so any
+# real value written for local use — a service credential, a Redis password —
+# landed straight in git. Copy the template instead:
+#     cp .env-default .env
+.env
+.env.*
+!.env-default
