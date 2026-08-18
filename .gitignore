@@ -31,3 +31,6 @@ build*/
 .env
 .env.*
 !.env-default
+# ...but the placeholder templates are meant to be tracked.
+!.env.example
+!.env-default
