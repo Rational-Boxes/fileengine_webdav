@@ -109,7 +109,9 @@ class WebDAVOverloadHandler : public Poco::Net::HTTPRequestHandler {
 public:
     void handleRequest(Poco::Net::HTTPServerRequest&,
                        Poco::Net::HTTPServerResponse& resp) override {
-        resp.setStatus(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
+        // setStatusAndReason, not setStatus: Poco's setStatus(HTTPStatus) sets the
+        // code and leaves the reason phrase alone, which produced "503 OK".
+        resp.setStatusAndReason(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
         resp.setContentType("application/xml");
         resp.set("Retry-After", "1");
         const std::string body =
