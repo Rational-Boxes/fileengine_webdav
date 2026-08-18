@@ -69,8 +69,15 @@ void loadEnvFile() {
                 value = value.substr(1, value.length() - 2);
             }
 
-            // Set the environment variable
-            setenv(key.c_str(), value.c_str(), 1);
+            // Do NOT overwrite: the real environment wins over the file.
+            //
+            // This was `1` (overwrite), which made the .env authoritative over
+            // anything set at launch — so a value could not be overridden by an
+            // operator, a container runtime, a systemd unit, or a test starting
+            // the process with a different setting. It silently ignored them.
+            // A dotenv file supplies DEFAULTS; http_bridge already treats it that
+            // way, and the two bridges disagreeing is its own trap.
+            setenv(key.c_str(), value.c_str(), 0);
         }
     }
 }
