@@ -1720,7 +1720,12 @@ WebDAVServer::WebDAVServer(const std::string& host, int port)
     }
     server_params_->setKeepAlive(true);
     server_params_->setMaxThreads(thread_pool_);
-    server_params_->setMaxQueued(thread_pool_ * 8);
+    // A DEEP accept queue on purpose: Poco drops connections at the TCP level
+    // once it is full, before any handler runs, so a shallow queue means an
+    // overloaded bridge resets clients instead of answering them. With room to
+    // accept, the factory sheds the excess with 503 + Retry-After.
+    server_params_->setMaxQueued(std::stoi(
+        webdav::getEnvOrDefault("WEBDAV_MAX_QUEUED", std::to_string(thread_pool_ * 64))));
     webdav::debugLog("WebDAVServer: Initialization completed (threads=" + std::to_string(thread_pool_) + ")");
 }
 
@@ -1847,6 +1852,9 @@ void WebDAVServer::start() {
         pool_ = std::make_unique<Poco::ThreadPool>(
             std::min(2, thread_pool_), thread_pool_, 60 /* idle seconds */);
         server_ = std::make_unique<Poco::Net::HTTPServer>(factory, *pool_, *socket_, server_params_);
+        // Shed once the backlog is several times the worker count: headroom for
+        // an ordinary burst, quick news for a genuine overload.
+        factory->set_server(server_.get(), thread_pool_ * 4);
         webdav::debugLog("WebDAVServer: Created HTTP server instance with socket on port " + std::to_string(port_));
         webdav::debugLog("WebDAVServer: About to call server_->start()");
         server_->start();

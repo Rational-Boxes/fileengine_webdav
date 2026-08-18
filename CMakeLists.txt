@@ -177,3 +177,24 @@ add_executable(failover_tests tests/test_failover.cpp)
 target_include_directories(failover_tests PRIVATE include)
 target_compile_features(failover_tests PRIVATE cxx_std_17)
 add_test(NAME failover_tests COMMAND failover_tests)
+
+# ---------------------------------------------------------------------------
+# Load stress: does the service survive traffic beyond its worker count without
+# crashing or soft-locking?
+#
+# Labelled `stress` because it needs the stack up, and excluded from a default
+# `ctest` run for the same reason: run it with `ctest -L stress`.
+#
+# The point is the RATIO, not the volume — the harness is pointed at a service
+# whose pool has been shrunk so ordinary traffic overwhelms it:
+#
+#   WEBDAV_THREAD_POOL=2 ./build/webdav_bridge &
+#   ctest -L stress
+#
+# That is what surfaced the behaviour this suite now guards: past its accept
+# queue the bridge used to drop connections at the TCP level, giving clients a
+# reset they could not tell from a network fault. It now answers 503 + Retry-After.
+add_test(NAME load_stress
+         COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/tests/load_stress.py
+                 --target webdav --requests 200 --concurrency 32)
+set_tests_properties(load_stress PROPERTIES LABELS "stress" TIMEOUT 600)

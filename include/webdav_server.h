@@ -16,6 +16,8 @@
 #ifndef WEBSERVICE_SERVER_H
 #define WEBSERVICE_SERVER_H
 
+#include <cstdint>
+#include <atomic>
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPRequestHandlerFactory.h>
@@ -92,6 +94,32 @@ private:
     std::shared_ptr<WebdavHardening> hardening_;
 };
 
+// Answers 503 when the server is past its capacity, so an overloaded bridge
+// tells the client so rather than closing the socket on it.
+//
+// Poco drops connections at the TCP level once its accept queue is full, before
+// any handler exists — a client then sees a reset and cannot tell overload from a
+// broken network. The queue is now deep enough that connections are ACCEPTED, and
+// this sheds the excess with a status the moment a worker looks at it.
+//
+// 503 specifically: it is the registered code for a temporary overload
+// (RFC 9110 §15.6.4) and the one defined to carry Retry-After. 429 would be
+// wrong — nobody exceeded a quota, the server is out of capacity for everyone.
+class WebDAVOverloadHandler : public Poco::Net::HTTPRequestHandler {
+public:
+    void handleRequest(Poco::Net::HTTPServerRequest&,
+                       Poco::Net::HTTPServerResponse& resp) override {
+        resp.setStatus(Poco::Net::HTTPResponse::HTTP_SERVICE_UNAVAILABLE);
+        resp.setContentType("application/xml");
+        resp.set("Retry-After", "1");
+        const std::string body =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+            "<D:error xmlns:D=\"DAV:\"><D:overloaded/></D:error>";
+        resp.setContentLength(static_cast<std::streamsize>(body.size()));
+        resp.send() << body;
+    }
+};
+
 class WebDAVRequestHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory {
 public:
     WebDAVRequestHandlerFactory(
@@ -105,10 +133,29 @@ public:
         , hardening_(hardening) {}
 
     Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request) override {
+        // Shed before doing any work. The monitoring paths are on their own
+        // listener, so nothing here needs excluding.
+        if (server_ && shed_above_ > 0 && server_->queuedConnections() > shed_above_) {
+            (void)request;
+            shed_total_.fetch_add(1);
+            return new WebDAVOverloadHandler();
+        }
         return new WebDAVRequestHandler(grpc_client_, path_resolver_, ldap_auth_, hardening_);
     }
 
+    // Set once the server exists (the factory is built first, to be handed to it).
+    void set_server(Poco::Net::HTTPServer* s, int shed_above) {
+        server_ = s;
+        shed_above_ = shed_above;
+    }
+
+    static std::uint64_t shed_total() { return shed_total_.load(); }
+
 private:
+    Poco::Net::HTTPServer* server_ = nullptr;   // not owned; valid for the server's life
+    int shed_above_ = 0;
+    static inline std::atomic<std::uint64_t> shed_total_{0};
+
     std::shared_ptr<GRPCClientWrapper> grpc_client_;
     std::shared_ptr<PathResolver> path_resolver_;
     std::shared_ptr<LDAPAuthenticator> ldap_auth_;
