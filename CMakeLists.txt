@@ -74,6 +74,26 @@ set(PROTO_HDRS
     ${proto_hdrs_dir}/fileservice.grpc.pb.h
 )
 
+# ONE target owns the generated sources; everything else links it.
+#
+# Listing ${PROTO_SRCS} directly in two executables made CMake attach a copy of
+# the codegen custom command to EACH of them. Under `make -j` both copies run at
+# once, and the second loses a race to install the header:
+#
+#   cp: cannot create regular file './proto/include/fileservice.grpc.pb.h': File exists
+#
+# which fails the build. It only bites at high parallelism, so it looked
+# intermittent and machine-specific rather than structural. A single library
+# makes the generation happen exactly once by construction, and mirrors what
+# file_engine_core already does with its own proto_lib.
+add_library(webdav_proto STATIC ${PROTO_SRCS})
+target_include_directories(webdav_proto PUBLIC ${proto_hdrs_dir})
+target_link_libraries(webdav_proto PUBLIC
+    gRPC::grpc++
+    gRPC::grpc
+    protobuf::libprotobuf
+)
+
 # Define the executable
 add_executable(webdav_bridge
     src/main.cpp
@@ -83,11 +103,11 @@ add_executable(webdav_bridge
     src/ldap_authenticator.cpp
     src/webdav_hardening.cpp
     src/utils.cpp
-    ${PROTO_SRCS}
 )
 
 # Link libraries
 target_link_libraries(webdav_bridge
+    webdav_proto
     gRPC::grpc++
     gRPC::grpc
     protobuf::libprotobuf
@@ -133,7 +153,6 @@ set(WEBDAV_TEST_SRCS
     src/ldap_authenticator.cpp
     src/webdav_hardening.cpp
     src/utils.cpp
-    ${PROTO_SRCS}
 )
 
 # gtest suites:
@@ -155,6 +174,7 @@ add_executable(webdav_tests
     ${WEBDAV_TEST_SRCS}
 )
 target_link_libraries(webdav_tests
+    webdav_proto
     gRPC::grpc++
     gRPC::grpc
     protobuf::libprotobuf
