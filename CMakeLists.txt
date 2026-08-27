@@ -199,6 +199,24 @@ target_compile_features(failover_tests PRIVATE cxx_std_17)
 add_test(NAME failover_tests COMMAND failover_tests)
 
 # ---------------------------------------------------------------------------
+# Service-token coverage: asserts that every outbound gRPC ClientContext in the
+# client wrapper attaches the service credential. Hermetic — it reads the source
+# rather than making a call, because the failure it guards against (a streaming
+# call site that builds its own context and skips the token) is invisible to a
+# unit suite with no core to talk to, and cost a round of "previews return 500
+# and nothing else does" to find.
+add_executable(service_token_tests tests/test_main.cpp tests/test_service_token_coverage.cpp)
+target_include_directories(service_token_tests PRIVATE include)
+target_compile_features(service_token_tests PRIVATE cxx_std_17)
+target_compile_definitions(service_token_tests PRIVATE
+    GRPC_CLIENT_WRAPPER_SOURCE="${CMAKE_CURRENT_SOURCE_DIR}/src/grpc_client_wrapper.cpp")
+target_link_libraries(service_token_tests
+    Threads::Threads
+    GTest::gtest
+)
+add_test(NAME service_token_tests COMMAND service_token_tests)
+
+# ---------------------------------------------------------------------------
 # Load stress: does the service survive traffic beyond its worker count without
 # crashing or soft-locking?
 #
