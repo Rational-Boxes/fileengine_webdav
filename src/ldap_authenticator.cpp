@@ -194,7 +194,7 @@ UserInfo LDAPAuthenticator::authenticateUser(const std::string& username, const 
     return user_info;
 }
 
-UserInfo LDAPAuthenticator::lookupUser(const std::string& username) {
+UserInfo LDAPAuthenticator::lookupUser(const std::string& username, const std::string& tenant) {
     // Roles WITHOUT a password bind: the credential (a key:secret, §15) is verified
     // elsewhere; here we only resolve the uid's DN + group-membership roles via the
     // service connection. Mirrors authenticateUser's search + role extraction, minus
@@ -228,7 +228,7 @@ UserInfo LDAPAuthenticator::lookupUser(const std::string& username) {
     UserInfo info;
     info.dn = user_dn;
     info.user_id = username;
-    info.roles = extractRolesFromGroups(ld, user_dn);
+    info.roles = extractRolesFromGroups(ld, user_dn, tenant);
     info.tenant = "";              // host-driven by the caller
     info.authenticated = true;     // the uid exists; the secret was verified upstream
     ldap_msgfree(result);
@@ -383,7 +383,15 @@ std::string LDAPAuthenticator::extractTenantFromUserDN(const std::string& user_d
     return "";
 }
 
-std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld, const std::string& user_dn) {
+std::string LDAPAuthenticator::tenantRoleBase(const std::string& tenant,
+                                              const std::string& tenant_base) {
+    if (tenant.empty() || tenant_base.empty()) return "";
+    return "ou=" + tenant + "," + tenant_base;
+}
+
+std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld,
+                                                                   const std::string& user_dn,
+                                                                   const std::string& tenant) {
     std::vector<std::string> roles;
 
     // Search for groupOfNames entities the user belongs to
@@ -396,6 +404,44 @@ std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld, con
     // Based on your information, the groups are under ou=default,ou=tenants,dc=rationalboxes,dc=com
     // So let's make sure we search there specifically
     std::vector<std::string> possible_bases;
+
+    // With a tenant, the ONLY correct base is that tenant's ou. Role cns repeat
+    // across tenants (`administrators`, `engineering`, `accounting` all exist
+    // under more than one ou), so the widening fallbacks below return a union:
+    // a user who is `administrators` in any tenant came back holding it here.
+    // The credential is already bound to one tenant (ldap_manager verifies
+    // key_id AND tenant), so the roles must be read from that tenant alone.
+    const std::string scoped_base = tenantRoleBase(tenant, tenant_base_);
+    if (!scoped_base.empty()) {
+        const std::string& base = scoped_base;
+        LDAPMessage* tres = nullptr;
+        const int trc = ldap_search_s(ld, base.c_str(), LDAP_SCOPE_SUBTREE,
+                                      search_filter.c_str(), nullptr, false, &tres);
+        if (trc == LDAP_SUCCESS) {
+            for (LDAPMessage* e = ldap_first_entry(ld, tres); e != nullptr;
+                 e = ldap_next_entry(ld, e)) {
+                berval** vals = ldap_get_values_len(ld, e, "cn");
+                if (!vals) continue;
+                if (vals[0]) {
+                    std::string role(vals[0]->bv_val, vals[0]->bv_len);
+                    std::transform(role.begin(), role.end(), role.begin(), ::tolower);
+                    if (!role.empty() &&
+                        std::find(roles.begin(), roles.end(), role) == roles.end()) {
+                        roles.push_back(role);
+                    }
+                }
+                ldap_value_free_len(vals);
+            }
+        } else {
+            // Fail closed: no roles rather than a directory-wide fallback.
+            webdav::warnLog("LDAPAuthenticator::extractRolesFromGroups: tenant-scoped "
+                            "search failed for base '" + base + "' rc=" + std::to_string(trc));
+        }
+        if (tres) ldap_msgfree(tres);
+        webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: tenant-scoped base '" +
+                         base + "' yielded " + std::to_string(roles.size()) + " role(s)");
+        return roles;
+    }
 
     // Add the specific location where groups are known to exist
     possible_bases.push_back("ou=default,ou=tenants," + ldap_domain_);

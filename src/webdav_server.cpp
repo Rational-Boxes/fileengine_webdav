@@ -1643,14 +1643,17 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
         // we do the live lookup and populate the cache; the credential itself was
         // already verified above, so a hit safely skips the directory round-trip.
         user = uid;
-        if (!hardening_->getCachedRoles(uid, roles)) {
-            UserInfo info = ldap_auth_->lookupUser(uid);
+        // Roles are resolved WITHIN the verified tenant, and cached per tenant:
+        // role cns repeat across tenants, so a uid-only cache key served one
+        // tenant's roles for a request against another.
+        if (!hardening_->getCachedRoles(uid, tenant, roles)) {
+            UserInfo info = ldap_auth_->lookupUser(uid, tenant);
             if (!info.authenticated) {
                 webdav::errorLog("authenticateUser: verified key but uid not in directory: " + uid);
                 return false;
             }
             roles = info.roles;
-            hardening_->putCachedRoles(uid, roles);
+            hardening_->putCachedRoles(uid, tenant, roles);
         }
 
         // Origin/session gate (§14): allow on the trusted LAN OR with a live Web-UI

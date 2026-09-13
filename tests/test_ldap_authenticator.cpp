@@ -75,3 +75,27 @@ TEST_F(LDAPAuthenticatorTest, ExtractTenantFromHostnameTest) {
     EXPECT_EQ(tenant2, "tenant");  // Part before hyphen
     EXPECT_EQ(tenant3, "");        // www is excluded
 }
+// --- the tenant-membership invariant ---------------------------------------
+//
+// Role cns REPEAT across tenants (`administrators`, `engineering` and
+// `accounting` all exist under more than one ou), so the base a role search
+// runs against is what decides whether the answer means "in THIS tenant" or
+// "in any tenant". The role search here used to try a list of widening bases —
+// the whole tenant base, then the domain, then `ou=groups`, `ou=Roles`... —
+// and keep whatever it found first. A user who is `administrators` in one
+// tenant therefore arrived holding that role in the tenant the credential was
+// actually bound to.
+TEST_F(LDAPAuthenticatorTest, TenantRoleBaseScopesToTheTenantsOwnOu) {
+    EXPECT_EQ("ou=acme,ou=tenants,dc=example,dc=com",
+              webdav::LDAPAuthenticator::tenantRoleBase("acme", "ou=tenants,dc=example,dc=com"));
+    EXPECT_EQ("ou=other,ou=tenants,dc=example,dc=com",
+              webdav::LDAPAuthenticator::tenantRoleBase("other", "ou=tenants,dc=example,dc=com"));
+}
+
+// Without a tenant there is no scoped base to build. The caller must not treat
+// that as licence to search the whole directory for a tenant-bound credential.
+TEST_F(LDAPAuthenticatorTest, TenantRoleBaseIsEmptyWithoutBothParts) {
+    EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("", "ou=tenants,dc=example,dc=com"));
+    EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("acme", ""));
+    EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("", ""));
+}

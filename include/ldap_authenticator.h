@@ -57,10 +57,17 @@ public:
     // Resolve a user's roles WITHOUT a password bind (for key:secret auth, §15):
     // a service-bind search by uid + group-membership role extraction. `authenticated`
     // is true iff the uid exists in the directory. Tenant is host-driven by the
-    // caller, so it is left empty here.
-    UserInfo lookupUser(const std::string& username);
+    // caller and passed in so roles are resolved WITHIN it; the returned
+    // UserInfo::tenant is still left empty (the caller owns it).
+    UserInfo lookupUser(const std::string& username, const std::string& tenant = "");
 
     
+    // Where one tenant's groups live: `ou=<tenant>,<tenant_base>`. Empty when
+    // either part is missing, which the caller treats as "no tenant-scoped
+    // search is possible" rather than falling back to a directory-wide one.
+    static std::string tenantRoleBase(const std::string& tenant,
+                                      const std::string& tenant_base);
+
 private:
     std::string ldap_endpoint_;
     std::string ldap_domain_;
@@ -87,7 +94,11 @@ private:
     std::string extractTenantFromUserDN(const std::string& user_dn);
     
     // Helper function to extract roles from user's group memberships
-    std::vector<std::string> extractRolesFromGroups(LDAP* ld, const std::string& user_dn);
+    // Roles held by `user_dn`. With a tenant, ONLY that tenant's ou is searched:
+    // role cns repeat across tenants, so a directory-wide search returns a union
+    // and a user who is `administrators` in one tenant looks like one everywhere.
+    std::vector<std::string> extractRolesFromGroups(LDAP* ld, const std::string& user_dn,
+                                                    const std::string& tenant = "");
 };
 
 } // namespace webdav
