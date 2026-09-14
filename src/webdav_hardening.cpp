@@ -247,11 +247,12 @@ bool WebdavHardening::hasLiveSessionLocked(const std::string& tenant, const std:
     return found;
 }
 
-bool WebdavHardening::getCachedRoles(const std::string& uid, std::vector<std::string>& out_roles) {
+bool WebdavHardening::getCachedRoles(const std::string& uid, const std::string& tenant,
+                                     std::vector<std::string>& out_roles) {
     if (uid.empty()) return false;
     std::lock_guard<std::mutex> g(redis_mtx_);
     if (!ensureConnectedLocked()) return false;
-    const std::string key = "webdav:roles:" + uid;
+    const std::string key = "webdav:roles:" + tenant + ":" + uid;
     auto* r = static_cast<redisReply*>(redisCommand(ctx_, "GET %s", key.c_str()));
     if (!r || ctx_->err) {
         if (r) freeReplyObject(r);
@@ -276,13 +277,14 @@ bool WebdavHardening::getCachedRoles(const std::string& uid, std::vector<std::st
     return hit;
 }
 
-void WebdavHardening::putCachedRoles(const std::string& uid, const std::vector<std::string>& roles) {
+void WebdavHardening::putCachedRoles(const std::string& uid, const std::string& tenant,
+                                     const std::vector<std::string>& roles) {
     if (uid.empty() || cfg_.role_cache_ttl <= 0) return;
     std::lock_guard<std::mutex> g(redis_mtx_);
     if (!ensureConnectedLocked()) return;
     std::string val;
     for (size_t i = 0; i < roles.size(); ++i) { if (i) val += '\n'; val += roles[i]; }
-    const std::string key = "webdav:roles:" + uid;
+    const std::string key = "webdav:roles:" + tenant + ":" + uid;
     auto* r = static_cast<redisReply*>(redisCommand(ctx_, "SETEX %s %d %b",
         key.c_str(), cfg_.role_cache_ttl, val.data(), val.size()));
     if (!r || ctx_->err) {
@@ -300,8 +302,10 @@ bool WebdavHardening::hasLiveSessionLocked(const std::string&, const std::string
     return false;
 }
 // No hiredis: no cache -> every request resolves roles via LDAP (correct, just chattier).
-bool WebdavHardening::getCachedRoles(const std::string&, std::vector<std::string>&) { return false; }
-void WebdavHardening::putCachedRoles(const std::string&, const std::vector<std::string>&) {}
+bool WebdavHardening::getCachedRoles(const std::string&, const std::string&,
+                                     std::vector<std::string>&) { return false; }
+void WebdavHardening::putCachedRoles(const std::string&, const std::string&,
+                                     const std::vector<std::string>&) {}
 #endif
 
 }  // namespace webdav
