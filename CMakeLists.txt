@@ -170,6 +170,7 @@ add_executable(webdav_tests
     tests/test_utils.cpp
     tests/test_ldap_authenticator.cpp
     tests/test_path_resolver.cpp
+    tests/test_tenant_state_policy.cpp
     tests/test_webdav_server.cpp
     ${WEBDAV_TEST_SRCS}
 )

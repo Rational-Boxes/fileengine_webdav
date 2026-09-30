@@ -110,6 +110,11 @@ Resp invoke(const char* name, Fn&& fn) {
 }
 }  // namespace
 
+fileengine_rpc::TenantStateResponse GRPCClientWrapper::getTenantState(const fileengine_rpc::TenantStateRequest& request) {
+    return invoke<fileengine_rpc::TenantStateResponse>("GetTenantState",
+        [&](grpc::ClientContext& c, fileengine_rpc::TenantStateResponse& r) { return stub_->GetTenantState(&c, request, &r); });
+}
+
 // Directory operations
 fileengine_rpc::MakeDirectoryResponse GRPCClientWrapper::makeDirectory(const fileengine_rpc::MakeDirectoryRequest& request) {
     return invoke<fileengine_rpc::MakeDirectoryResponse>("MakeDirectory",
