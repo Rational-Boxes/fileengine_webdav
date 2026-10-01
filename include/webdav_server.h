@@ -77,6 +77,10 @@ private:
     std::string extractTenantFromHost(const std::string& host);
     bool authenticateUser(Poco::Net::HTTPServerRequest& request, std::string& user, std::string& tenant, std::vector<std::string>& roles);
 
+    // §3.4c: whether this tenant's lifecycle state admits a login. Shared policy
+    // with http_bridge; fails closed.
+    bool tenantAdmits(const std::string& tenant);
+
     // COPY/MOVE destination guard (security review M4). Validates the Destination
     // authority against the request host and enforces RFC 4918 Overwrite: an
     // existing target with Overwrite:F yields 412; with Overwrite:T (default) the

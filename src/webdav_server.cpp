@@ -14,6 +14,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "monitor_metrics.h"
+#include "tenant_state_policy.h"
 #include "webdav_server.h"
 #include "client_ip.h"
 
@@ -1581,6 +1582,59 @@ std::string WebDAVRequestHandler::extractTenantFromHost(const std::string& host)
     return webdav::extractTenantFromHostname(host);
 }
 
+// ── the tenant-state gate (§3.4c) ───────────────────────────────────────────
+//
+// The SAME shared policy header http_bridge uses, verbatim. §3.4c: "shared code
+// rather than N implementations wherever the doors' languages allow it" —
+// because "adding a check to N doors is N chances to add it subtly differently,
+// and one chance to forget a door entirely", and the last time that happened a
+// member of one tenant could administer another (1.9.17).
+//
+// Cached asymmetrically, as in the other door: admissions for 60s, refusals for
+// 10s. Restoring a tenant to service should not wait on a cache; a suspension
+// already bit the moment it was read.
+//
+// FAILS CLOSED on every path — empty tenant, unreachable core, thrown exception,
+// unrecognised state, or no registry row at all.
+bool WebDAVRequestHandler::tenantAdmits(const std::string& tenant) {
+    using namespace fileengine::tenant_state;
+    if (tenant.empty()) return false;
+
+    struct Entry { std::time_t until; bool admits; };
+    static std::mutex mu;
+    static std::map<std::string, Entry> cache;
+    const std::time_t now = std::time(nullptr);
+    {
+        std::lock_guard<std::mutex> lk(mu);
+        auto it = cache.find(tenant);
+        if (it != cache.end() && now < it->second.until) return it->second.admits;
+    }
+
+    std::string state;
+    bool ok = false;
+    try {
+        fileengine_rpc::TenantStateRequest rq;
+        rq.set_tenant(tenant);
+        auto rs = grpc_client_->getTenantState(rq);
+        if (rs.success() && rs.found()) { state = rs.state(); ok = true; }
+    } catch (const std::exception& e) {
+        webdav::warnLog(std::string("tenantAdmits: state lookup threw for '") +
+                        tenant + "': " + e.what());
+        ok = false;
+    }
+
+    const bool admits = admits_or_refuses_unknown(state, ok);
+    if (!admits) {
+        webdav::warnLog("tenant-state gate: tenant '" + tenant + "' does not admit — " +
+                        refusal_reason(state, ok));
+    }
+    {
+        std::lock_guard<std::mutex> lk(mu);
+        cache[tenant] = Entry{now + (admits ? 60 : 10), admits};
+    }
+    return admits;
+}
+
 bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& request, std::string& user, std::string& tenant, std::vector<std::string>& roles) {
     // Check for Authorization header
     std::string auth_header = request.get("Authorization", "");
@@ -1634,6 +1688,23 @@ bool WebDAVRequestHandler::authenticateUser(Poco::Net::HTTPServerRequest& reques
         std::string uid;
         if (!hardening_->verifyCredential(key_id, secret, tenant, ip, uid)) {
             webdav::debugLog("authenticateUser: key:secret verification failed");
+            return false;
+        }
+
+        // §3.4c: only a `live` tenant admits. AT THE CALL SITE, not inside
+        // verifyCredential, because that has its own TTL cache — a cached
+        // credential would skip the check entirely, and the whole point is that a
+        // suspension takes effect without waiting for something to expire. The
+        // state lookup has its own short cache, so this is not an RPC per request.
+        //
+        // This door authenticates a key:secret against ldap_manager's database
+        // rather than binding to LDAP, and the tenant is host-driven and already
+        // verified against the credential above — so by here `tenant` is the one
+        // the caller is entitled to, and the only remaining question is whether
+        // it is open.
+        if (!tenantAdmits(tenant)) {
+            webdav::warnLog("authenticateUser: tenant-state gate REFUSED tenant=" +
+                            tenant + " uid=" + uid);
             return false;
         }
         // Roles from LDAP (the authorization authority) via service-search — no

@@ -11,6 +11,8 @@ service FileService {
     rpc RemoveDirectory(RemoveDirectoryRequest) returns (RemoveDirectoryResponse);
     rpc ListDirectory(ListDirectoryRequest) returns (ListDirectoryResponse);
     rpc ListDirectoryWithDeleted(ListDirectoryWithDeletedRequest) returns (ListDirectoryWithDeletedResponse);
+    // "What changed most recently, that I may see?" — answered in the core.
+    rpc ListRecentFiles(ListRecentFilesRequest) returns (ListRecentFilesResponse);
 
     // File operations
     rpc Touch(TouchRequest) returns (TouchResponse);
@@ -64,7 +66,45 @@ service FileService {
 
     // Administrative operations
     rpc GetStorageUsage(StorageUsageRequest) returns (StorageUsageResponse);
+
+    // Tenant lifecycle state, from the global `tenants` registry.
+    // PROPOSAL_system_administration_application.md §3.4c.
+    //
+    // THIS IS THE DOORS' LOGIN CHECK. Only `live` admits a user; every other
+    // state refuses, including `provisioning` (a half-built tenant must not be
+    // reachable) and `decommissioned` (the row outlives the data so the name
+    // cannot be silently reused, and must not become a way back in).
+    //
+    // A read rather than a per-door database connection, deliberately: the state
+    // has ONE authoritative home and one read path. A door with its own libpq
+    // route into the core's global schema would be a second reader of
+    // core-owned state, and an LDAP copy would be a second WRITER — a tenant
+    // suspended in one place and live in the other, reachable through whichever
+    // door read the stale copy, failing silently.
+    rpc GetTenantState(TenantStateRequest) returns (TenantStateResponse);
     rpc PurgeOldVersions(PurgeOldVersionsRequest) returns (PurgeOldVersionsResponse);
+
+    // Erasure ("true delete") — PROPOSAL_accountability_record.md §5.4.
+    //
+    // The payload is destroyed; the fact is retained. Distinct from RemoveFile,
+    // which is a SOFT delete that UndeleteFile reverses: a consumer may
+    // reasonably keep derived data for a soft-deleted file, and reusing that
+    // path for erasure would leave extracted text and embeddings exactly where
+    // they were.
+    //
+    // Erasure is a tracked job, not a call that returns done (§5.4.3). The core
+    // destroys its own content and records the erasure as INITIATED; each
+    // participating service acknowledges; the erasure becomes COMPLETE only when
+    // every participant has. Partial completion stays visibly incomplete, which
+    // is what makes the completion record worth showing an auditor.
+    rpc EraseFile(EraseFileRequest) returns (EraseFileResponse);
+    // The guarantee path (§5.4.5). Consumers poll for erasures they have not
+    // acknowledged, so one that missed the fail-open event, was down, or was
+    // restored from a backup converges without the instruction being redelivered.
+    rpc ListPendingErasures(ListPendingErasuresRequest) returns (ListPendingErasuresResponse);
+    rpc AcknowledgeErasure(AcknowledgeErasureRequest) returns (AcknowledgeErasureResponse);
+    // What an auditor is shown: participants, timestamps, outcome.
+    rpc GetErasureStatus(GetErasureStatusRequest) returns (GetErasureStatusResponse);
     rpc TriggerSync(TriggerSyncRequest) returns (TriggerSyncResponse);
 
     // The accountability pull surface (PROPOSAL_accountability_record.md §4.3).
@@ -103,6 +143,30 @@ enum FileType {
     REGULAR_FILE = 0;
     DIRECTORY = 1;
     SYMLINK = 2;
+}
+
+// The same permissions as BIT VALUES, for permission_mask.
+//
+// `Permission` above is an ordinal (READ = 0), which is what a single-permission
+// field needs and is useless for OR-ing: READ|WRITE would be 1. The core stores
+// a bitmask, so a mask field has to speak in bits, and two fields in one message
+// numbering the same concept differently is a trap — a caller who assumes
+// permission_mask takes Permission values gets silent nonsense rather than an
+// error. These are those bits, named, so nobody has to hardcode 0x400.
+enum PermissionBit {
+    PB_NONE                  = 0;
+    PB_RESTORE_TO_VERSION    = 0x008;
+    PB_RETRIEVE_BACK_VERSION = 0x010;
+    PB_VIEW_VERSIONS         = 0x020;
+    PB_UNDELETE              = 0x040;
+    PB_LIST_DELETED          = 0x080;
+    PB_DELETE                = 0x100;
+    PB_WRITE                 = 0x200;
+    PB_READ                  = 0x400;
+    PB_MANAGE_ACL            = 0x800;
+    PB_ACL_INHERIT           = 0x1000;
+    PB_CULL_VERSIONS         = 0x2000;
+    PB_ERASE                 = 0x4000;
 }
 
 enum Permission {
@@ -163,6 +227,61 @@ message ListDirectoryResponse {
     bool success = 1;
     string error = 2;
     repeated DirectoryEntry entries = 3;
+}
+
+// Most-recently-versioned files the caller may read, newest first.
+//
+// This exists because the alternative is a caller assembling the answer from
+// outside: the dashboard read a projection of file events, over-fetched four
+// times its page size, then made TWO permission calls per row — up to 800 round
+// trips for one page, each building and closing a core client. The question
+// "what are the newest files I can see" is a query, and the core is where the
+// files, their versions and their ACLs already are.
+//
+// One security event per call, naming how many rows were examined and returned —
+// not one per row. An event stream that fires per file touched answers this
+// question by accident and at enormous cost; this answers it on purpose.
+message ListRecentFilesRequest {
+    int32 limit = 1;                    // rows to RETURN (server clamps; default 50)
+    AuthenticationContext auth = 2;
+    // Optional: restrict to a subtree. Empty = the whole tenant.
+    string under_uid = 3;
+    // Optional: only versions newer than this (UNIX epoch seconds). 0 = no bound.
+    int64 since_epoch = 4;
+}
+
+// Deliberately not DirectoryEntry. A listing entry answers "what is in this
+// folder"; this answers "what changed", so it carries the version that changed
+// and how many there have been — which is what lets a caller say "created" or
+// "updated" without a second lookup, and what the event projection it replaces
+// used to carry.
+message RecentFileEntry {
+    string uid = 1;
+    string name = 2;
+    // No path. `files` stores parent_uid, not a path, so producing one means an
+    // ancestor walk PER ROW — the precise cost this RPC exists to remove. A
+    // caller that needs paths can resolve the handful it actually displays.
+    reserved 3;
+    string version = 4;           // the version_timestamp that made it recent
+    int32 version_count = 5;      // 1 = this file is new; >1 = it was updated
+    int64 size = 6;
+    int64 modified_at = 7;        // UNIX epoch seconds, derived from `version`
+    string modified_by = 8;       // who wrote that version
+    string owner = 9;
+}
+
+message ListRecentFilesResponse {
+    bool success = 1;
+    string error = 2;
+    repeated RecentFileEntry entries = 3;
+    // Rows the query examined before ACL filtering. The gap between this and
+    // entries.size() is how much of the tenant's recent activity the caller
+    // cannot see — useful for tuning, and the reason the scan is bounded.
+    int32 examined = 4;
+    // True when the scan bound was reached before `limit` rows were collected,
+    // so a caller knows the page is short because of the bound rather than
+    // because the tenant has nothing older.
+    bool scan_truncated = 5;
 }
 
 message ListDirectoryWithDeletedRequest {
@@ -226,12 +345,41 @@ message GetFileRequest {
     string uid = 1;                     // File UUID
     string version_timestamp = 2;       // Optional version timestamp (if empty, get latest)
     AuthenticationContext auth = 3;     // Authentication information
+
+    // Byte range over the PLAINTEXT, half-open [offset, offset+length).
+    // storage_pipeline.md SR-10 - SR-14.
+    //
+    // Additive and optional: proto3 defaults make an old client's request
+    // offset=0, length=0, which is "the whole file" — exactly today's
+    // behaviour, so no consumer has to change to keep working (SR-21).
+    //
+    // The range is over plaintext, never over stored bytes: a caller must never
+    // need to know whether the deployment compresses or encrypts.
+    int64 offset = 4;                   // >= 0
+    int64 length = 5;                   // 0 = to end of file
 }
 
 message GetFileResponse {
     bool success = 1;
     string error = 2;
     bytes data = 3;                     // File content
+
+    // Range metadata, set on the FIRST frame of a stream only; zero/absent on
+    // later frames. storage_pipeline.md SR-12 / SR-13.
+    //
+    // total_size removes a round-trip the doors make today: a bridge must Stat
+    // before it can answer an HTTP Range, and a media player asks for
+    // "bytes=0-" first precisely to discover the length.
+    int64 total_size = 4;               // plaintext length of the whole version
+    int64 range_start = 5;              // first plaintext byte in this stream
+    int64 range_length = 6;             // plaintext bytes that will follow
+    bool ranged = 7;                    // true when a range was applied
+
+    // "seek" when the cost was proportional to length, "scan" when it was
+    // proportional to offset+length. Part of the contract, not diagnostics: a
+    // range API that silently costs O(offset) is worse than none, because
+    // callers design against the promise rather than the behaviour.
+    string range_method = 8;
 }
 
 // File information
@@ -439,9 +587,34 @@ enum AclEffect {
 message GrantPermissionRequest {
     string resource_uid = 1;            // Resource UUID to grant permission on
     string principal = 2;               // user id | "role:<name>" | "claim:<k=v>" | "everyone"
-    Permission permission = 3;          // Permission to grant
+    Permission permission = 3;          // Permission to grant (single bit; see permission_mask)
     AuthenticationContext auth = 4;     // Authentication information
     AclEffect effect = 5;               // ALLOW (default) or DENY
+
+    // OR of PermissionBit values, applied in one call. Supersedes `permission`
+    // when non-zero. NOTE these are bits, not the `Permission` ordinals above —
+    // see PermissionBit for why the two differ.
+    //
+    // The core's own grant_permission has always taken a bitmask — the creator
+    // grant sets eleven bits at once — but that shape was not reachable here, so
+    // every caller looped. Tenant provisioning issued eleven RPCs for a single
+    // folder; a recursive apply multiplied that by the size of the tree.
+    int32 permission_mask = 6;
+
+    // Apply to resource_uid AND every descendant, as one database operation.
+    //
+    // Without this a caller must enumerate the tree and grant per node, which
+    // for a large tree does not complete: it exceeds the request timeout having
+    // applied part of the tree, with no record of where it stopped.
+    //
+    // MANAGE_ACL is required on the ROOT and is not re-checked per descendant —
+    // checking per node would reintroduce inside the core the fan-out this
+    // field exists to remove, and a caller who may manage a folder's ACL can
+    // already reach everything inside it.
+    //
+    // ONE accountability record is written, naming the root and the number of
+    // nodes reached, rather than one per node.
+    bool recursive = 7;
 }
 
 // List all ACL entries on a resource (for an ACL editor). Requires MANAGE_ACL on
@@ -467,19 +640,27 @@ message GetResourceAclsResponse {
 message GrantPermissionResponse {
     bool success = 1;
     string error = 2;
+    int32 nodes_affected = 3;           // rows written; 1 for a non-recursive grant
 }
 
 message RevokePermissionRequest {
     string resource_uid = 1;            // Resource UUID to revoke permission from
     string principal = 2;               // user id | "role:<name>" | "claim:<k=v>" | "everyone"
-    Permission permission = 3;          // Permission to revoke
+    Permission permission = 3;          // Permission to revoke (single bit; see permission_mask)
     AuthenticationContext auth = 4;     // Authentication information
     AclEffect effect = 5;               // Which row to revoke from: ALLOW (default) or DENY
+
+    int32 permission_mask = 6;          // OR of PermissionBit values; supersedes `permission`
+    // Apply to resource_uid and every descendant. A row left with an empty mask
+    // is deleted, not kept at zero: this system is read-by-default, so an ALLOW
+    // row with no bits and no row at all must be indistinguishable.
+    bool recursive = 7;
 }
 
 message RevokePermissionResponse {
     bool success = 1;
     string error = 2;
+    int32 nodes_affected = 3;           // rows updated or deleted; 1 for a non-recursive revoke
 }
 
 message CheckPermissionRequest {
@@ -600,6 +781,34 @@ message ListClaimsResponse {
 }
 
 // Administrative operations
+message TenantStateRequest {
+    string tenant = 1;
+    AuthenticationContext auth = 2;
+}
+
+message TenantStateResponse {
+    bool success = 1;
+    string error = 2;
+
+    // The state as recorded. Empty when the tenant is not in the registry.
+    string state = 3;
+    // When it entered that state, who put it there, and why. For the refusal
+    // message and for the administrative console; never for authorization.
+    string state_since = 4;
+    string state_by = 5;
+    string state_note = 6;
+
+    // The core's OWN verdict, so a door is not the only thing that knows the
+    // rule. A door still applies its own policy — shared, header-only — and the
+    // two agreeing is the point: if they ever disagree, the door refuses,
+    // because `admits` here is advisory and the door's check is the gate.
+    bool admits = 7;
+    // False when the tenant has no registry row at all. Distinct from
+    // `admits=false`, because "no such tenant" and "suspended" need different
+    // operator responses and a door that conflates them tells the wrong story.
+    bool found = 8;
+}
+
 message StorageUsageRequest {
     AuthenticationContext auth = 1;     // Authentication information
     string tenant = 2;                  // Optional tenant-specific usage
@@ -623,6 +832,101 @@ message PurgeOldVersionsRequest {
 message PurgeOldVersionsResponse {
     bool success = 1;
     string error = 2;
+}
+
+// --- Erasure (§5.4) --------------------------------------------------------
+
+enum ErasureState {
+    ERASURE_INITIATED = 0;  // Core content destroyed; participants outstanding.
+    ERASURE_COMPLETE = 1;   // Every participant acknowledged.
+    ERASURE_FAILED = 2;     // A participant reported it could not comply.
+}
+
+message EraseFileRequest {
+    string uid = 1;                     // File to erase
+    AuthenticationContext auth = 2;
+    // The filename is itself party data — "Acme_Contract_J_Smith.pdf" names a
+    // person. §5.4.1 recommends redacting it by default, because the safe
+    // default for an erasure feature is to erase. Set this only where a
+    // retention justification covers keeping it.
+    bool retain_name = 3;
+    string reason = 4;                  // Recorded on the erasure record
+}
+message EraseFileResponse {
+    bool success = 1;
+    string error = 2;
+    string erasure_id = 3;              // The root's record
+    ErasureState state = 4;             // INITIATED unless there are no participants
+    repeated string awaiting = 5;       // Participants not yet acknowledged
+    // Every erasure this call started, deepest first. Erasing a FOLDER erases
+    // what is in it, and each member is a real document with its own derived
+    // copies — so each gets its own record and its own participants. The root's
+    // record alone does not attest to the subtree; these do.
+    repeated string erasure_ids = 6;
+}
+
+message PendingErasure {
+    string erasure_id = 1;
+    string uid = 2;
+    string tenant = 3;
+    int64 initiated_at = 4;             // Unix seconds
+}
+message ListPendingErasuresRequest {
+    string participant = 1;             // Service id, e.g. "csai"
+    AuthenticationContext auth = 2;
+    int32 limit = 3;                    // 0 = server default
+    // Sweep EVERY tenant rather than the one in `auth`.
+    //
+    // A consumer does not reliably know the tenant set. It knows the tenants it
+    // has happened to see traffic for, which is not the same thing: a tenant it
+    // has not served since starting, or one whose events it missed, is invisible
+    // to it — and an erasure there would sit unacknowledged for ever with
+    // nothing saying so. The core is the authority on which tenants exist, so it
+    // is the core that iterates. Each returned row carries its own tenant, and
+    // the acknowledgement must be sent with that tenant.
+    bool all_tenants = 4;
+}
+message ListPendingErasuresResponse {
+    bool success = 1;
+    string error = 2;
+    repeated PendingErasure erasures = 3;
+}
+
+message AcknowledgeErasureRequest {
+    string erasure_id = 1;
+    string participant = 2;
+    AuthenticationContext auth = 3;
+    bool complied = 4;                  // false records a failure, never silence
+    string detail = 5;                  // What was destroyed, or why it could not be
+}
+message AcknowledgeErasureResponse {
+    bool success = 1;
+    string error = 2;
+    ErasureState state = 3;             // COMPLETE once this was the last one
+}
+
+message ErasureAck {
+    string participant = 1;
+    int64 acked_at = 2;
+    bool complied = 3;
+    string detail = 4;
+}
+message GetErasureStatusRequest {
+    string erasure_id = 1;
+    AuthenticationContext auth = 2;
+}
+message GetErasureStatusResponse {
+    bool success = 1;
+    string error = 2;
+    string uid = 3;
+    string tenant = 4;
+    ErasureState state = 5;
+    int64 initiated_at = 6;
+    int64 completed_at = 7;             // 0 while incomplete
+    string actor = 8;
+    string reason = 9;
+    repeated ErasureAck acks = 10;
+    repeated string awaiting = 11;      // Participants still outstanding
 }
 
 message TriggerSyncRequest {

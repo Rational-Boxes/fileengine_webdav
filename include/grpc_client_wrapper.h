@@ -46,6 +46,9 @@ public:
     virtual ~GRPCClientWrapper();
 
     // Directory operations
+    // The tenant lifecycle state, for the login check (§3.4c). Read-only.
+    fileengine_rpc::TenantStateResponse getTenantState(const fileengine_rpc::TenantStateRequest& request);
+
     fileengine_rpc::MakeDirectoryResponse makeDirectory(const fileengine_rpc::MakeDirectoryRequest& request);
     fileengine_rpc::RemoveDirectoryResponse removeDirectory(const fileengine_rpc::RemoveDirectoryRequest& request);
     virtual fileengine_rpc::ListDirectoryResponse listDirectory(const fileengine_rpc::ListDirectoryRequest& request);
