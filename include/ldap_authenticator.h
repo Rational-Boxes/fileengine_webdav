@@ -101,6 +101,12 @@ private:
                                                     const std::string& tenant = "");
 };
 
+// The last step of role resolution, applied on every way out of
+// LDAPAuthenticator::extractRolesFromGroups: maps the `administrators` group to
+// the core's `tenant_admin` role and strips deployment-tier (system_*) groups.
+// Exposed for the unit tests; see the definition for why it is one function.
+std::vector<std::string> finishTenantRoles(std::vector<std::string> roles);
+
 } // namespace webdav
 
 #endif // LDAP_AUTHENTICATOR_H

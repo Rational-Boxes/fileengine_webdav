@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <algorithm>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "../include/ldap_authenticator.h"
@@ -98,4 +99,31 @@ TEST_F(LDAPAuthenticatorTest, TenantRoleBaseIsEmptyWithoutBothParts) {
     EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("", "ou=tenants,dc=example,dc=com"));
     EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("acme", ""));
     EXPECT_EQ("", webdav::LDAPAuthenticator::tenantRoleBase("", ""));
+}
+
+// --- every role path ends in the same mapping -------------------------------
+// The tenant-scoped branch (every key:secret session) returned early and never
+// mapped administrators -> tenant_admin, so tenant admins on WebDAV reached the
+// core with no admin role. finishTenantRoles is now the only way out.
+
+TEST(FinishTenantRoles, AdministratorsGroupGainsTenantAdmin) {
+    auto r = webdav::finishTenantRoles({"users", "contributors", "administrators"});
+    EXPECT_NE(std::find(r.begin(), r.end(), "tenant_admin"), r.end());
+    EXPECT_EQ(std::count(r.begin(), r.end(), "tenant_admin"), 1);
+}
+
+TEST(FinishTenantRoles, TenantAdminIsNotDuplicated) {
+    auto r = webdav::finishTenantRoles({"administrators", "tenant_admin"});
+    EXPECT_EQ(std::count(r.begin(), r.end(), "tenant_admin"), 1);
+}
+
+TEST(FinishTenantRoles, NonAdminsGainNothing) {
+    auto r = webdav::finishTenantRoles({"users", "contributors"});
+    EXPECT_EQ(std::find(r.begin(), r.end(), "tenant_admin"), r.end());
+    EXPECT_EQ(std::find(r.begin(), r.end(), "system_admin"), r.end());
+}
+
+TEST(FinishTenantRoles, DeploymentTierGroupsAreStillStripped) {
+    auto r = webdav::finishTenantRoles({"users", "system_admins"});
+    EXPECT_EQ(std::find(r.begin(), r.end(), "system_admins"), r.end());
 }

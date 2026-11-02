@@ -394,6 +394,28 @@ std::string LDAPAuthenticator::tenantRoleBase(const std::string& tenant,
     return "ou=" + tenant + "," + tenant_base;
 }
 
+// Group -> core role, applied on EVERY way out of extractRolesFromGroups.
+//
+// The core grants admin of the caller's own tenant (root-level create, ACL/role
+// admin, permission bypass) to `tenant_admin`, whose bypass cannot cross
+// tenants (security review H2); the directory holds the `administrators` GROUP.
+// The mapping used to sit only at the end of the function, and the
+// tenant-scoped branch — the one every key:secret session takes, since roles
+// are resolved within the tenant the credential is bound to — returned early
+// and skipped it. Tenant admins on WebDAV then reached the core with no admin
+// role at all. The global `system_admin` is NOT granted here; a platform
+// operator gets it only via a group literally named `system_admin`.
+std::vector<std::string> finishTenantRoles(std::vector<std::string> roles) {
+    if (std::find(roles.begin(), roles.end(), "administrators") != roles.end() &&
+        std::find(roles.begin(), roles.end(), "tenant_admin") == roles.end()) {
+        roles.push_back("tenant_admin");
+        webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: mapped 'administrators' group -> 'tenant_admin' role");
+    }
+    // §6.2's second layer: the search is scoped by directory LAYOUT, and layout
+    // is configuration — a system_* group misplaced in a tenant OU is stripped.
+    return fileengine::tenant_roles::stripDeploymentRoles(roles);
+}
+
 std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld,
                                                                    const std::string& user_dn,
                                                                    const std::string& tenant) {
@@ -445,10 +467,7 @@ std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld,
         if (tres) ldap_msgfree(tres);
         webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: tenant-scoped base '" +
                          base + "' yielded " + std::to_string(roles.size()) + " role(s)");
-        // §6.2's second layer: scoping the search depends on directory LAYOUT,
-        // and layout is configuration. A system_* group misplaced inside a
-        // tenant OU sits in a base this code is entitled to search.
-        return fileengine::tenant_roles::stripDeploymentRoles(roles);
+        return finishTenantRoles(std::move(roles));
     }
 
     // NO TENANT IN HAND, AND STILL NOT A DIRECTORY-WIDE SEARCH.
@@ -849,21 +868,7 @@ std::vector<std::string> LDAPAuthenticator::extractRolesFromGroups(LDAP* ld,
         roles.push_back("users");
     }
 
-    // Map the tenant "administrators" group to the tenant-scoped admin role.
-    // The core grants admin of THE CALLER'S OWN tenant (root-level create,
-    // ACL/role admin, permission bypass) to `tenant_admin`, whose bypass cannot
-    // cross tenants (security review H2). The global `system_admin` is NOT
-    // granted here; a platform operator gets it only via a group literally named
-    // `system_admin`, which is already carried in `roles` verbatim.
-    if (std::find(roles.begin(), roles.end(), "administrators") != roles.end() &&
-        std::find(roles.begin(), roles.end(), "tenant_admin") == roles.end()) {
-        roles.push_back("tenant_admin");
-        webdav::debugLog("LDAPAuthenticator::extractRolesFromGroups: mapped 'administrators' group -> 'tenant_admin' role");
-    }
-
-    // Same second layer as the tenant-scoped branch above: the search is
-    // scoped by directory LAYOUT, and layout is configuration.
-    return fileengine::tenant_roles::stripDeploymentRoles(roles);
+    return finishTenantRoles(std::move(roles));
 }
 
 } // namespace webdav
